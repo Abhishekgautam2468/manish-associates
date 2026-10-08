@@ -1,0 +1,18 @@
+{
+  "name": "manish-associates",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "install:all": "npm install && npm install --prefix client && npm install --prefix server",
+    "dev": "concurrently -n db,server,client -c gray,blue,green \"npm run db\" \"npm run dev --prefix server\" \"npm run dev --prefix client\"",
+    "db": "node scripts/mongo.mjs",
+    "open:dashboard": "node scripts/open-dashboard.mjs",
+    "build": "npm run build --prefix client",
+    "start": "npm start --prefix server",
+    "test": "node tests/run.mjs"
+  },
+  "devDependencies": {
+    "concurrently": "^10.0.5",
+    "playwright": "^1.63.0"
+  }
+}
