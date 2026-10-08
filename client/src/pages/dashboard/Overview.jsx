@@ -493,7 +493,7 @@ function Outstanding({ pending, className = '' }) {
           <div key={r.label} className="flex items-baseline justify-between gap-3 py-2.5 first:pt-0">
             <dt className="text-sm font-semibold text-ink-2">{r.label}</dt>
             <dd className="m-0 flex flex-col items-end">
-              <span className={`text-2xl font-extrabold tracking-tight tabular-nums ${r.highlight ? 'text-attn' : 'text-ink'}`}>
+              <span className={`text-2xl font-extrabold tracking-tight tabular-nums text-ink`}>
                 {money(r.value)}
               </span>
               <span className="text-xs text-ink-3">

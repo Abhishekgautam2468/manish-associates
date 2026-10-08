@@ -1119,3 +1119,13 @@ a.hero-stat:hover {
   border-color: var(--line-soft);
   box-shadow: 0 1px 2px rgb(20 23 43 / 0.04);
 }
+
+/* Reminder dots: due today in amber, overdue in red (defined after the plain dot so they win) */
+:where(.dash-root) .reminder-item--today::before {
+  background: var(--mark);
+  box-shadow: 0 0 0 3px var(--attn-soft);
+}
+:where(.dash-root) .reminder-item--overdue::before {
+  background: var(--danger);
+  box-shadow: 0 0 0 3px var(--danger-soft);
+}
