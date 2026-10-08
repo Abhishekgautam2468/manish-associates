@@ -153,7 +153,7 @@ export default [
       setVal(d.querySelector('input[inputmode=decimal]'), '20000')
       await w(300)
       expect(/₹20,200/.test(d.innerText), 'collect ₹20,200')
-      const toInput = all('input', d).find((i) => i.placeholder.startsWith('Type a name'))
+      const toInput = all('input', d).find((i) => i.placeholder.startsWith('Receiver’s name'))
       toInput.focus()
       setVal(toInput, 'QA Receiver')
       await w(400)

@@ -450,7 +450,7 @@ export function EntryForm({ entry, defaults = {}, onDone, onCancel, toast, title
         editing
           ? 'Entry updated'
           : pendingP > 0
-            ? `Saved. ${money(pendingP)} pending${v.remindOn ? ', reminder set' : ''}`
+            ? `${service?.name ?? 'Entry'} saved. ${money(pendingP)} left pending${v.remindOn ? ', with a reminder' : ''}`
             : v.kind === 'service'
               ? `${service?.name ?? 'Entry'} saved`
               : 'Entry saved',
@@ -585,7 +585,7 @@ export function EntryForm({ entry, defaults = {}, onDone, onCancel, toast, title
             id={ids.person}
             value={v.contact}
             onChange={set('contact')}
-            placeholder={v.kind === 'service' ? 'Walk-in, or search a saved customer' : 'Search by name or phone'}
+            placeholder={v.kind === 'service' ? 'Search customers, or leave blank for a walk-in' : 'Search by name or phone number'}
             invalid={error?.field === 'contact_id'}
             describedBy={error?.field === 'contact_id' ? `${ids.person}-err` : undefined}
           />
@@ -916,7 +916,7 @@ export function EntryForm({ entry, defaults = {}, onDone, onCancel, toast, title
                 onChange={set('to')}
                 onText={set('toName')}
                 text={v.toName}
-                placeholder="Type a name or pick a saved person"
+                placeholder="Receiver’s name, or pick a saved person"
                 invalid={error?.field === 'to'}
               />
             </div>
@@ -927,7 +927,7 @@ export function EntryForm({ entry, defaults = {}, onDone, onCancel, toast, title
               <input
                 id={ids.account}
                 className="field"
-                placeholder="UPI ID, bank account or phone"
+                placeholder="UPI ID, account number or phone number"
                 value={v.toAccount}
                 onChange={set('toAccount')}
                 maxLength={200}
@@ -1165,7 +1165,7 @@ export function PersonForm({ person, initialName = '', onDone, onCancel, toast, 
             value={v.note}
             onChange={set('note')}
             maxLength={1000}
-            placeholder="Address, business name, anything to remember"
+            placeholder="Address, shop name or anything worth remembering"
           />
         </div>
         {error && !['name', 'phone'].includes(error.field) && (
@@ -1224,7 +1224,7 @@ export function ReminderForm({ reminder, defaults = {}, onDone, onCancel, toast 
                 id={ids.title}
                 className="field"
                 autoFocus
-                placeholder="e.g. Collect rent, Pay electricity bill"
+                placeholder="For example, collect rent from Ramesh"
                 value={v.title}
                 onChange={set('title')}
                 maxLength={120}
@@ -1342,7 +1342,7 @@ export function LabelForm({ label, defaults = {}, onDone, onCancel, toast }) {
             className="field"
             autoFocus
             autoComplete="off"
-            placeholder={v.flow ? 'e.g. Cash withdrawal, Money transfer' : 'e.g. Rent, Salary, Office expense'}
+            placeholder={v.flow ? 'For example, Cash withdrawal' : 'For example, Rent or Salary'}
             maxLength={40}
             value={v.name}
             onChange={set('name')}

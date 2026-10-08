@@ -118,7 +118,7 @@ export default [
       if (chip) {
         const name = chip.querySelector('span').textContent
         await click(chip, null, 400)
-        const to = all('input', d).find((i) => i.placeholder.startsWith('Type a name'))
+        const to = all('input', d).find((i) => i.placeholder.startsWith('Receiver’s name'))
         expect(to.value === name, 'chip fills Send to (' + to.value + ')')
       }
       dlg()?.dispatchEvent(new Event('cancel'))
@@ -148,7 +148,7 @@ export default [
       const op = document.querySelector('#' + CSS.escape(all('label').find((l) => l.innerText.includes('Opening cash')).htmlFor))
       setVal(op, '500000')
       await w(200)
-      const ct = all('input').find((i) => i.placeholder === 'Count the drawer')
+      const ct = all('input').find((i) => i.placeholder === 'Cash counted in the drawer')
       setVal(ct, '1')
       await w(300)
       expect(/short|extra|Matches/.test(text()), 'difference shows')

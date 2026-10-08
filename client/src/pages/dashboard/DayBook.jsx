@@ -39,36 +39,69 @@ import { Hero } from '../../dashboard/bits.jsx'
 const CARD = 'rounded-[20px] bg-surface shadow-[var(--soft-card)] ring-1 ring-[var(--soft-ring)]'
 const MODE_ICON = { cash: Banknote, upi: Smartphone, bank: Landmark, cheque: FileText, card: CreditCard, other: Wallet }
 
-function ModeCard({ m }) {
-  const Icon = MODE_ICON[m.mode] ?? Wallet
-  const net = m.in_amount - m.out_amount
+// Money in and out for each payment mode, as rows of one card, with the day's totals under a double rule.
+function ModesCard({ modes }) {
+  const total = modes.reduce((t, m) => ({ in: t.in + m.in_amount, out: t.out + m.out_amount, count: t.count + m.count }), {
+    in: 0,
+    out: 0,
+    count: 0,
+  })
+  const row = 'grid grid-cols-[minmax(0,1fr)_auto] items-center gap-x-4 px-4 sm:grid-cols-[minmax(0,1fr)_5rem_8rem_8rem_8rem] sm:px-5'
   return (
-    <section className={`${CARD} flex min-w-0 flex-col gap-3 p-4 sm:p-5`} aria-label={modeLabel(m.mode)}>
-      <div className="flex items-center justify-between gap-2">
-        <span className="flex items-center gap-2 text-sm font-bold text-ink">
-          <span className="grid size-8 place-items-center rounded-lg bg-surface-3 text-ink-2" aria-hidden="true">
-            <Icon size={16} />
-          </span>
-          {modeLabel(m.mode)}
-        </span>
-        <span className="text-xs font-semibold text-ink-3">
-          {m.count} {m.count === 1 ? 'move' : 'moves'}
+    <section className={`${CARD} overflow-hidden`} aria-labelledby="db-modes">
+      <h2 id="db-modes" className="m-0 border-b border-line-soft px-4 py-3.5 text-base font-bold text-ink sm:px-5">
+        By payment mode
+      </h2>
+      <div className={`${row} hidden h-9 bg-surface-2 text-xs font-semibold text-ink-3 sm:grid`} aria-hidden="true">
+        <span>Mode</span>
+        <span className="text-right">Moves</span>
+        <span className="text-right">In</span>
+        <span className="text-right">Out</span>
+        <span className="text-right">Net</span>
+      </div>
+      <ul className="m-0 list-none p-0">
+        {modes.map((m) => {
+          const Icon = MODE_ICON[m.mode] ?? Wallet
+          const net = m.in_amount - m.out_amount
+          return (
+            <li key={m.mode} className={`${row} border-t border-line-soft py-3 first:border-t-0`}>
+              <span className="flex min-w-0 items-center gap-3">
+                <span
+                  className="grid size-9 shrink-0 place-items-center rounded-xl bg-surface-2 text-ink-2 ring-1 ring-line-soft"
+                  aria-hidden="true"
+                >
+                  <Icon size={16} />
+                </span>
+                <span className="min-w-0">
+                  <span className="block truncate text-sm font-bold text-ink">{modeLabel(m.mode)}</span>
+                  <span className="block text-xs text-ink-3 sm:hidden">
+                    in {money(m.in_amount)} · out {money(m.out_amount)}
+                  </span>
+                </span>
+              </span>
+              <span className="hidden text-right text-sm text-ink-3 tabular-nums sm:block">{m.count}</span>
+              <span className="hidden text-right text-sm font-bold text-in tabular-nums sm:block">
+                {m.in_amount ? money(m.in_amount) : '–'}
+              </span>
+              <span className="hidden text-right text-sm font-bold text-out tabular-nums sm:block">
+                {m.out_amount ? money(m.out_amount) : '–'}
+              </span>
+              <span className={`text-right text-[15px] font-extrabold tabular-nums ${net >= 0 ? 'text-ink' : 'text-out'}`}>
+                {money(net, { sign: true })}
+              </span>
+            </li>
+          )
+        })}
+      </ul>
+      <div className={`${row} border-0 border-t-[3px] border-double border-ink/40 bg-surface-2 py-3 text-sm font-extrabold`}>
+        <span className="text-ink">Total</span>
+        <span className="hidden text-right text-ink-3 tabular-nums sm:block">{total.count}</span>
+        <span className="hidden text-right text-in tabular-nums sm:block">{money(total.in)}</span>
+        <span className="hidden text-right text-out tabular-nums sm:block">{money(total.out)}</span>
+        <span className={`text-right tabular-nums ${total.in - total.out >= 0 ? 'text-ink' : 'text-out'}`}>
+          {money(total.in - total.out, { sign: true })}
         </span>
       </div>
-      <dl className="m-0 grid grid-cols-2 gap-2 text-sm">
-        <div>
-          <dt className="text-xs font-bold text-ink-3">In</dt>
-          <dd className="m-0 font-extrabold text-in tabular-nums">{money(m.in_amount)}</dd>
-        </div>
-        <div className="text-right">
-          <dt className="text-xs font-bold text-ink-3">Out</dt>
-          <dd className="m-0 font-extrabold text-out tabular-nums">{money(m.out_amount)}</dd>
-        </div>
-      </dl>
-      <p className="m-0 flex items-baseline justify-between gap-2 border-t border-line-soft pt-2.5 text-sm">
-        <span className="font-semibold text-ink-3">Net</span>
-        <span className={`text-lg font-extrabold tabular-nums ${net >= 0 ? 'text-ink' : 'text-out'}`}>{money(net, { sign: true })}</span>
-      </p>
     </section>
   )
 }
@@ -205,7 +238,7 @@ function CashCount({ data, date }) {
               id={ids.counted}
               className="w-full min-w-0 border-0 bg-transparent p-0 text-right text-2xl font-extrabold text-ink tabular-nums outline-none placeholder:text-ink-3/40"
               inputMode="decimal"
-              placeholder="Count the drawer"
+              placeholder="Cash counted in the drawer"
               value={counted}
               onChange={edit(setCounted)}
             />
@@ -227,7 +260,7 @@ function CashCount({ data, date }) {
           <input
             id={ids.note}
             className="field h-10 min-h-10 py-0 text-sm"
-            placeholder="Note (optional), e.g. gave ₹500 to the shop"
+            placeholder="Add a note (optional)"
             value={note}
             onChange={(e) => (setNote(e.target.value), setTouched(true))}
             maxLength={500}
@@ -386,11 +419,7 @@ function DayBook() {
               <p className="m-0 mt-1 text-sm text-ink-3">You can still record the opening cash below.</p>
             </section>
           ) : (
-            <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-              {data.modes.map((m) => (
-                <ModeCard key={m.mode} m={m} />
-              ))}
-            </div>
+            <ModesCard modes={data.modes} />
           )}
 
           <CashCount data={data} date={date} />

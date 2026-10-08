@@ -59,14 +59,8 @@ function Cash({ value, tone }) {
 function LabelTag({ entry: e }) {
   if (!e.label_name) return <span className="text-ink-3">–</span>
   return (
-    <span
-      className="inline-flex max-w-full min-w-0 items-center gap-1.5 rounded-full px-2 py-0.5 text-xs font-bold"
-      style={{
-        color: `color-mix(in oklab, ${e.label_color} 70%, var(--ink))`,
-        background: `color-mix(in oklab, ${e.label_color} 13%, transparent)`,
-      }}
-    >
-      <span className="size-1.5 shrink-0 rounded-full" style={{ background: e.label_color }} aria-hidden="true" />
+    <span className="inline-flex max-w-full min-w-0 items-center gap-2 text-[13px] font-semibold text-ink-2">
+      <span className="size-2 shrink-0 rounded-full" style={{ background: e.label_color }} aria-hidden="true" />
       <span className="truncate">{e.label_name}</span>
     </span>
   )
@@ -135,13 +129,7 @@ function EntryRow({ entry: e, onOpen }) {
           <span className="flex min-w-0 flex-col gap-1">
             <span className="flex min-w-0 items-center gap-2">
               <span className="truncate text-[15px] font-bold text-ink">{title}</span>
-              {balanceNote && (
-                <span
-                  className={`shrink-0 rounded-md px-1.5 py-px text-[11px] font-bold ${effect < 0 ? 'bg-attn-soft text-attn' : 'bg-out-soft text-out'}`}
-                >
-                  {balanceNote}
-                </span>
-              )}
+              {balanceNote && <span className={`shrink-0 text-xs font-bold ${effect < 0 ? 'text-attn' : 'text-out'}`}>{balanceNote}</span>}
             </span>
             {/* Phones and tablets: details under the name */}
             <span className="flex min-w-0 flex-wrap items-center gap-x-2 gap-y-1 text-xs whitespace-nowrap text-ink-3 xl:hidden">

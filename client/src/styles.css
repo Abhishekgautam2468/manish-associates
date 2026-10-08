@@ -904,3 +904,218 @@ a.hero-stat:hover {
     min-height: 2.375rem;
   }
 }
+
+/* Phones: windows are bottom sheets with a grab handle */
+@media (max-width: 640px) {
+  .dash-root .modal {
+    border-radius: 24px 24px 0 0;
+  }
+  .dash-root .modal__inner {
+    position: relative;
+  }
+  .dash-root .modal:not(:has(.more)) .modal__inner::before {
+    content: '';
+    position: absolute;
+    top: 0.5rem;
+    left: 50%;
+    z-index: 2;
+    width: 2.25rem;
+    height: 0.25rem;
+    border-radius: 999px;
+    background: var(--line);
+    transform: translateX(-50%);
+  }
+}
+
+/* Dropdowns and fields in the hero stay dark when hovered, focused or open */
+.dash-root .hero select.field--compact:hover,
+.dash-root .hero .field:hover {
+  background-color: rgb(255 255 255 / 0.12);
+  border-color: rgb(255 255 255 / 0.22);
+}
+.dash-root .hero .field:focus,
+.dash-root .hero .field:focus-visible,
+.dash-root .hero select.field--compact:focus,
+.dash-root .hero select.field--compact:focus-visible {
+  color: #fff;
+  background-color: rgb(255 255 255 / 0.12);
+  border-color: rgb(165 148 255 / 0.7);
+  outline: none;
+  box-shadow: 0 0 0 3px rgb(124 98 255 / 0.35);
+}
+
+/* Wide screens: let the content use more of the width */
+@media (min-width: 1600px) {
+  .dash-root .page {
+    max-width: 1480px;
+  }
+}
+
+/*
+ * Body polish: the shared controls, windows, menus, toasts and tables. Wrapped in :where(), so
+ * these weigh less than the hero's versions of the same controls and never repaint them.
+ */
+:where(.dash-root) .label {
+  margin-bottom: 0.45rem;
+  font-size: 0.8125rem;
+  font-weight: 650;
+  color: var(--ink-2);
+}
+:where(.dash-root) .field {
+  min-height: 2.75rem;
+  border-color: var(--line);
+  border-radius: 12px;
+  box-shadow: 0 1px 2px rgb(20 23 43 / 0.04);
+  transition:
+    border-color 140ms ease,
+    box-shadow 140ms ease;
+}
+:where(.dash-root) .field:hover {
+  border-color: color-mix(in srgb, var(--ink-3) 40%, var(--line));
+}
+:where(.dash-root) .field:focus-visible {
+  outline: none;
+  border-color: var(--primary);
+  box-shadow: 0 0 0 4px rgb(109 74 255 / 0.14);
+}
+:where(.dash-root) .field--compact {
+  min-height: 2.5rem;
+}
+
+:where(.dash-root) .btn {
+  min-height: 2.5rem;
+  padding-inline: 1rem;
+  font-weight: 650;
+  border-radius: 12px;
+  box-shadow: 0 1px 2px rgb(20 23 43 / 0.05);
+}
+:where(.dash-root) .btn--sm {
+  min-height: 2.125rem;
+  padding-inline: 0.8rem;
+  border-radius: 10px;
+}
+:where(.dash-root) .btn--primary {
+  background: linear-gradient(180deg, #7b5eff, var(--primary));
+  border-color: transparent;
+  box-shadow:
+    0 8px 18px -10px rgb(109 74 255 / 0.85),
+    inset 0 1px 0 rgb(255 255 255 / 0.2);
+}
+:where(.dash-root) .btn--primary:hover {
+  background: linear-gradient(180deg, #8467ff, var(--primary-hover));
+}
+:where(.dash-root) .btn--danger {
+  box-shadow: 0 8px 18px -10px rgb(190 18 60 / 0.6);
+}
+:where(.dash-root) .icon-button {
+  border-radius: 10px;
+}
+:where(.dash-root) .icon-button--bordered {
+  border-color: var(--line-soft);
+  box-shadow: 0 1px 2px rgb(20 23 43 / 0.05);
+}
+
+:where(.dash-root) .segmented {
+  padding: 3px;
+  border-radius: 12px;
+}
+:where(.dash-root) .segmented__option {
+  font-weight: 650;
+  border-radius: 9px;
+}
+:where(.dash-root) .segmented__option[aria-checked='true'] {
+  box-shadow:
+    0 1px 3px rgb(20 23 43 / 0.12),
+    0 0 0 1px rgb(20 23 43 / 0.04);
+}
+
+/* Menus */
+:where(.dash-root) .menu__list {
+  min-width: 11rem;
+  padding: 0.375rem;
+  border: 0;
+  border-radius: 14px;
+  box-shadow:
+    0 0 0 1px rgb(20 23 43 / 0.07),
+    0 18px 40px -14px rgb(10 14 32 / 0.4);
+}
+:where(.dash-root) .menu__item {
+  min-height: 2.375rem;
+  border-radius: 9px;
+}
+
+/* Toasts in the brand navy */
+:where(.dash-root) .toast {
+  padding: 0.8rem 1.1rem;
+  background: var(--side);
+  border-radius: 14px;
+  box-shadow:
+    0 0 0 1px rgb(255 255 255 / 0.06),
+    0 18px 40px -16px rgb(10 14 32 / 0.6);
+}
+
+/* Windows */
+:where(.dash-root) .modal__head {
+  gap: 0.95rem;
+  padding: 1.5rem 1.6rem 0.4rem;
+}
+:where(.dash-root) .modal__icon {
+  width: 2.75rem;
+  height: 2.75rem;
+  border-radius: 14px;
+}
+:where(.dash-root) .modal__title {
+  font-size: 1.25rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+:where(.dash-root) .modal__desc {
+  margin-top: 0.25rem;
+  font-size: 0.875rem;
+  color: var(--ink-3);
+}
+:where(.dash-root) .modal__body {
+  padding: 1.25rem 1.6rem 1.6rem;
+}
+:where(.dash-root) .modal__foot {
+  padding: 1rem 1.6rem;
+  border-top-color: var(--line-soft);
+  border-radius: 0 0 24px 24px;
+}
+:where(.dash-root) .detail__person {
+  border: 0;
+  border-radius: 14px;
+  background: var(--surface-2);
+}
+
+/* Tables */
+:where(.dash-root) .table thead th {
+  font-size: 0.75rem;
+  font-weight: 650;
+  color: var(--ink-3);
+  background: var(--surface-2);
+}
+:where(.dash-root) .table td {
+  padding-block: 0.85rem;
+}
+:where(.dash-root) .table tbody tr {
+  transition: background-color 120ms ease;
+}
+:where(.dash-root) .table tbody tr:hover {
+  background: color-mix(in srgb, var(--surface-2) 70%, transparent);
+}
+
+/* Reminder lines on Overview and a person's page */
+:where(.dash-root) .reminder-item {
+  padding: 0.85rem 0 0.85rem 1.2rem;
+}
+:where(.dash-root) .reminder-item__title {
+  font-weight: 650;
+}
+
+/* Quick add choices */
+:where(.dash-root) .chip {
+  font-weight: 600;
+  border-color: var(--line-soft);
+  box-shadow: 0 1px 2px rgb(20 23 43 / 0.04);
+}

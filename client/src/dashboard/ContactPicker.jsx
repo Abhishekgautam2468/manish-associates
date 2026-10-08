@@ -7,7 +7,7 @@ import { useQueryClient } from '@tanstack/react-query'
 
 // Search saved people by name or phone, or add a new person without leaving the form.
 // With `onText`, a typed name that isn't a saved person can be used as it is (for example a transfer's receiver).
-function ContactPicker({ id, value, onChange, onText, text = '', invalid, describedBy, autoFocus, placeholder = 'Search by name or phone' }) {
+function ContactPicker({ id, value, onChange, onText, text = '', invalid, describedBy, autoFocus, placeholder = 'Search by name or phone number' }) {
   const listId = useId()
   const client = useQueryClient()
   const [query, setQuery] = useState(value?.name ?? text)

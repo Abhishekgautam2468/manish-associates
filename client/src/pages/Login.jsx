@@ -48,7 +48,7 @@ function Login() {
                 id="identifier"
                 className="field"
                 autoComplete="username"
-              placeholder="e.g. manish or name@example.com"
+              placeholder="Your username or email"
                 autoCapitalize="none"
                 spellCheck="false"
                 value={identifier}

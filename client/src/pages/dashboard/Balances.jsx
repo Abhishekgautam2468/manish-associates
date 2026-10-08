@@ -88,21 +88,21 @@ function PersonRow({ person: p, side, max, reminder, ui }) {
 
       {/* Share of the total, wide screens */}
       <span className="hidden min-w-0 flex-col gap-1.5 lg:flex">
-        <span className="h-1.5 overflow-hidden rounded-full bg-surface-3" aria-hidden="true">
-          <span className={`block h-full rounded-full ${s.bar}`} style={{ width: `${Math.max(3, (amount / max) * 100)}%` }} />
+        <span className="h-1 overflow-hidden rounded-full bg-surface-3" aria-hidden="true">
+          <span className={`block h-full rounded-full opacity-75 ${s.bar}`} style={{ width: `${Math.max(3, (amount / max) * 100)}%` }} />
         </span>
         <span className="text-xs text-ink-3">Last entry {since(p.last_date)}</span>
       </span>
 
       <span className="flex flex-col items-end text-right">
-        <span className={`text-[17px] font-extrabold whitespace-nowrap tabular-nums ${s.tone}`}>{money(amount)}</span>
-        <span className="text-[11px] font-semibold text-ink-3">{s.word}</span>
+        <span className="text-[17px] font-extrabold whitespace-nowrap text-ink tabular-nums">{money(amount)}</span>
+        <span className={`text-[11px] font-semibold ${s.tone}`}>{s.word}</span>
       </span>
 
       <span className="col-span-2 flex items-center justify-end gap-1.5 pt-2 lg:col-span-1 lg:pt-0">
         {p.phone ? (
           <a
-            className="icon-button icon-button--bordered size-9"
+            className="icon-button size-9"
             href={whatsappLink(p.phone, reminderMessage({ name: p.name, type: side, amount, dueDate: reminder?.due_date }))}
             target="_blank"
             rel="noreferrer"
@@ -112,17 +112,13 @@ function PersonRow({ person: p, side, max, reminder, ui }) {
             <MessageCircle size={16} />
           </a>
         ) : (
-          <span
-            className="icon-button icon-button--bordered size-9 cursor-not-allowed opacity-40"
-            title="No phone saved"
-            aria-label="No phone saved"
-          >
+          <span className="icon-button size-9 cursor-not-allowed opacity-40" title="No phone saved" aria-label="No phone saved">
             <MessageCircle size={16} />
           </span>
         )}
         <button
           type="button"
-          className={`icon-button icon-button--bordered size-9 ${
+          className={`icon-button size-9 ${
             !reminder
               ? ''
               : reminder.due_date < todayISO()

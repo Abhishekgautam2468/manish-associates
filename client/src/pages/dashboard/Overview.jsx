@@ -148,7 +148,7 @@ function QuickAdd() {
     if (main <= 0) return setError('Enter an amount first.')
     let body
     if (service) {
-      if (!isWithdrawal && !to && !toName.trim()) return setError('Type who the money goes to.')
+      if (!isWithdrawal && !to && !toName.trim()) return setError('Enter who receives the money.')
       body = {
         type: 'transfer',
         label_id: service.id,
@@ -170,14 +170,14 @@ function QuickAdd() {
     try {
       const saved = await save.mutateAsync({ path: '/transactions', body })
       ui.toast(
-        service ? `${service.name} saved · you keep ${money(fee)}` : `${kind === 'in' ? 'Money in' : 'Money out'} of ${money(main)} saved`,
+        service ? `${service.name} saved. You keep ${money(fee)}.` : `${kind === 'in' ? 'Money in' : 'Money out'} of ${money(main)} saved`,
         'done',
         [
           {
             label: 'Undo',
             onClick: async () => {
               await save.mutateAsync({ path: `/transactions/${saved.id}`, method: 'DELETE' })
-              ui.toast('Entry removed')
+              ui.toast('Entry undone')
             },
           },
           { label: 'Receipt', onClick: () => window.open(receiptLink(saved, null, contact?.phone), '_blank', 'noopener') },
@@ -259,7 +259,7 @@ function QuickAdd() {
           id={ids.person}
           value={contact}
           onChange={setContact}
-          placeholder={service ? 'Walk-in, or search' : 'Search by name or phone'}
+          placeholder={service ? 'Search customers (optional)' : 'Search by name or phone number'}
         />
       </div>
 
@@ -274,7 +274,7 @@ function QuickAdd() {
             onChange={setTo}
             onText={setToName}
             text={toName}
-            placeholder="Type a name or pick a saved person"
+            placeholder="Receiver’s name, or pick a saved person"
           />
         </div>
       )}
@@ -611,7 +611,7 @@ function Overview() {
 
   async function markDone(reminder) {
     await save.mutateAsync({ path: `/reminders/${reminder.id}/done` })
-    ui.toast('Reminder done')
+    ui.toast('Reminder marked as done')
   }
 
   const name = user.username.charAt(0).toUpperCase() + user.username.slice(1)

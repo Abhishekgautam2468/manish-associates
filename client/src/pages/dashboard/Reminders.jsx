@@ -208,7 +208,7 @@ function ReminderRow({ r, bucket, ui, save }) {
           <button
             type="button"
             className={`btn btn--sm ${urgent ? 'btn--primary' : 'btn--ghost'}`}
-            onClick={() => act(`/reminders/${r.id}/done`, 'Reminder done')}
+            onClick={() => act(`/reminders/${r.id}/done`, 'Reminder marked as done')}
           >
             <Check size={15} aria-hidden="true" /> Done
           </button>

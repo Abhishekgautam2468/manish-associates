@@ -85,7 +85,7 @@ function CommandPalette({ onClose, ui }) {
           <input
             autoFocus
             className="palette__field"
-            placeholder="Search people, entries, or type an action"
+            placeholder="Search people, entries or actions"
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             onKeyDown={onKeyDown}

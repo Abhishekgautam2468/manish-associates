@@ -569,7 +569,7 @@ function Person() {
 
   async function markDone(reminder) {
     await save.mutateAsync({ path: `/reminders/${reminder.id}/done` })
-    ui.toast('Reminder done')
+    ui.toast('Reminder marked as done')
   }
 
   const side = reminders.length > 0
