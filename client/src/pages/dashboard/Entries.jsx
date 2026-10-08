@@ -1,22 +1,11 @@
 import { useMemo, useState } from 'react'
 import { useSearchParams } from 'react-router-dom'
-import {
-  ArrowDownLeft,
-  ArrowLeftRight,
-  ArrowUpRight,
-  Download,
-  ListFilter,
-  Pencil,
-  ReceiptText,
-  Scale,
-  Search,
-  X,
-} from 'lucide-react'
+import { ArrowDownLeft, ArrowLeftRight, ArrowUpRight, Download, ListFilter, Pencil, ReceiptText, Scale, Search, X } from 'lucide-react'
 import { qs, useLabels, useTransactions } from '../../lib/queries.js'
 import { LabelChip } from '../../dashboard/LabelPicker.jsx'
 import { useUI } from '../../dashboard/ui.jsx'
-import DateRange, { PRESETS, presetRange } from '../../dashboard/DateRange.jsx'
-import { Avatar, EmptyState, Segmented } from '../../dashboard/bits.jsx'
+import DateRange, { presetRange } from '../../dashboard/DateRange.jsx'
+import { Avatar, EmptyState, Hero, Segmented } from '../../dashboard/bits.jsx'
 import { MODES, formatDate, formatFullDate, formatMonthShort, modeLabel, money, relativeDay } from '../../lib/format.js'
 
 const PAGE = 100
@@ -61,7 +50,9 @@ function periodText(preset, from, to) {
 
 function Cash({ value, tone }) {
   if (!value) return null
-  return <span className={`text-[15px] font-bold whitespace-nowrap tabular-nums ${tone === 'in' ? 'text-in' : 'text-out'}`}>{money(value)}</span>
+  return (
+    <span className={`text-[15px] font-bold whitespace-nowrap tabular-nums ${tone === 'in' ? 'text-in' : 'text-out'}`}>{money(value)}</span>
+  )
 }
 
 // A label as a soft chip tinted with the label's own colour.
@@ -80,7 +71,6 @@ function LabelTag({ entry: e }) {
     </span>
   )
 }
-
 
 // Who the entry is with, plus a small badge for what happened:
 // ↙ money in, ↗ money out, ⇄ a service where money came in and went out, ⚖ a balance.
@@ -116,7 +106,10 @@ function PartyMark({ entry: e }) {
 // The "what" line under the name: where a transfer went, the commission, and the mode.
 function details(e) {
   if (e.type === 'transfer') {
-    const where = e.payee === 'self' ? `${modeLabel(e.mode)} in, ${modeLabel(e.paid_mode ?? e.mode)} out` : `to ${e.to_name}${e.to_account ? ` (${e.to_account})` : ''}`
+    const where =
+      e.payee === 'self'
+        ? `${modeLabel(e.mode)} in, ${modeLabel(e.paid_mode ?? e.mode)} out`
+        : `to ${e.to_name}${e.to_account ? ` (${e.to_account})` : ''}`
     return [where, e.commission ? `${money(e.commission)} commission` : 'no commission']
   }
   if (e.type === 'adjust') return [e.direction === 'owes_you' ? `${e.contact_name} owes you` : `You owe ${e.contact_name}`]
@@ -128,8 +121,7 @@ function EntryRow({ entry: e, onOpen }) {
   const title = e.contact_name ?? e.label_name ?? MARK[e.type]?.label
   const parts = details(e).filter(Boolean)
   const effect = e.effect ?? 0
-  const balanceNote =
-    service && effect !== 0 ? (effect < 0 ? `owes ${money(-effect)}` : `you hold ${money(effect)}`) : ''
+  const balanceNote = service && effect !== 0 ? (effect < 0 ? `owes ${money(-effect)}` : `you hold ${money(effect)}`) : ''
 
   return (
     <li className="border-t border-line-soft first:border-t-0">
@@ -144,7 +136,9 @@ function EntryRow({ entry: e, onOpen }) {
             <span className="flex min-w-0 items-center gap-2">
               <span className="truncate text-[15px] font-bold text-ink">{title}</span>
               {balanceNote && (
-                <span className={`shrink-0 rounded-md px-1.5 py-px text-[11px] font-bold ${effect < 0 ? 'bg-attn-soft text-attn' : 'bg-out-soft text-out'}`}>
+                <span
+                  className={`shrink-0 rounded-md px-1.5 py-px text-[11px] font-bold ${effect < 0 ? 'bg-attn-soft text-attn' : 'bg-out-soft text-out'}`}
+                >
                   {balanceNote}
                 </span>
               )}
@@ -192,19 +186,17 @@ function DayGroup({ day, onOpen }) {
   const rows = day.items
   return (
     <section
-      className="overflow-hidden rounded-2xl border border-line bg-surface shadow-[0_1px_2px_rgb(22_24_43/0.04),0_8px_24px_-18px_rgb(22_24_43/0.25)]"
+      className="overflow-hidden rounded-[20px] bg-surface shadow-[var(--soft-card)] ring-1 ring-[var(--soft-ring)]"
       aria-label={formatFullDate(day.date)}
     >
-      {/* Day header: a tinted band with a calendar tile, and the day's totals under the In / Out columns */}
-      <h2
-        className={`${ROW} m-0 border-b border-brand/20 bg-[linear-gradient(90deg,color-mix(in_oklab,var(--primary)_16%,var(--surface)),color-mix(in_oklab,var(--primary)_5%,var(--surface)))] py-3`}
-      >
+      {/* Day header: a calm band with a date badge, and the day's totals under the In / Out columns */}
+      <h2 className={`${ROW} m-0 border-b border-line-soft bg-surface-2 py-3`}>
         <span className="flex min-w-0 items-center gap-3">
           <span
-            className="flex w-11 shrink-0 flex-col overflow-hidden rounded-[10px] bg-surface text-center leading-none shadow-[0_2px_6px_-2px_rgb(76_50_200/0.35)] ring-1 ring-brand/25"
+            className="flex w-11 shrink-0 flex-col overflow-hidden rounded-xl bg-surface text-center leading-none shadow-[0_1px_2px_rgb(20_23_43/0.08)] ring-1 ring-line"
             aria-hidden="true"
           >
-            <span className="bg-brand py-[3px] text-[9px] font-extrabold tracking-wide text-white">{formatMonthShort(day.date)}</span>
+            <span className="bg-[var(--side)] py-[3px] text-[9px] font-bold tracking-wide text-white">{formatMonthShort(day.date)}</span>
             <span className="py-1 text-[17px] font-extrabold text-ink tabular-nums">{Number(day.date.slice(8, 10))}</span>
           </span>
           <span className="flex min-w-0 flex-col gap-0.5 leading-tight">
@@ -240,77 +232,14 @@ function DayGroup({ day, onOpen }) {
 
 function TotalPill({ tone, children }) {
   return (
-    <span
-      className={`rounded-lg px-2 py-1 text-[13px] leading-none font-extrabold whitespace-nowrap tabular-nums ring-1 ${
-        tone === 'in' ? 'bg-in-soft text-in ring-in/20' : 'bg-out-soft text-out ring-out/20'
-      }`}
-    >
-      {children}
-    </span>
+    <span className={`text-sm font-extrabold whitespace-nowrap tabular-nums ${tone === 'in' ? 'text-in' : 'text-out'}`}>{children}</span>
   )
 }
 
-// The period as a statement card: net first, then in and out with their split.
-function Summary({ totals }) {
+// "48% of all money moved"
+function share(value, totals) {
   const moved = totals.done_in + totals.done_out
-  const net = totals.done_in - totals.done_out
-  const inShare = moved ? Math.round((totals.done_in / moved) * 100) : 0
-  return (
-    <section
-      aria-label="Totals for these entries"
-      className="relative overflow-hidden rounded-2xl bg-[linear-gradient(120deg,var(--side)_0%,color-mix(in_oklab,var(--side),var(--primary)_42%)_100%)] p-5 text-white shadow-[0_14px_30px_-18px_var(--side)] sm:p-6"
-    >
-      <span
-        className="pointer-events-none absolute -top-24 -right-16 size-64 rounded-full bg-[radial-gradient(circle,color-mix(in_oklab,var(--primary)_55%,transparent),transparent_70%)] opacity-60"
-        aria-hidden="true"
-      />
-      <div className="relative grid gap-5 md:grid-cols-[minmax(0,1fr)_minmax(0,1.35fr)] md:items-end">
-        <div className="min-w-0">
-          <p className="m-0 text-sm font-semibold text-white/65">Cash in hand from this period</p>
-          <p className="m-0 mt-1 truncate text-[32px] leading-none font-extrabold tracking-tight tabular-nums sm:text-[38px]">
-            {money(net, { sign: true })}
-          </p>
-          <p className="m-0 mt-3 inline-flex items-center gap-2 rounded-full bg-white/10 px-3 py-1 text-xs font-bold text-[#7ee2a8] ring-1 ring-white/15">
-            <span className="size-1.5 rounded-full bg-current" aria-hidden="true" />
-            {money(totals.commission ?? 0)} commission
-            {totals.transfers > 0 && (
-              <span className="font-semibold text-white/60">
-                · from {totals.transfers} {totals.transfers === 1 ? 'service' : 'services'}
-              </span>
-            )}
-          </p>
-        </div>
-        <div className="min-w-0">
-          <div className="grid grid-cols-2 gap-3">
-            <div className="min-w-0 rounded-xl bg-white/[0.07] px-3.5 py-3 ring-1 ring-white/10">
-              <p className="m-0 flex items-center gap-1.5 text-xs font-bold text-white/65">
-                <ArrowDownLeft size={14} className="text-[#8fb3ff]" aria-hidden="true" /> Money in
-              </p>
-              <p className="m-0 mt-1 truncate text-lg font-extrabold tabular-nums sm:text-[22px]">{money(totals.done_in)}</p>
-            </div>
-            <div className="min-w-0 rounded-xl bg-white/[0.07] px-3.5 py-3 ring-1 ring-white/10">
-              <p className="m-0 flex items-center gap-1.5 text-xs font-bold text-white/65">
-                <ArrowUpRight size={14} className="text-[#ffa27c]" aria-hidden="true" /> Money out
-              </p>
-              <p className="m-0 mt-1 truncate text-lg font-extrabold tabular-nums sm:text-[22px]">{money(totals.done_out)}</p>
-            </div>
-          </div>
-          {moved > 0 && (
-            <div className="mt-3">
-              <div className="flex h-2 gap-[3px] overflow-hidden rounded-full bg-white/10" aria-hidden="true">
-                {totals.done_in > 0 && <span className="rounded-full bg-[#5b8cff]" style={{ flexGrow: totals.done_in }} />}
-                {totals.done_out > 0 && <span className="rounded-full bg-[#ff8a5c]" style={{ flexGrow: totals.done_out }} />}
-              </div>
-              <p className="m-0 mt-1.5 flex justify-between text-[11px] font-bold text-white/55">
-                <span>{inShare}% in</span>
-                <span>{100 - inShare}% out</span>
-              </p>
-            </div>
-          )}
-        </div>
-      </div>
-    </section>
-  )
+  return moved ? `${Math.round((value / moved) * 100)}% of all money moved` : ''
 }
 
 function Entries() {
@@ -368,35 +297,33 @@ function Entries() {
   const clearFilters = () => update({ q: '', type: '', mode: '', label_id: '' })
   const extraFilters = ['mode', 'label_id'].filter((k) => filters[k]).length
   const [showFilters, setShowFilters] = useState(extraFilters > 0)
-  const presetLabel = PRESETS.find((p) => p.value === preset)?.label
   const select = 'field field--compact'
 
   return (
     <div className="page">
-      {/* Header: the period is the subject of this page */}
-      <header className="flex flex-wrap items-start justify-between gap-4 pt-7">
-        <div className="min-w-0">
-          <h1 className="m-0 text-[26px] leading-tight font-extrabold tracking-tight text-ink">Entries</h1>
-          <p className="m-0 mt-1 text-[15px] font-semibold text-ink-2">
+      <Hero
+        title="Entries"
+        subtitle={
+          <>
             {periodText(preset, range.from, range.to)}
             {totals && (
-              <span className="text-ink-3">
+              <>
                 {' '}
-                · {totals.count.toLocaleString('en-IN')} {totals.count === 1 ? 'entry' : 'entries'}
+                · <strong>{totals.count.toLocaleString('en-IN')}</strong> {totals.count === 1 ? 'entry' : 'entries'}
+              </>
+            )}
+            {currentLabel && (
+              <span className="mt-2 flex flex-wrap items-center gap-2">
+                Showing <LabelChip name={currentLabel.name} color={currentLabel.color} />
+                <button type="button" className="link-button text-white" onClick={() => ui.editLabel(currentLabel)}>
+                  <Pencil size={13} aria-hidden="true" /> Edit label
+                </button>
               </span>
             )}
-          </p>
-          {currentLabel && (
-            <p className="m-0 mt-2 flex flex-wrap items-center gap-2 text-sm text-ink-3">
-              Labelled <LabelChip name={currentLabel.name} color={currentLabel.color} />
-              <button type="button" className="link-button" onClick={() => ui.editLabel(currentLabel)}>
-                <Pencil size={13} aria-hidden="true" /> Edit label
-              </button>
-            </p>
-          )}
-        </div>
-        <div className="toolbar">
-          <div title={presetLabel} className="contents">
+          </>
+        }
+        actions={
+          <>
             <DateRange
               preset={preset}
               from={range.from}
@@ -409,69 +336,90 @@ function Entries() {
                 })
               }
             />
-          </div>
-          <a
-            className="icon-button icon-button--bordered size-10"
-            href={exportHref}
-            download
-            aria-label="Export these entries as CSV"
-            title="Export CSV"
-          >
-            <Download size={17} />
-          </a>
-        </div>
-      </header>
+            <a
+              className="icon-button icon-button--bordered size-10"
+              href={exportHref}
+              download
+              aria-label="Download these entries as a CSV file"
+              title="Download CSV"
+            >
+              <Download size={17} />
+            </a>
+          </>
+        }
+        stats={
+          totals && totals.count > 0
+            ? [
+                {
+                  label: 'Cash in hand',
+                  featured: true,
+                  value: money(totals.done_in - totals.done_out, { sign: true }),
+                  hint: 'In minus out',
+                },
+                { label: 'Money in', tone: 'in', value: money(totals.done_in), hint: share(totals.done_in, totals) },
+                { label: 'Money out', tone: 'out', value: money(totals.done_out), hint: share(totals.done_out, totals) },
+                {
+                  label: 'Commission',
+                  tone: 'ok',
+                  value: money(totals.commission ?? 0),
+                  hint: totals.transfers
+                    ? `From ${totals.transfers} ${totals.transfers === 1 ? 'service' : 'services'}`
+                    : 'No services yet',
+                },
+              ]
+            : null
+        }
+      />
 
-      {totals && totals.count > 0 && <Summary totals={totals} />}
-
-      {/* Toolbar */}
+      {/* One filter bar: search, what kind of entry, and more filters */}
       <div className="flex flex-col gap-2">
-        <div className="toolbar">
-          <div className="search-field">
-            <Search size={16} aria-hidden="true" />
+        <div className="filterbar">
+          <label className="filterbar__search">
+            <Search size={17} aria-hidden="true" />
             <input
-              className="field field--compact w-full"
               type="search"
-              placeholder="Search name, label or note"
+              placeholder="Search by name, label or note"
               aria-label="Search entries"
               defaultValue={filters.q}
               onChange={(e) => update({ q: e.target.value.trim() })}
             />
+          </label>
+          <div className="filterbar__tabs">
+            <Segmented
+              label="Kind of entry"
+              size="sm"
+              value={filters.type}
+              onChange={(type) => update({ type })}
+              options={[
+                { value: '', label: 'All' },
+                { value: 'in', label: 'Money in', tone: 'in' },
+                { value: 'out', label: 'Money out', tone: 'out' },
+                { value: 'transfer', label: 'Services' },
+                { value: 'adjust', label: 'Balances' },
+              ]}
+            />
           </div>
-          <Segmented
-            label="Type"
-            size="sm"
-            value={filters.type}
-            onChange={(type) => update({ type })}
-            options={[
-              { value: '', label: 'All' },
-              { value: 'in', label: 'In', tone: 'in' },
-              { value: 'out', label: 'Out', tone: 'out' },
-              { value: 'transfer', label: 'Services', icon: <ArrowLeftRight size={14} aria-hidden="true" /> },
-              { value: 'adjust', label: 'Balance' },
-            ]}
-          />
-          <button
-            type="button"
-            className={`btn btn--ghost ${showFilters ? '!border-brand !text-brand-text' : ''}`}
-            aria-expanded={showFilters}
-            onClick={() => setShowFilters((v) => !v)}
-          >
-            <ListFilter size={15} aria-hidden="true" /> Filters
-            {extraFilters > 0 && (
-              <span className="grid size-5 place-items-center rounded-full bg-brand text-[11px] font-bold text-white">{extraFilters}</span>
-            )}
-          </button>
-          {activeFilters > 0 && (
-            <button type="button" className="btn btn--ghost" onClick={clearFilters}>
-              <X size={15} aria-hidden="true" /> Clear
+          <div className="filterbar__end">
+            <button
+              type="button"
+              className={`filterbar__button${showFilters || extraFilters ? ' is-on' : ''}`}
+              aria-expanded={showFilters}
+              onClick={() => setShowFilters((v) => !v)}
+            >
+              <ListFilter size={16} aria-hidden="true" /> <span className="max-sm:sr-only">Filters</span>
+              {extraFilters > 0 && <span className="filterbar__count">{extraFilters}</span>}
             </button>
-          )}
+            {activeFilters > 0 && (
+              <button type="button" className="filterbar__button" onClick={clearFilters}>
+                <X size={16} aria-hidden="true" /> <span className="max-sm:sr-only">Clear</span>
+              </button>
+            )}
+          </div>
         </div>
         {showFilters && (
-          <div className="toolbar rounded-xl border border-line bg-surface p-2">
+          <div className="filterbar filterbar--more">
             <select className={select} aria-label="Payment mode" value={filters.mode} onChange={(e) => update({ mode: e.target.value })}>
-              <option value="">Any mode</option>
+              <option value="">All payment modes</option>
               {MODES.map((m) => (
                 <option key={m.value} value={m.value}>
                   {m.label}
@@ -479,8 +427,8 @@ function Entries() {
               ))}
             </select>
             <select className={select} aria-label="Label" value={filters.label_id} onChange={(e) => update({ label_id: e.target.value })}>
-              <option value="">Any label</option>
-              <option value="none">No label</option>
+              <option value="">All labels</option>
+              <option value="none">Without a label</option>
               {labels.map((l) => (
                 <option key={l.id} value={l.id}>
                   {l.name}

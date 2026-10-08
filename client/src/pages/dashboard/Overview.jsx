@@ -5,8 +5,6 @@ import {
   ArrowLeftRight,
   ArrowUpRight,
   BarChart3,
-  BellRing,
-  CalendarDays,
   Check,
   CircleCheck,
   CornerDownLeft,
@@ -26,11 +24,11 @@ import { useDaybook, useLabels, useOverview, useSave, useSeries, useSettings } f
 import { useUI } from '../../dashboard/ui.jsx'
 import { commissionRule } from '../../lib/commission.js'
 import { receiptLink } from '../../lib/receipt.js'
-import { Badge, Card, CardLink, HeaderChip, StatCards } from '../../dashboard/tw.jsx'
+import { Badge, Card, CardLink } from '../../dashboard/tw.jsx'
 import CashFlowChart from '../../dashboard/CashFlowChart.jsx'
 import ContactPicker from '../../dashboard/ContactPicker.jsx'
 import LabelPicker, { LabelChip } from '../../dashboard/LabelPicker.jsx'
-import { Avatar, EmptyState, Segmented } from '../../dashboard/bits.jsx'
+import { Avatar, EmptyState, Hero, Segmented } from '../../dashboard/bits.jsx'
 import {
   addDays,
   addMonths,
@@ -635,120 +633,73 @@ function Overview() {
         key: l.id,
         label: l.name,
         Icon: ArrowLeftRight,
-        bg: 'bg-brand',
-        glow: 'var(--primary)',
         tint: i === 0 ? 'primary' : 'service',
         open: () => ui.newEntry({ service: l }),
       })),
-    { key: 'in', label: 'Money in', Icon: ArrowDownLeft, bg: 'bg-in', glow: 'var(--in)', tint: 'in', open: () => ui.newEntry({ type: 'in' }) },
-    { key: 'out', label: 'Money out', Icon: ArrowUpRight, bg: 'bg-out', glow: 'var(--out)', tint: 'out', open: () => ui.newEntry({ type: 'out' }) },
+    { key: 'in', label: 'Money in', Icon: ArrowDownLeft, tint: 'in', open: () => ui.newEntry({ type: 'in' }) },
+    { key: 'out', label: 'Money out', Icon: ArrowUpRight, tint: 'out', open: () => ui.newEntry({ type: 'out' }) },
   ]
   const month = data?.month
   const prev = data?.previousMonthToDate
 
   return (
     <div className="page">
-      {/* Phones: a navy hero that flows out of the top bar; the page curves up into it (see .ov-hero). */}
-      <header className="ov-hero flex flex-wrap items-end justify-between gap-x-6 gap-y-4 pt-7">
-        <div className="min-w-0">
-          <p className="ov-hero__date m-0 flex items-center gap-1.5 text-sm font-semibold text-ink-3">
-            <CalendarDays size={15} aria-hidden="true" /> {formatLongDate()}
-          </p>
-          <h1 className="ov-hero__title m-0 mt-1 text-[28px] leading-tight font-extrabold tracking-tight text-ink">
-            {greeting()}, {name}
-          </h1>
-          {data && !isNew && (
-            <div className="mt-3 flex flex-wrap gap-2 max-sm:hidden">
+      <Hero
+        eyebrow={formatLongDate()}
+        title={`${greeting()}, ${name}`}
+        subtitle={
+          data &&
+          !isNew &&
+          (attention > 0 || data.pending.in_amount > 0) && (
+            <div className="hero-pills">
               {attention > 0 && (
-                <HeaderChip to="/dashboard/reminders" tone="danger" icon={<BellRing size={14} />}>
+                <Link to="/dashboard/reminders" className="hero-pill">
+                  <span className="hero-pill__dot hero-pill__dot--due" aria-hidden="true" />
                   {attention} {attention === 1 ? 'reminder' : 'reminders'} due
-                </HeaderChip>
+                </Link>
               )}
               {data.pending.in_amount > 0 && (
-                <HeaderChip to="/dashboard/balances" tone="attn" icon={<HandCoins size={14} />}>
-                  {money(data.pending.in_amount)} to receive
-                </HeaderChip>
+                <Link to="/dashboard/balances" className="hero-pill">
+                  <span className="hero-pill__dot hero-pill__dot--receive" aria-hidden="true" />
+                  {money(data.pending.in_amount)} to collect
+                </Link>
               )}
-              <HeaderChip to="/dashboard/entries?range=month" tone="neutral" icon={<ReceiptText size={14} />}>
+              <Link to="/dashboard/entries?range=month" className="hero-pill max-sm:hidden">
+                <span className="hero-pill__dot" aria-hidden="true" />
                 {month.count} {month.count === 1 ? 'entry' : 'entries'} this month
-              </HeaderChip>
+              </Link>
             </div>
-          )}
-          {data && !isNew && (attention > 0 || data.pending.in_amount > 0) && (
-            <div className="ov-hero__status sm:hidden">
-              {attention > 0 && (
-                <Link to="/dashboard/reminders" className="ov-pill">
-                  <span className="ov-pill__dot ov-pill__dot--due" aria-hidden="true" />
-                  {attention} {attention === 1 ? 'reminder' : 'reminders'} due
-                </Link>
-              )}
-              {data.pending.in_amount > 0 && (
-                <Link to="/dashboard/balances" className="ov-pill">
-                  <span className="ov-pill__dot ov-pill__dot--receive" aria-hidden="true" />
-                  {money(data.pending.in_amount)} to receive
-                </Link>
-              )}
-            </div>
-          )}
-        </div>
-        {/* Wider screens: a row of buttons */}
-        <div className="flex flex-wrap gap-2 max-sm:hidden">
-          {actions.map(({ key, label, Icon, bg, glow, open }) => (
-            <button
-              key={key}
-              type="button"
-              onClick={open}
-              className={`inline-flex h-10 cursor-pointer items-center gap-2 rounded-xl border-0 px-4 text-sm font-bold text-white transition hover:brightness-110 ${bg}`}
-              style={{ boxShadow: `0 6px 16px -8px ${glow}` }}
-            >
-              <Icon size={16} aria-hidden="true" /> {label}
-            </button>
-          ))}
-        </div>
-        {/* Phones: a glass dock of quick actions; only the most used service is solid */}
-        <div className="ov-dock sm:hidden" role="group" aria-label="New entry">
-          {actions.map(({ key, label, Icon, tint, open }) => (
-            <button key={key} type="button" onClick={open} className="ov-dock__item">
-              <span className={`ov-dock__icon ov-dock__icon--${tint}`} aria-hidden="true">
-                <Icon size={19} strokeWidth={2.2} />
-              </span>
-              <span className="ov-dock__label">{label}</span>
-            </button>
-          ))}
-        </div>
-        <span className="ov-hero__curve" aria-hidden="true" />
-      </header>
-
-      {error && (
-        <p className="field-error" role="alert">
-          {error.message}
-        </p>
-      )}
-      {isLoading && <p className="loading">Loading your ledger…</p>}
-
-      {data && (
-        <>
-          {!isNew && (
-            <StatCards
-              label="This month at a glance"
-              items={[
+          )
+        }
+        actions={
+          <div className="flex flex-wrap gap-2 max-sm:hidden" role="group" aria-label="New entry">
+            {actions.map(({ key, label, Icon, tint, open }) => (
+              <button key={key} type="button" onClick={open} className="hero-action">
+                <span className={`hero-action__icon hero-action__icon--${tint}`} aria-hidden="true">
+                  <Icon size={16} strokeWidth={2.3} />
+                </span>
+                {label}
+              </button>
+            ))}
+          </div>
+        }
+        stats={
+          data && !isNew
+            ? [
                 {
                   label: 'Commission this month',
-                  icon: <Wallet size={16} />,
                   featured: true,
                   value: money(month.commission ?? 0),
                   hint: vsLastMonth(month.commission ?? 0, prev.commission ?? 0, prev.count > 0),
                 },
                 {
                   label: 'Money in',
-                  icon: <ArrowDownLeft size={16} />,
                   tone: 'in',
                   value: money(month.in_amount),
                   hint: vsLastMonth(month.in_amount, prev.in_amount, prev.count > 0),
                 },
                 {
                   label: 'Money out',
-                  icon: <ArrowUpRight size={16} />,
                   tone: 'out',
                   good: -1,
                   value: money(month.out_amount),
@@ -756,18 +707,39 @@ function Overview() {
                 },
                 {
                   label: 'Owed to you',
-                  icon: <HandCoins size={16} />,
                   tone: 'attn',
                   to: '/dashboard/balances',
                   value: money(data.pending.in_amount),
                   hint: data.pending.in_people
                     ? `from ${data.pending.in_people} ${data.pending.in_people === 1 ? 'person' : 'people'}`
-                    : 'nobody owes you',
+                    : 'Nobody owes you',
                 },
-              ]}
-            />
-          )}
+              ]
+            : null
+        }
+      >
+        {/* Phones: quick actions as a dock of four */}
+        <div className="ov-dock" role="group" aria-label="New entry">
+          {actions.map(({ key, label, Icon, tint, open }) => (
+            <button key={key} type="button" onClick={open} className="ov-dock__item">
+              <span className={`ov-dock__icon hero-action__icon--${tint}`} aria-hidden="true">
+                <Icon size={19} strokeWidth={2.2} />
+              </span>
+              <span className="ov-dock__label">{label}</span>
+            </button>
+          ))}
+        </div>
+      </Hero>
 
+      {error && (
+        <p className="field-error" role="alert">
+          {error.message}
+        </p>
+      )}
+      {isLoading && <p className="loading">Loading the overview…</p>}
+
+      {data && (
+        <>
           <div className="flex flex-col gap-5 lg:grid lg:grid-cols-[minmax(0,1.75fr)_minmax(0,1fr)] lg:items-start">
             <div className="contents lg:flex lg:min-w-0 lg:flex-col lg:gap-5">
               {isNew && <GetStarted ui={ui} className="order-first lg:order-none" />}

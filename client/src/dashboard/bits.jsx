@@ -1,14 +1,11 @@
 import { useEffect, useRef, useState } from 'react'
+import { Link } from 'react-router-dom'
 import { MoreHorizontal } from 'lucide-react'
 import { money } from '../lib/format.js'
 
 export function Amount({ value, type, className = '', strong = false }) {
   const signed = type === 'out' ? -Math.abs(value) : Math.abs(value)
-  return (
-    <span className={`amount amount--${type} ${strong ? 'amount--strong' : ''} ${className}`}>
-      {money(signed, { sign: true })}
-    </span>
-  )
+  return <span className={`amount amount--${type} ${strong ? 'amount--strong' : ''} ${className}`}>{money(signed, { sign: true })}</span>
 }
 
 export function Segmented({ label, value, onChange, options, size }) {
@@ -35,7 +32,11 @@ export function Segmented({ label, value, onChange, options, size }) {
 export function EmptyState({ icon, title, children, action }) {
   return (
     <div className="empty">
-      {icon && <div className="empty__icon" aria-hidden="true">{icon}</div>}
+      {icon && (
+        <div className="empty__icon" aria-hidden="true">
+          {icon}
+        </div>
+      )}
       <p className="empty__title">{title}</p>
       {children && <p className="empty__body">{children}</p>}
       {action}
@@ -43,24 +44,75 @@ export function EmptyState({ icon, title, children, action }) {
   )
 }
 
-// Same header as the other pages: a large title, a short line under it, actions on the right.
-export function PageHeader({ title, description, actions, icon }) {
+// The navy header every page opens with. It continues the dark frame, holds the page's key
+// figures in glass panels, and the page's light sheet curves up into its bottom edge.
+//   eyebrow: a small line above the title (a date, a back link)
+//   stats:   [{ label, value, hint, good, tone, featured, to }]
+export function Hero({ eyebrow, title, subtitle, actions, stats, children, compact = false }) {
   return (
-    <header className="flex flex-wrap items-end justify-between gap-4 pt-7">
-      <div className="flex min-w-0 items-center gap-3">
-        {icon && (
-          <span className="grid size-10 shrink-0 place-items-center rounded-xl border border-line bg-surface text-ink-2" aria-hidden="true">
-            {icon}
-          </span>
-        )}
-        <div className="min-w-0">
-          <h1 className="m-0 text-[26px] leading-tight font-extrabold tracking-tight text-ink">{title}</h1>
-          {description && <p className="m-0 mt-1 max-w-[70ch] text-[15px] font-semibold text-ink-3">{description}</p>}
+    <header className={`hero${compact ? ' hero--compact' : ''}`}>
+      <div className="hero__top">
+        <div className="hero__heading">
+          {eyebrow && <div className="hero__eyebrow">{eyebrow}</div>}
+          <h1 className="hero__title">{title}</h1>
+          {subtitle && <div className="hero__subtitle">{subtitle}</div>}
         </div>
+        {actions && <div className="hero__actions">{actions}</div>}
       </div>
-      {actions && <div className="toolbar">{actions}</div>}
+      {stats?.length > 0 && <HeroStats items={stats} />}
+      {children}
+      <span className="hero__curve" aria-hidden="true" />
     </header>
   )
+}
+
+// good: whether a rise is good news (money out rising is not). hint: text, or { text, suffix, dir }.
+function HeroHint({ hint, good = 1 }) {
+  if (!hint) return null
+  if (typeof hint === 'string' || !hint.dir) return <p className="hero-stat__hint">{typeof hint === 'string' ? hint : hint.text}</p>
+  const up = hint.dir > 0
+  return (
+    <p className="hero-stat__hint" title={hint.text + (hint.suffix ?? '')}>
+      <span className={up * good > 0 || (!up && good < 0) ? 'hero-stat__up' : 'hero-stat__down'}>
+        {up ? '↑' : '↓'} {hint.text.replace(/^[+−-]/, '')}
+      </span>
+      {hint.suffix && <span className="hero-stat__suffix">{hint.suffix}</span>}
+    </p>
+  )
+}
+
+export function HeroStats({ items }) {
+  return (
+    <div className={`hero-stats hero-stats--${Math.min(items.length, 4)}`}>
+      {items.map((item) => {
+        const cls = `hero-stat${item.featured ? ' hero-stat--featured' : ''}`
+        const body = (
+          <>
+            <p className="hero-stat__label">
+              {item.tone && <span className={`hero-stat__dot hero-stat__dot--${item.tone}`} aria-hidden="true" />}
+              {item.label}
+            </p>
+            <p className="hero-stat__value">{item.value}</p>
+            <HeroHint hint={item.hint} good={item.good} />
+          </>
+        )
+        return item.to ? (
+          <Link key={item.label} to={item.to} className={cls}>
+            {body}
+          </Link>
+        ) : (
+          <div key={item.label} className={cls}>
+            {body}
+          </div>
+        )
+      })}
+    </div>
+  )
+}
+
+// Older name: a Hero with just a title, a line under it and actions.
+export function PageHeader({ title, description, actions }) {
+  return <Hero title={title} subtitle={description} actions={actions} compact />
 }
 
 // Same name, same colour, everywhere it appears.
@@ -148,4 +200,3 @@ export function MenuItem({ icon, danger, onSelect, children }) {
     </button>
   )
 }
-
