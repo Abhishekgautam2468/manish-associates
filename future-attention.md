@@ -27,7 +27,7 @@ Things to come back to. Newest items at the top of each section.
 
 From the 2026-10-08 test pass.
 
-- **Git (#15).** Set up git, so changes can be rolled back.
+- **Git (#15).** Done on 2026-10-09: the project is on GitHub at https://github.com/Abhishekgautam2468/manish-associates (branch `main`). Commit before bigger changes, so work can be rolled back.
 - **Automatic backups (#16).** A daily backup, with a way to restore it.
 
 ## Code clean-up
@@ -40,7 +40,6 @@ Done on 2026-10-08 (#18): dashboard pages load one at a time (largest file 237 k
 ## Behaviour
 
 - **Entries now opens on "Last 30 days".** The Overview chip "N entries this month" links to `?range=month` on purpose so its count matches. Keep this in mind if defaults change again.
-- **Not a git repository.** Run `git init` and make a first commit before bigger changes, so work can be rolled back.
 
 ## Testing
 
