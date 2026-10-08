@@ -428,7 +428,7 @@ function PeopleReport({ range }) {
   if (rows.length === 0) {
     return (
       <section className={CARD}>
-        <EmptyState icon={<Users size={22} />} title="No one has entries in this period">
+        <EmptyState icon={<Users size={22} />} title="Nobody has entries in this period">
           Pick a wider date range, or add entries with a person attached.
         </EmptyState>
       </section>

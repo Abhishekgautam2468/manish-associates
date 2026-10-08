@@ -350,7 +350,7 @@ export default [
       if (s) {
         setVal(s, 'zzzz')
         await w(300)
-        expect(/No one matching/.test(text()), 'search empty state')
+        expect(/No one matches/.test(text()), 'search empty state')
         setVal(s, '')
         await w(300)
       }

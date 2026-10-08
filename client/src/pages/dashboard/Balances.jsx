@@ -373,7 +373,7 @@ function Balances() {
         </section>
       ) : list.length === 0 ? (
         <section className="rounded-[20px] bg-surface shadow-[var(--soft-card)] ring-1 ring-[var(--soft-ring)]">
-          <EmptyState icon={<Search size={22} />} title={`No one matching “${q}”`} />
+          <EmptyState icon={<Search size={22} />} title={`No one matches “${q}”`} />
         </section>
       ) : (
         <section
