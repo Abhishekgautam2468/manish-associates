@@ -76,7 +76,7 @@ function PersonHero({ person: p, ui, contact, onDelete }) {
       subtitle={
         <span className="flex flex-wrap items-center gap-x-3 gap-y-1">
           {p.phone ? (
-            <a href={telLink(p.phone)} className="text-white no-underline hover:underline">
+            <a href={telLink(p.phone)} className="inline-flex min-h-8 items-center text-white no-underline hover:underline">
               {displayPhone(p.phone)}
             </a>
           ) : (
@@ -122,14 +122,22 @@ function PersonHero({ person: p, ui, contact, onDelete }) {
       }
       stats={[
         { label: standing.label, featured: true, value: p.balance ? money(Math.abs(p.balance)) : 'Settled', hint: standing.hint },
-        { label: 'Received in total', tone: 'in', value: money(p.total_in), hint: 'Everything they gave you' },
-        { label: 'Paid or sent', tone: 'out', value: money(p.total_out), hint: 'Everything you gave or sent' },
-        { label: 'Your commission', tone: 'ok', value: money(p.commission ?? 0), hint: 'Earned from this person' },
+        { label: 'Received in total', tone: 'in', value: money(p.total_in), hint: 'All time' },
+        { label: 'Paid or sent', tone: 'out', value: money(p.total_out), hint: 'All time' },
+        { label: 'Your commission', tone: 'ok', value: money(p.commission ?? 0), hint: 'All time' },
       ]}
     >
       <div className="no-print mt-5 flex flex-wrap gap-2" role="group" aria-label="Record">
+        {p.balance !== 0 && (
+          <button type="button" className="hero-action" onClick={() => ui.recordPayment(p)}>
+            <span className="hero-action__icon hero-action__icon--primary" aria-hidden="true">
+              <Wallet size={16} strokeWidth={2.3} />
+            </span>
+            {p.balance < 0 ? `Record money from ${first}` : `Record money given to ${first}`}
+          </button>
+        )}
         <button type="button" className="hero-action" onClick={() => ui.newEntry({ contact })}>
-          <span className="hero-action__icon hero-action__icon--primary" aria-hidden="true">
+          <span className="hero-action__icon hero-action__icon--service" aria-hidden="true">
             <ArrowLeftRight size={16} strokeWidth={2.3} />
           </span>
           Withdrawal or transfer
@@ -154,32 +162,6 @@ function PersonHero({ person: p, ui, contact, onDelete }) {
         </button>
       </div>
     </NavyHero>
-  )
-}
-
-// What's left with this person, with a button to record money that settles it.
-function BalanceCard({ person: p, ui }) {
-  if (!p.balance) return null
-  const owesYou = p.balance < 0
-  const first = p.name.split(' ')[0]
-  return (
-    <section className={`${CARD} no-print overflow-hidden`} aria-labelledby="person-balance">
-      <div className={`h-1 ${owesYou ? 'bg-attn' : 'bg-out'}`} aria-hidden="true" />
-      <div className="flex flex-col gap-3 px-4 py-4 sm:px-5">
-        <h2 id="person-balance" className="m-0 flex items-center gap-2 text-[15px] font-extrabold text-ink">
-          <Scale size={16} className={owesYou ? 'text-attn' : 'text-out'} aria-hidden="true" /> Balance
-        </h2>
-        <p className="m-0">
-          <span className={`block text-2xl font-extrabold tabular-nums ${owesYou ? 'text-attn' : 'text-out'}`}>
-            {money(Math.abs(p.balance))}
-          </span>
-          <span className="text-sm text-ink-3">{owesYou ? `${first} owes you` : `You hold this for ${first}`}</span>
-        </p>
-        <button type="button" className="btn btn--ghost" onClick={() => ui.recordPayment(p)}>
-          <Wallet size={15} aria-hidden="true" /> {owesYou ? `Record money from ${first}` : `Record money given to ${first}`}
-        </button>
-      </div>
-    </section>
   )
 }
 
@@ -262,13 +244,7 @@ function StatementRow({ entry: e, person, onOpen }) {
 
 function MonthPill({ tone, children }) {
   return (
-    <span
-      className={`rounded-lg px-2 py-1 text-[13px] leading-none font-extrabold whitespace-nowrap tabular-nums ring-1 ${
-        tone === 'in' ? 'bg-in-soft text-in ring-in/20' : 'bg-out-soft text-out ring-out/20'
-      }`}
-    >
-      {children}
-    </span>
+    <span className={`text-sm font-extrabold whitespace-nowrap tabular-nums ${tone === 'in' ? 'text-in' : 'text-out'}`}>{children}</span>
   )
 }
 
@@ -278,16 +254,14 @@ function MonthCard({ month: m, person, onOpen }) {
   const short = new Date(Number(year), Number(mon) - 1, 1).toLocaleString('en-IN', { month: 'short' })
   const closing = m.items[0].balance
   return (
-    <section className="rounded-xl border border-line bg-surface shadow-[0_1px_2px_rgb(22_24_43/0.04)]" aria-label={m.title}>
-      <h3
-        className={`${ROW} m-0 rounded-t-xl border-b border-brand/20 bg-[linear-gradient(90deg,color-mix(in_oklab,var(--primary)_16%,var(--surface)),color-mix(in_oklab,var(--primary)_6%,var(--surface)))] py-2.5 lg:sticky lg:top-9 lg:z-10 lg:bg-[color-mix(in_oklab,var(--primary)_12%,var(--surface))]`}
-      >
+    <section className="rounded-2xl bg-surface shadow-[var(--soft-card)] ring-1 ring-[var(--soft-ring)]" aria-label={m.title}>
+      <h3 className={`${ROW} m-0 rounded-t-2xl border-b border-line-soft bg-surface-2 py-2.5 lg:sticky lg:top-9 lg:z-10`}>
         <span className="flex min-w-0 items-center gap-3 sm:col-span-2">
           <span
-            className="flex w-11 shrink-0 flex-col overflow-hidden rounded-lg bg-surface text-center leading-none shadow-[0_2px_6px_-2px_rgb(76_50_200/0.35)] ring-1 ring-brand/25"
+            className="flex w-11 shrink-0 flex-col overflow-hidden rounded-xl bg-surface text-center leading-none shadow-[0_1px_2px_rgb(20_23_43/0.08)] ring-1 ring-line"
             aria-hidden="true"
           >
-            <span className="bg-brand py-[3px] text-[9px] font-extrabold tracking-wide text-white">{year}</span>
+            <span className="bg-[var(--side)] py-[3px] text-[9px] font-extrabold tracking-wide text-white">{year}</span>
             <span className="py-1 text-[13px] font-extrabold text-ink">{short}</span>
           </span>
           <span className="flex min-w-0 flex-col gap-0.5 leading-tight">
@@ -314,7 +288,7 @@ function MonthCard({ month: m, person, onOpen }) {
           <span className="text-[11px] font-semibold text-ink-3">month end</span>
         </span>
       </h3>
-      <ul className="m-0 list-none p-0 [&>li:last-child>button]:rounded-b-xl">
+      <ul className="m-0 list-none p-0 [&>li:last-child>button]:rounded-b-2xl">
         {m.items.map((e) => (
           <StatementRow key={e.id} entry={e} person={person} onOpen={onOpen} />
         ))}
@@ -450,20 +424,19 @@ function Statement({ rows, person, onOpen }) {
       </div>
 
       {/* Filters: one row, every control the same height */}
-      <div className="toolbar no-print border-b border-line-soft bg-surface-2/60 px-4 py-3 sm:px-5">
-        <div className="search-field">
-          <Search size={16} aria-hidden="true" />
+      <div className="toolbar no-print border-b border-line-soft px-4 py-3 sm:px-5">
+        <label className="filterbar__search min-w-[14rem] bg-surface-2">
+          <Search size={17} aria-hidden="true" />
           <input
-            className="field field--compact w-full"
             type="search"
-            placeholder="Search note, label, amount"
+            placeholder="Search notes, labels or amounts"
             aria-label="Search the statement"
             value={q}
             onChange={(e) => resetPaging(setQ)(e.target.value)}
           />
-        </div>
+        </label>
         <DateRange preset={range.preset} from={range.from} to={range.to} onChange={resetPaging(setRange)} />
-        <select className="field field--compact" aria-label="Show" value={kind} onChange={(e) => resetPaging(setKind)(e.target.value)}>
+        <select className="filterbar__select" aria-label="Show" value={kind} onChange={(e) => resetPaging(setKind)(e.target.value)}>
           {KINDS.map((k) => (
             <option key={k.value} value={k.value}>
               {k.label}
@@ -471,9 +444,9 @@ function Statement({ rows, person, onOpen }) {
           ))}
         </select>
         {labels.length > 0 && (
-          <select className="field field--compact" aria-label="Label" value={label} onChange={(e) => resetPaging(setLabel)(e.target.value)}>
-            <option value="">Any label</option>
-            <option value="none">No label</option>
+          <select className="filterbar__select" aria-label="Label" value={label} onChange={(e) => resetPaging(setLabel)(e.target.value)}>
+            <option value="">All labels</option>
+            <option value="none">Without a label</option>
             {labels.map(([lid, name]) => (
               <option key={lid} value={lid}>
                 {name}
@@ -599,7 +572,7 @@ function Person() {
     ui.toast('Reminder done')
   }
 
-  const side = Boolean(person.balance) || reminders.length > 0
+  const side = reminders.length > 0
 
   return (
     <div className="page">
@@ -609,7 +582,6 @@ function Person() {
         <Statement rows={rows} person={person} onOpen={ui.viewEntry} />
         {side && (
           <div className="order-first flex min-w-0 flex-col gap-5 lg:order-none lg:sticky lg:top-4">
-            <BalanceCard person={person} ui={ui} />
             {reminders.length > 0 && (
               <section className={`${CARD} no-print`} aria-labelledby="person-rem">
                 <h2

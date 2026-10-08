@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { Link, useSearchParams } from 'react-router-dom'
-import { ArrowDownLeft, ArrowUpRight, CircleCheck, Clock3, MessageCircle, Phone, Plus, Search, UserPlus, Users } from 'lucide-react'
+import { MessageCircle, Phone, Plus, Search, UserPlus, Users } from 'lucide-react'
 import { useContacts } from '../../lib/queries.js'
 import { useUI } from '../../dashboard/ui.jsx'
 import { Avatar, EmptyState, Hero, Segmented } from '../../dashboard/bits.jsx'
@@ -23,9 +23,9 @@ function lastSeen(p) {
 }
 
 const STANDING = {
-  owed: { bar: 'bg-attn', badge: 'bg-attn-soft text-attn', amount: 'text-attn', label: 'Owes you', sub: 'left to collect' },
-  owe: { bar: 'bg-out', badge: 'bg-out-soft text-out', amount: 'text-out', label: 'You owe', sub: 'you hold their money' },
-  settled: { bar: 'bg-ok', badge: 'bg-ok-soft text-ok', amount: 'text-ok', label: 'Settled up', sub: 'nothing pending' },
+  owed: { dot: 'bg-mark', label: 'Owes you', sub: 'Left to collect' },
+  owe: { dot: 'bg-out', label: 'You owe', sub: 'You hold their money' },
+  settled: { dot: 'bg-ok', label: 'Settled', sub: 'Nothing pending' },
 }
 
 // Which way the balance leans for this person; the bigger side wins when both are open.
@@ -41,82 +41,70 @@ function PersonCard({ person: p, ui }) {
   const other = kind === 'owed' ? p.pending_out : kind === 'owe' ? p.pending_in : 0
   const flow = p.total_in + p.total_out
   return (
-    <li className="group relative flex min-w-0 flex-col overflow-hidden rounded-[20px] bg-surface shadow-[var(--soft-card)] ring-1 ring-[var(--soft-ring)] transition hover:-translate-y-0.5 hover:border-brand/40 hover:shadow-[0_16px_32px_-22px_rgb(22_24_43/0.5)]">
-      <span className={`h-1 ${st.bar}`} aria-hidden="true" />
-      <div className="flex flex-1 flex-col gap-4 p-4 sm:p-5">
-        <div className="flex min-w-0 items-start gap-3">
-          <span className="rounded-full ring-2 ring-surface-3 [&_.avatar]:size-11 [&_.avatar]:text-[15px]">
+    <li className="group relative flex min-w-0 flex-col rounded-[20px] bg-surface shadow-[var(--soft-card)] ring-1 ring-[var(--soft-ring)] transition duration-200 hover:-translate-y-0.5 hover:shadow-[0_22px_40px_-26px_rgb(20_23_43/0.45)] hover:ring-brand/30">
+      <div className="flex flex-1 flex-col gap-5 p-5">
+        <div className="flex min-w-0 items-center gap-3">
+          <span className="[&_.avatar]:size-11 [&_.avatar]:text-[15px]">
             <Avatar name={p.name} />
           </span>
-          <div className="flex min-w-0 flex-1 flex-col pt-0.5">
+          <div className="flex min-w-0 flex-1 flex-col">
             {/* The name link covers the whole card; the buttons sit above it. */}
             <Link
               to={`/dashboard/people/${p.id}`}
-              className="truncate text-base leading-tight font-extrabold text-ink no-underline after:absolute after:inset-0 after:content-['']"
+              className="truncate text-base leading-tight font-bold text-ink no-underline after:absolute after:inset-0 after:rounded-[20px] after:content-['']"
             >
               {p.name}
             </Link>
-            <span className="mt-0.5 truncate text-[13px] text-ink-3">{p.phone ? displayPhone(p.phone) : 'No phone saved'}</span>
+            <span className="mt-0.5 truncate text-[13px] text-ink-3">{p.phone ? displayPhone(p.phone) : 'No phone number'}</span>
           </div>
-          <span className={`inline-flex shrink-0 items-center gap-1 rounded-full px-2 py-0.5 text-[11px] font-bold ${st.badge}`}>
-            {kind === 'settled' && <CircleCheck size={12} aria-hidden="true" />}
-            {st.label}
-          </span>
         </div>
 
         <div>
-          {kind === 'settled' ? (
-            <p className="m-0 inline-flex items-center gap-2 text-[22px] leading-[26px] font-extrabold tracking-tight text-ok">
-              <CircleCheck size={22} aria-hidden="true" /> All clear
-            </p>
-          ) : (
-            <p className={`m-0 text-[26px] leading-none font-extrabold tracking-tight tabular-nums ${st.amount}`}>{money(main)}</p>
-          )}
-          <p className="m-0 mt-1.5 text-xs font-semibold text-ink-3">
+          <p className="m-0 flex items-center gap-2 text-xs font-semibold text-ink-3">
+            <span className={`size-2 rounded-full ${st.dot}`} aria-hidden="true" />
+            {st.label}
+          </p>
+          <p
+            className={`m-0 mt-1.5 text-[26px] leading-none font-extrabold tracking-tight tabular-nums ${kind === 'settled' ? 'text-ink-3' : 'text-ink'}`}
+          >
+            {kind === 'settled' ? 'All clear' : money(main)}
+          </p>
+          <p className="m-0 mt-1.5 text-xs text-ink-3">
             {st.sub}
             {other > 0 && (
-              <span className={kind === 'owed' ? 'text-out' : 'text-attn'}>
+              <>
                 {' '}
-                · {kind === 'owed' ? 'you owe' : 'they owe'} {money(other)}
-              </span>
+                · {kind === 'owed' ? 'you also owe' : 'they also owe'} {money(other)}
+              </>
             )}
           </p>
         </div>
 
-        <div className="mt-auto flex flex-col gap-2">
-          <div className="flex h-1.5 gap-[2px] overflow-hidden rounded-full bg-surface-3" aria-hidden="true">
-            {p.total_in > 0 && <span className="rounded-full bg-in" style={{ flexGrow: p.total_in }} />}
-            {p.total_out > 0 && <span className="rounded-full bg-out" style={{ flexGrow: p.total_out }} />}
+        <dl className="mt-auto grid grid-cols-2 gap-3 rounded-xl bg-surface-2 px-3.5 py-2.5 text-xs">
+          <div className="min-w-0">
+            <dt className="text-ink-3">Received</dt>
+            <dd className="m-0 mt-0.5 truncate text-sm font-bold text-ink tabular-nums">{flow ? money(p.total_in) : '–'}</dd>
           </div>
-          <p className="m-0 flex justify-between gap-2 text-xs text-ink-3">
-            <span className="inline-flex items-center gap-1">
-              <ArrowDownLeft size={13} className="text-in" aria-hidden="true" />
-              <strong className="font-bold text-ink-2 tabular-nums">{flow ? money(p.total_in) : '–'}</strong> received
-            </span>
-            <span className="inline-flex items-center gap-1">
-              <ArrowUpRight size={13} className="text-out" aria-hidden="true" />
-              <strong className="font-bold text-ink-2 tabular-nums">{flow ? money(p.total_out) : '–'}</strong> paid
-            </span>
-          </p>
-        </div>
+          <div className="min-w-0">
+            <dt className="text-ink-3">Paid or sent</dt>
+            <dd className="m-0 mt-0.5 truncate text-sm font-bold text-ink tabular-nums">{flow ? money(p.total_out) : '–'}</dd>
+          </div>
+        </dl>
       </div>
 
-      <div className="flex items-center justify-between gap-2 border-t border-line-soft bg-surface-2 px-4 py-2.5 sm:px-5">
-        <span className="inline-flex min-w-0 items-center gap-1.5 text-xs font-semibold text-ink-3">
-          <Clock3 size={13} className="shrink-0" aria-hidden="true" />
-          <span className="truncate" title="Last entry">
-            {lastSeen(p)}
-            {p.tx_count > 0 && ` · ${p.tx_count} ${p.tx_count === 1 ? 'entry' : 'entries'}`}
-          </span>
+      <div className="flex items-center justify-between gap-2 border-t border-line-soft px-5 py-3">
+        <span className="min-w-0 truncate text-xs text-ink-3" title="Last entry">
+          {lastSeen(p)}
+          {p.tx_count > 0 && ` · ${p.tx_count} ${p.tx_count === 1 ? 'entry' : 'entries'}`}
         </span>
-        <span className="relative z-10 flex shrink-0 items-center gap-1">
+        <span className="relative z-10 flex shrink-0 items-center gap-0.5">
           {p.phone && (
             <>
-              <a className="icon-button size-8" href={telLink(p.phone)} aria-label={`Call ${p.name}`} title="Call">
-                <Phone size={15} />
+              <a className="icon-button size-9" href={telLink(p.phone)} aria-label={`Call ${p.name}`} title="Call">
+                <Phone size={16} />
               </a>
               <a
-                className="icon-button size-8"
+                className="icon-button size-9"
                 href={whatsappLink(
                   p.phone,
                   p.pending_in ? reminderMessage({ name: p.name, type: 'in', amount: p.pending_in }) : `Namaste ${p.name},`,
@@ -126,17 +114,18 @@ function PersonCard({ person: p, ui }) {
                 aria-label={`WhatsApp ${p.name}`}
                 title="WhatsApp"
               >
-                <MessageCircle size={15} />
+                <MessageCircle size={16} />
               </a>
             </>
           )}
           <button
             type="button"
-            className="ml-1 inline-flex h-8 cursor-pointer items-center gap-1 rounded-lg border border-line bg-surface px-2.5 text-xs font-bold text-ink-2 transition-colors hover:border-brand hover:text-brand-text"
+            className="icon-button size-9 bg-brand-soft text-brand-text hover:bg-brand hover:text-white"
             onClick={() => ui.newEntry({ contact: { id: p.id, name: p.name } })}
             aria-label={`New entry for ${p.name}`}
+            title="New entry"
           >
-            <Plus size={14} aria-hidden="true" /> Entry
+            <Plus size={17} />
           </button>
         </span>
       </div>

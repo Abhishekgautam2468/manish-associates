@@ -50,10 +50,22 @@ function bucketOf(r, today, weekEnd) {
 }
 
 const TONE = {
-  overdue: { tile: 'bg-danger text-white', due: 'text-danger', dot: 'bg-danger', ring: 'ring-danger/25', label: 'text-danger' },
-  today: { tile: 'bg-attn text-white', due: 'text-attn', dot: 'bg-attn', ring: 'ring-attn/30', label: 'text-attn' },
-  week: { tile: 'bg-brand-soft text-brand-text', due: 'text-ink-2', dot: 'bg-brand', ring: 'ring-brand/20', label: 'text-brand-text' },
-  later: { tile: 'bg-surface-3 text-ink-2', due: 'text-ink-3', dot: 'bg-ink-3', ring: 'ring-line', label: 'text-ink-2' },
+  overdue: { tile: 'bg-danger-soft text-danger', due: 'text-danger', dot: 'bg-danger', ring: 'ring-danger/25', label: 'text-danger' },
+  today: { tile: 'bg-attn-soft text-attn', due: 'text-attn', dot: 'bg-attn', ring: 'ring-attn/30', label: 'text-attn' },
+  week: {
+    tile: 'bg-surface-2 text-ink-2 ring-1 ring-line-soft',
+    due: 'text-ink-2',
+    dot: 'bg-brand',
+    ring: 'ring-brand/20',
+    label: 'text-brand-text',
+  },
+  later: {
+    tile: 'bg-surface-2 text-ink-3 ring-1 ring-line-soft',
+    due: 'text-ink-3',
+    dot: 'bg-ink-3',
+    ring: 'ring-line',
+    label: 'text-ink-2',
+  },
   done: { tile: 'bg-ok-soft text-ok', due: 'text-ok', dot: 'bg-ok', ring: 'ring-ok/20', label: 'text-ok' },
 }
 
@@ -105,9 +117,7 @@ function ReminderRow({ r, bucket, ui, save }) {
 
   return (
     <li
-      className={`relative flex flex-col gap-3 rounded-2xl border bg-surface p-3.5 shadow-[0_1px_2px_rgb(22_24_43/0.04)] sm:flex-row sm:items-center sm:gap-4 sm:p-4 ${
-        urgent ? `border-transparent ring-1 ${TONE[bucket].ring}` : 'border-line'
-      } ${r.done_at ? 'opacity-75' : ''}`}
+      className={`relative flex flex-col gap-3 border-t border-line-soft p-4 first:border-t-0 sm:flex-row sm:items-center sm:gap-4 sm:px-5 ${r.done_at ? 'opacity-75' : ''}`}
     >
       <div className="flex min-w-0 flex-1 items-start gap-3.5">
         <DateTile iso={r.due_date} bucket={bucket} />
@@ -119,13 +129,7 @@ function ReminderRow({ r, bucket, ui, save }) {
             <span className={`font-bold ${TONE[bucket].due}`}>
               {r.done_at ? `Done · was due ${formatDate(r.due_date)}` : dueLabel(r.due_date)}
             </span>
-            {amount ? (
-              <span
-                className={`rounded-md px-1.5 py-0.5 font-extrabold tabular-nums ${r.tx_type === 'out' ? 'bg-out-soft text-out' : 'bg-attn-soft text-attn'}`}
-              >
-                {money(amount)}
-              </span>
-            ) : null}
+            {amount ? <span className="text-[13px] font-extrabold text-ink tabular-nums">{money(amount)}</span> : null}
             {r.contact_id && (
               <Link
                 to={`/dashboard/people/${r.contact_id}`}
@@ -216,7 +220,7 @@ function ReminderRow({ r, bucket, ui, save }) {
 
 function ReminderList({ items, today, weekEnd, ui, save }) {
   return (
-    <ul className="m-0 flex list-none flex-col gap-2.5 p-0">
+    <ul className="m-0 flex list-none flex-col overflow-hidden rounded-[20px] bg-surface p-0 shadow-[var(--soft-card)] ring-1 ring-[var(--soft-ring)]">
       {items.map((r) => (
         <ReminderRow key={r.id} r={r} bucket={bucketOf(r, today, weekEnd)} ui={ui} save={save} />
       ))}
@@ -251,14 +255,14 @@ function WeekStrip({ all, filter, onFilter, today, buckets }) {
   const count = (iso) => open.filter((r) => r.due_date === iso).length
   const days = Array.from({ length: 7 }, (_, i) => addDays(today, i))
   const chip = (active) =>
-    `flex min-w-[4.25rem] shrink-0 cursor-pointer flex-col items-center gap-0.5 rounded-xl border px-2.5 py-2 text-center transition-colors ${
-      active ? 'border-brand bg-brand text-white shadow-[0_8px_18px_-12px_var(--primary)]' : 'border-line bg-surface hover:border-brand/40'
+    `flex min-w-[4.25rem] shrink-0 cursor-pointer flex-col items-center gap-0.5 rounded-xl border-0 px-2.5 py-2 text-center transition-colors ${
+      active ? 'bg-[var(--side)] text-white shadow-[0_10px_20px_-12px_rgb(20_23_43/0.7)]' : 'bg-transparent hover:bg-surface-2'
     }`
   const num = (n, active, tone) => (
     <span className={`text-lg leading-none font-extrabold tabular-nums ${active ? 'text-white' : n ? tone : 'text-ink-3/60'}`}>{n}</span>
   )
   return (
-    <div className="-mx-1 flex gap-2 overflow-x-auto px-1 pb-1" role="radiogroup" aria-label="Show reminders for">
+    <div className="filterbar !flex-nowrap gap-1 overflow-x-auto [scrollbar-width:none]" role="radiogroup" aria-label="Show reminders for">
       <button
         type="button"
         role="radio"

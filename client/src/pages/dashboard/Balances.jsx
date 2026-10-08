@@ -345,7 +345,7 @@ function Balances() {
             <Search size={17} aria-hidden="true" />
             <input
               type="search"
-              placeholder="Search by name or phone number"
+              placeholder="Search people"
               aria-label="Search balances"
               value={q}
               onChange={(e) => setQ(e.target.value)}

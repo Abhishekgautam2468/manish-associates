@@ -90,7 +90,7 @@ function Summary({ items }) {
             {f.label}
           </span>
           <span
-            className={`truncate font-extrabold tracking-tight tabular-nums ${f.small ? 'text-base leading-7 sm:text-lg sm:leading-8' : 'text-xl sm:text-2xl'} ${f.tone}`}
+            className={`truncate font-extrabold tracking-tight tabular-nums ${f.small ? 'text-base leading-7 sm:text-lg sm:leading-8' : 'text-xl sm:text-2xl'} text-ink`}
           >
             {f.value}
           </span>
