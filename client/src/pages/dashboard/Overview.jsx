@@ -493,9 +493,7 @@ function Outstanding({ pending, className = '' }) {
           <div key={r.label} className="flex items-baseline justify-between gap-3 py-2.5 first:pt-0">
             <dt className="text-sm font-semibold text-ink-2">{r.label}</dt>
             <dd className="m-0 flex flex-col items-end">
-              <span className={`text-2xl font-extrabold tracking-tight tabular-nums text-ink`}>
-                {money(r.value)}
-              </span>
+              <span className={`text-2xl font-extrabold tracking-tight tabular-nums text-ink`}>{money(r.value)}</span>
               <span className="text-xs text-ink-3">
                 {r.people ? `${r.word} ${r.people} ${r.people === 1 ? 'person' : 'people'}` : 'nobody'}
               </span>
@@ -647,7 +645,7 @@ function Overview() {
       <Hero
         eyebrow={formatLongDate()}
         title={`${greeting()}, ${name}`}
-        subtitle={
+        meta={
           data &&
           !isNew &&
           (attention > 0 || data.pending.in_amount > 0) && (

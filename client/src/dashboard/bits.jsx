@@ -48,7 +48,8 @@ export function EmptyState({ icon, title, children, action }) {
 // figures in glass panels, and the page's light sheet curves up into its bottom edge.
 //   eyebrow: a small line above the title (a date, a back link)
 //   stats:   [{ label, value, hint, good, tone, featured, to }]
-export function Hero({ eyebrow, title, subtitle, actions, stats, children, compact = false }) {
+//   meta:    a full-width line under the title row (status links); keeps actions beside the title
+export function Hero({ eyebrow, title, subtitle, meta, actions, stats, children, compact = false }) {
   return (
     <header className={`hero${compact ? ' hero--compact' : ''}`}>
       <div className="hero__top">
@@ -59,6 +60,7 @@ export function Hero({ eyebrow, title, subtitle, actions, stats, children, compa
         </div>
         {actions && <div className="hero__actions">{actions}</div>}
       </div>
+      {meta}
       {stats?.length > 0 && <HeroStats items={stats} />}
       {children}
       <span className="hero__curve" aria-hidden="true" />

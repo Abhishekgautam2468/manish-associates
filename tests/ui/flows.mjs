@@ -343,7 +343,7 @@ export default [
     h: 900,
     wait: 2500,
     run: async () => {
-      expect(/Owe you/.test(text()) && /You owe/.test(text()), 'both tabs')
+      expect(/Owed to you/.test(text()) && /You owe/.test(text()), 'both tabs')
       await click(btn('You owe'), null, 600)
       expect(location.search.includes('side=out'), 'switch to You owe')
       const s = document.querySelector('input[aria-label="Search balances"]')
@@ -354,8 +354,8 @@ export default [
         setVal(s, '')
         await w(300)
       }
-      await click(btn('Owe you'), null, 600)
-      const sel = document.querySelector('select[aria-label="Sort"]')
+      await click(btn('Owed to you'), null, 600)
+      const sel = document.querySelector('select[aria-label="Sort by"]')
       setVal(sel, 'name')
       await w(300)
       expect(true, 'sort by name')
@@ -387,7 +387,7 @@ export default [
       setVal(s, '')
       await w(800)
       for (const f of ['Owe you', 'You owe', 'Settled up', 'Everyone']) {
-        await click(btn(f), null, 700)
+        await click(btn(f, document.querySelector('.filterbar')), null, 700)
       }
       expect(true, 'filters clickable')
       await click('Add person', null, 800)
@@ -564,7 +564,7 @@ export default [
       await click(btn('Money transfer', f))
       expect(/Send to/.test(f.innerText), 'transfer shows Send to')
       await click(all('button[type=submit]', f)[0], null, 800)
-      expect(/who the money goes to/i.test(f.innerText), 'asks for receiver')
+      expect(/who receives the money/i.test(f.innerText), 'asks for receiver')
       await click(btn('Money in', f))
       setVal(f.querySelector('input[inputmode=decimal]'), '55')
       await w(200)
