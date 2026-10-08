@@ -8,7 +8,6 @@ import {
   BellPlus,
   BellRing,
   ChevronDown,
-  CircleCheck,
   Download,
   MessageCircle,
   Pencil,
@@ -22,7 +21,7 @@ import {
 } from 'lucide-react'
 import { useContact, useReminders, useSave, useTransactions } from '../../lib/queries.js'
 import { useUI } from '../../dashboard/ui.jsx'
-import { Avatar, EmptyState, Menu, MenuItem } from '../../dashboard/bits.jsx'
+import { Avatar, EmptyState, Hero as NavyHero, Menu, MenuItem } from '../../dashboard/bits.jsx'
 import DateRange, { presetRange } from '../../dashboard/DateRange.jsx'
 import { ReminderItem } from './Overview.jsx'
 import { balanceWord, withBalance } from '../../lib/statement.js'
@@ -45,98 +44,58 @@ import {
  * them, and a month-by-month statement with a running balance.
  */
 
-const CARD = 'rounded-2xl border border-line bg-surface shadow-[0_1px_2px_rgb(22_24_43/0.04)]'
+const CARD = 'rounded-[20px] bg-surface shadow-[var(--soft-card)] ring-1 ring-[var(--soft-ring)]'
 
 // Date, details, received, paid, balance. Phones: details and amount.
 const ROW = 'grid grid-cols-[minmax(0,1fr)_auto] items-center gap-x-4 px-4 sm:grid-cols-[4.5rem_minmax(0,1fr)_6.5rem_6.5rem_7rem] sm:px-5'
 
-// The headline: what is owed, in words.
-function Standing({ person: p }) {
-  const first = p.name.split(' ')[0]
-  if (p.pending_in > 0 && p.pending_in >= p.pending_out) {
-    return (
-      <>
-        <p className="m-0 text-sm font-bold text-ink-3">{first} owes you</p>
-        <p className="m-0 mt-1 text-[34px] leading-none font-extrabold tracking-tight text-attn tabular-nums sm:text-[40px]">
-          {money(p.pending_in)}
-        </p>
-        {p.pending_out > 0 && (
-          <p className="m-0 mt-2 text-sm font-semibold text-out">
-            and you owe {first} {money(p.pending_out)}
-          </p>
-        )}
-      </>
-    )
-  }
-  if (p.pending_out > 0) {
-    return (
-      <>
-        <p className="m-0 text-sm font-bold text-ink-3">You owe {first}</p>
-        <p className="m-0 mt-1 text-[34px] leading-none font-extrabold tracking-tight text-out tabular-nums sm:text-[40px]">
-          {money(p.pending_out)}
-        </p>
-        {p.pending_in > 0 && (
-          <p className="m-0 mt-2 text-sm font-semibold text-attn">
-            and {first} owes you {money(p.pending_in)}
-          </p>
-        )}
-      </>
-    )
-  }
-  return (
-    <>
-      <p className="m-0 text-sm font-bold text-ink-3">Where you stand</p>
-      <p className="m-0 mt-1 inline-flex items-center gap-2 text-[30px] leading-none font-extrabold tracking-tight text-ok">
-        <CircleCheck size={28} aria-hidden="true" /> All settled
-      </p>
-      <p className="m-0 mt-2 text-sm text-ink-3">Nothing is pending either way.</p>
-    </>
-  )
-}
-
-function Hero({ person: p, ui, contact, onDelete }) {
+// The person's navy header: who they are, how to reach them, where you stand, and what to record next.
+function PersonHero({ person: p, ui, contact, onDelete }) {
   const navigate = useNavigate()
   const owedMessage = reminderMessage({ name: p.name, type: 'in', amount: p.pending_in })
-  const facts = [
-    { label: 'Received in total', value: money(p.total_in), tone: 'text-in' },
-    { label: 'Paid or sent', value: money(p.total_out), tone: 'text-out' },
-    { label: 'Your commission', value: money(p.commission ?? 0), tone: 'text-ok' },
-    { label: 'Last entry', value: p.last_date ? relativeDay(p.last_date) : 'None yet', tone: 'text-ink' },
-  ]
+  const first = p.name.split(' ')[0]
+  const standing =
+    p.balance < 0
+      ? { label: `${first} owes you`, hint: 'Left to collect' }
+      : p.balance > 0
+        ? { label: `You owe ${first}`, hint: 'You hold their money' }
+        : { label: 'Balance', hint: 'All settled' }
   return (
-    <section className={`${CARD} overflow-hidden`} aria-label={p.name}>
-      <div className="grid gap-6 p-5 sm:p-6 lg:grid-cols-[minmax(0,1fr)_auto] lg:items-start">
-        <div className="flex min-w-0 items-start gap-4">
-          <span className="[&_.avatar]:size-14 [&_.avatar]:text-lg">
-            <Avatar name={p.name} />
-          </span>
-          <div className="min-w-0">
-            <h1 className="m-0 truncate text-[26px] leading-tight font-extrabold tracking-tight text-ink">{p.name}</h1>
-            <p className="m-0 mt-1 flex flex-wrap items-center gap-x-3 gap-y-1 text-sm text-ink-3">
-              {p.phone ? (
-                <a
-                  href={telLink(p.phone)}
-                  className="inline-flex min-h-8 items-center font-semibold text-ink-2 no-underline hover:text-brand-text"
-                >
-                  {displayPhone(p.phone)}
-                </a>
-              ) : (
-                <span>No phone saved</span>
-              )}
-              {p.created_at && <span>Added {formatDate(p.created_at.slice(0, 10))}</span>}
-            </p>
-            {p.note && <p className="m-0 mt-2 max-w-[60ch] text-sm text-ink-2">{p.note}</p>}
-          </div>
-        </div>
-
+    <NavyHero
+      eyebrow={
+        <Link to="/dashboard/people" className="no-print">
+          <ArrowLeft size={15} aria-hidden="true" /> People
+        </Link>
+      }
+      title={
+        <span className="hero__person">
+          <Avatar name={p.name} />
+          <span className="min-w-0 truncate">{p.name}</span>
+        </span>
+      }
+      subtitle={
+        <span className="flex flex-wrap items-center gap-x-3 gap-y-1">
+          {p.phone ? (
+            <a href={telLink(p.phone)} className="text-white no-underline hover:underline">
+              {displayPhone(p.phone)}
+            </a>
+          ) : (
+            <span>No phone number saved</span>
+          )}
+          {p.created_at && <span>Added {formatDate(p.created_at.slice(0, 10))}</span>}
+          {p.last_date && <span>Last entry {relativeDay(p.last_date).toLowerCase()}</span>}
+          {p.note && <span className="basis-full">{p.note}</span>}
+        </span>
+      }
+      actions={
         <div className="no-print flex flex-wrap items-center gap-2">
           {p.phone && (
             <>
-              <a className="btn btn--ghost btn--sm" href={telLink(p.phone)}>
+              <a className="btn btn--sm" href={telLink(p.phone)}>
                 <Phone size={15} aria-hidden="true" /> Call
               </a>
               <a
-                className="btn btn--ghost btn--sm"
+                className="btn btn--sm"
                 href={whatsappLink(p.phone, p.pending_in > 0 ? owedMessage : `Namaste ${p.name},`)}
                 target="_blank"
                 rel="noreferrer"
@@ -160,45 +119,41 @@ function Hero({ person: p, ui, contact, onDelete }) {
             </MenuItem>
           </Menu>
         </div>
-      </div>
-
-      <div className="grid gap-5 border-t border-line-soft bg-surface-2 p-5 sm:p-6 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.3fr)] lg:items-end">
-        <div className="min-w-0">
-          <Standing person={p} />
-        </div>
-        <dl className="m-0 grid grid-cols-2 gap-x-4 gap-y-3 sm:grid-cols-4">
-          {facts.map((f) => (
-            <div key={f.label} className="min-w-0">
-              <dt className="truncate text-xs font-bold text-ink-3">{f.label}</dt>
-              <dd className={`m-0 mt-0.5 truncate text-lg font-extrabold tabular-nums ${f.tone}`}>{f.value}</dd>
-            </div>
-          ))}
-        </dl>
-      </div>
-
-      <div className="no-print flex flex-wrap gap-2 border-t border-line-soft px-5 py-3.5 sm:px-6">
-        <button
-          type="button"
-          onClick={() => ui.newEntry({ type: 'in', contact })}
-          className="inline-flex h-10 cursor-pointer items-center gap-2 rounded-xl border-0 bg-in px-4 text-sm font-bold text-white shadow-[0_6px_16px_-8px_var(--in)] transition hover:brightness-110"
-        >
-          <ArrowDownLeft size={16} aria-hidden="true" /> Money in
+      }
+      stats={[
+        { label: standing.label, featured: true, value: p.balance ? money(Math.abs(p.balance)) : 'Settled', hint: standing.hint },
+        { label: 'Received in total', tone: 'in', value: money(p.total_in), hint: 'Everything they gave you' },
+        { label: 'Paid or sent', tone: 'out', value: money(p.total_out), hint: 'Everything you gave or sent' },
+        { label: 'Your commission', tone: 'ok', value: money(p.commission ?? 0), hint: 'Earned from this person' },
+      ]}
+    >
+      <div className="no-print mt-5 flex flex-wrap gap-2" role="group" aria-label="Record">
+        <button type="button" className="hero-action" onClick={() => ui.newEntry({ contact })}>
+          <span className="hero-action__icon hero-action__icon--primary" aria-hidden="true">
+            <ArrowLeftRight size={16} strokeWidth={2.3} />
+          </span>
+          Withdrawal or transfer
         </button>
-        <button
-          type="button"
-          onClick={() => ui.newEntry({ type: 'out', contact })}
-          className="inline-flex h-10 cursor-pointer items-center gap-2 rounded-xl border-0 bg-out px-4 text-sm font-bold text-white shadow-[0_6px_16px_-8px_var(--out)] transition hover:brightness-110"
-        >
-          <ArrowUpRight size={16} aria-hidden="true" /> Money out
+        <button type="button" className="hero-action" onClick={() => ui.newEntry({ type: 'in', contact })}>
+          <span className="hero-action__icon hero-action__icon--in" aria-hidden="true">
+            <ArrowDownLeft size={16} strokeWidth={2.3} />
+          </span>
+          Money in
         </button>
-        <button type="button" className="btn btn--ghost" onClick={() => ui.newEntry({ contact })}>
-          <ArrowLeftRight size={16} aria-hidden="true" /> Withdrawal or transfer
+        <button type="button" className="hero-action" onClick={() => ui.newEntry({ type: 'out', contact })}>
+          <span className="hero-action__icon hero-action__icon--out" aria-hidden="true">
+            <ArrowUpRight size={16} strokeWidth={2.3} />
+          </span>
+          Money out
         </button>
-        <button type="button" className="btn btn--ghost" onClick={() => ui.newReminder({ contact, title: `Call ${p.name}` })}>
-          <BellPlus size={16} aria-hidden="true" /> Add reminder
+        <button type="button" className="hero-action" onClick={() => ui.newReminder({ contact, title: `Call ${p.name}` })}>
+          <span className="hero-action__icon hero-action__icon--service" aria-hidden="true">
+            <BellPlus size={16} strokeWidth={2.3} />
+          </span>
+          Add reminder
         </button>
       </div>
-    </section>
+    </NavyHero>
   )
 }
 
@@ -648,11 +603,7 @@ function Person() {
 
   return (
     <div className="page">
-      <Link to="/dashboard/people" className="back-link no-print mt-6">
-        <ArrowLeft size={16} aria-hidden="true" /> People
-      </Link>
-
-      <Hero person={person} ui={ui} contact={contact} onDelete={remove} />
+      <PersonHero person={person} ui={ui} contact={contact} onDelete={remove} />
 
       <div className={`grid items-start gap-5 ${side ? 'lg:grid-cols-[minmax(0,1fr)_22rem]' : ''}`}>
         <Statement rows={rows} person={person} onOpen={ui.viewEntry} />

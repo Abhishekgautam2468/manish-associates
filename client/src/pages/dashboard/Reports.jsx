@@ -1,10 +1,23 @@
 import { useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
-import { ArrowDownLeft, ArrowUpRight, BarChart3, CalendarDays, CalendarRange, Download, Eye, EyeOff, Tag, TrendingDown, TrendingUp, Users } from 'lucide-react'
+import {
+  ArrowDownLeft,
+  ArrowUpRight,
+  BarChart3,
+  CalendarDays,
+  CalendarRange,
+  Download,
+  Eye,
+  EyeOff,
+  Tag,
+  TrendingDown,
+  TrendingUp,
+  Users,
+} from 'lucide-react'
 import { usePeopleReport, useSeries, useTransactions } from '../../lib/queries.js'
 import CashFlowChart from '../../dashboard/CashFlowChart.jsx'
 import DateRange, { PRESETS, presetRange } from '../../dashboard/DateRange.jsx'
-import { EmptyState } from '../../dashboard/bits.jsx'
+import { EmptyState, Hero } from '../../dashboard/bits.jsx'
 import { addDays, daysBetween, downloadCsv, formatDate, formatFullDate, money, periodLabel, todayISO } from '../../lib/format.js'
 
 /*
@@ -12,7 +25,7 @@ import { addDays, daysBetween, downloadCsv, formatDate, formatFullDate, money, p
  * Every view compares itself with the period just before, where that makes sense.
  */
 
-const CARD = 'rounded-2xl border border-line bg-surface shadow-[0_1px_2px_rgb(22_24_43/0.04)]'
+const CARD = 'rounded-[20px] bg-surface shadow-[var(--soft-card)] ring-1 ring-[var(--soft-ring)]'
 
 const VIEWS = [
   { value: 'day', label: 'Daily', Icon: CalendarDays, unit: 'day' },
@@ -111,7 +124,12 @@ function SeriesReport({ group, range }) {
   const { data: prevData } = useSeries(prev ? { group, from: prev.from, to: prev.to } : { group, from: to, to })
   const [hideEmpty, setHideEmpty] = useState(group === 'day')
 
-  if (error) return <p className="field-error" role="alert">{error.message}</p>
+  if (error)
+    return (
+      <p className="field-error" role="alert">
+        {error.message}
+      </p>
+    )
   if (isLoading || !data) return <p className="loading">Loading report…</p>
 
   // "All time" starts at the first period that has entries.
@@ -119,7 +137,12 @@ function SeriesReport({ group, range }) {
   const rows = range.from ? data.rows : firstActive === -1 ? [] : data.rows.slice(firstActive)
   const sum = (list) =>
     list.reduce(
-      (t, r) => ({ in: t.in + r.in_amount, out: t.out + r.out_amount, commission: t.commission + (r.commission ?? 0), count: t.count + r.count }),
+      (t, r) => ({
+        in: t.in + r.in_amount,
+        out: t.out + r.out_amount,
+        commission: t.commission + (r.commission ?? 0),
+        count: t.count + r.count,
+      }),
       { in: 0, out: 0, commission: 0, count: 0 },
     )
   const totals = sum(rows)
@@ -151,8 +174,20 @@ function SeriesReport({ group, range }) {
     <>
       <Summary
         items={[
-          { label: 'Money in', dot: 'bg-in', value: money(totals.in), tone: 'text-in', hint: <Delta now={totals.in} before={before?.in} /> },
-          { label: 'Money out', dot: 'bg-out', value: money(totals.out), tone: 'text-out', hint: <Delta now={totals.out} before={before?.out} goodWhenUp={false} /> },
+          {
+            label: 'Money in',
+            dot: 'bg-in',
+            value: money(totals.in),
+            tone: 'text-in',
+            hint: <Delta now={totals.in} before={before?.in} />,
+          },
+          {
+            label: 'Money out',
+            dot: 'bg-out',
+            value: money(totals.out),
+            tone: 'text-out',
+            hint: <Delta now={totals.out} before={before?.out} goodWhenUp={false} />,
+          },
           {
             label: 'Commission',
             dot: 'bg-ok',
@@ -197,7 +232,10 @@ function SeriesReport({ group, range }) {
             </button>
           </div>
         </div>
-        <div className={`${SERIES_ROW.replace('grid ', '')} hidden border-b border-line-soft bg-surface-2 py-2 text-xs font-bold text-ink-3 sm:grid`} aria-hidden="true">
+        <div
+          className={`${SERIES_ROW.replace('grid ', '')} hidden border-b border-line-soft bg-surface-2 py-2 text-xs font-bold text-ink-3 sm:grid`}
+          aria-hidden="true"
+        >
           <span>{unit[0].toUpperCase() + unit.slice(1)}</span>
           <span className="hidden lg:block">In vs out</span>
           <span className="text-right">Money in</span>
@@ -210,7 +248,10 @@ function SeriesReport({ group, range }) {
             const n = r.in_amount - r.out_amount
             const best = busiest && r.period === busiest.period && r.in_amount > 0
             return (
-              <li key={r.period} className={`${SERIES_ROW} border-t border-line-soft py-3 text-sm first:border-t-0 ${r.count === 0 ? 'text-ink-3' : ''}`}>
+              <li
+                key={r.period}
+                className={`${SERIES_ROW} border-t border-line-soft py-3 text-sm first:border-t-0 ${r.count === 0 ? 'text-ink-3' : ''}`}
+              >
                 <span className="flex min-w-0 flex-col">
                   <span className={`flex items-center gap-2 font-bold ${r.count ? 'text-ink' : 'text-ink-3'}`}>
                     <span className="truncate">{periodLabel(r.period, group)}</span>
@@ -220,9 +261,15 @@ function SeriesReport({ group, range }) {
                     {r.count ? `${money(r.in_amount)} in · ${money(r.out_amount)} out` : 'No entries'}
                   </span>
                 </span>
-                <span className="hidden pr-4 lg:block">{r.count > 0 && <FlowBars inAmount={r.in_amount} outAmount={r.out_amount} max={max} />}</span>
-                <span className="hidden text-right font-semibold text-in tabular-nums sm:block">{r.in_amount ? money(r.in_amount) : '–'}</span>
-                <span className="hidden text-right font-semibold text-out tabular-nums sm:block">{r.out_amount ? money(r.out_amount) : '–'}</span>
+                <span className="hidden pr-4 lg:block">
+                  {r.count > 0 && <FlowBars inAmount={r.in_amount} outAmount={r.out_amount} max={max} />}
+                </span>
+                <span className="hidden text-right font-semibold text-in tabular-nums sm:block">
+                  {r.in_amount ? money(r.in_amount) : '–'}
+                </span>
+                <span className="hidden text-right font-semibold text-out tabular-nums sm:block">
+                  {r.out_amount ? money(r.out_amount) : '–'}
+                </span>
                 <span className={`text-right font-extrabold tabular-nums ${!r.count ? 'text-ink-3' : n >= 0 ? 'text-ink' : 'text-out'}`}>
                   {r.count ? money(n, { sign: true }) : '–'}
                 </span>
@@ -255,7 +302,11 @@ function LabelColumn({ title, tone, rows, total, range }) {
     <section className={`${CARD} overflow-hidden`} aria-label={title}>
       <div className="flex items-center justify-between gap-3 border-b border-line-soft px-4 py-3.5 sm:px-5">
         <h2 className="m-0 flex items-center gap-2 text-[15px] font-extrabold text-ink">
-          {tone === 'in' ? <ArrowDownLeft size={16} className="text-in" aria-hidden="true" /> : <ArrowUpRight size={16} className="text-out" aria-hidden="true" />}
+          {tone === 'in' ? (
+            <ArrowDownLeft size={16} className="text-in" aria-hidden="true" />
+          ) : (
+            <ArrowUpRight size={16} className="text-out" aria-hidden="true" />
+          )}
           {title}
         </h2>
         <span className={`text-lg font-extrabold tabular-nums ${text}`}>{money(total)}</span>
@@ -271,7 +322,11 @@ function LabelColumn({ title, tone, rows, total, range }) {
                 <Link to={query(r.id)} className="flex flex-col gap-2 px-4 py-3 no-underline transition-colors hover:bg-surface-2 sm:px-5">
                   <span className="flex items-center justify-between gap-3 text-sm">
                     <span className="flex min-w-0 items-center gap-2 font-bold text-ink">
-                      <span className="size-2.5 shrink-0 rounded-full" style={{ background: r.color ?? 'var(--ink-3)' }} aria-hidden="true" />
+                      <span
+                        className="size-2.5 shrink-0 rounded-full"
+                        style={{ background: r.color ?? 'var(--ink-3)' }}
+                        aria-hidden="true"
+                      />
                       <span className="truncate">{r.name}</span>
                       <span className="shrink-0 text-xs font-semibold text-ink-3">
                         {r.count} {r.count === 1 ? 'entry' : 'entries'}
@@ -335,7 +390,13 @@ function LabelsReport({ range }) {
       ['Direction', 'Label', 'Amount', 'Share %', 'Entries'],
       [
         ...inRows.map((r) => ['Money in', r.name, r.amount / 100, totals.in ? Math.round((r.amount / totals.in) * 1000) / 10 : 0, r.count]),
-        ...outRows.map((r) => ['Money out', r.name, r.amount / 100, totals.out ? Math.round((r.amount / totals.out) * 1000) / 10 : 0, r.count]),
+        ...outRows.map((r) => [
+          'Money out',
+          r.name,
+          r.amount / 100,
+          totals.out ? Math.round((r.amount / totals.out) * 1000) / 10 : 0,
+          r.count,
+        ]),
       ],
     )
   }
@@ -383,7 +444,17 @@ function PeopleReport({ range }) {
     downloadCsv(
       `report-people-${range.from || 'start'}-to-${range.to || todayISO()}.csv`,
       ['Name', 'Phone', 'Received', 'Paid', 'Net', 'Owes you now', 'You owe now', 'Entries', 'Last entry'],
-      rows.map((r) => [r.name, r.phone, r.in_amount / 100, r.out_amount / 100, (r.in_amount - r.out_amount) / 100, r.pending_in / 100, r.pending_out / 100, r.count, r.last_date]),
+      rows.map((r) => [
+        r.name,
+        r.phone,
+        r.in_amount / 100,
+        r.out_amount / 100,
+        (r.in_amount - r.out_amount) / 100,
+        r.pending_in / 100,
+        r.pending_out / 100,
+        r.count,
+        r.last_date,
+      ]),
     )
   }
 
@@ -402,7 +473,10 @@ function PeopleReport({ range }) {
           </button>
         </div>
       </div>
-      <div className={`${PEOPLE_ROW.replace('grid ', '')} hidden border-b border-line-soft bg-surface-2 py-2 text-xs font-bold text-ink-3 sm:grid`} aria-hidden="true">
+      <div
+        className={`${PEOPLE_ROW.replace('grid ', '')} hidden border-b border-line-soft bg-surface-2 py-2 text-xs font-bold text-ink-3 sm:grid`}
+        aria-hidden="true"
+      >
         <span>Person</span>
         <span className="hidden lg:block">Received vs paid</span>
         <span className="text-right">Received</span>
@@ -416,7 +490,10 @@ function PeopleReport({ range }) {
           const n = r.in_amount - r.out_amount
           return (
             <li key={r.id} className="border-t border-line-soft first:border-t-0">
-              <Link to={`/dashboard/people/${r.id}`} className={`${PEOPLE_ROW} py-3 text-sm no-underline transition-colors hover:bg-surface-2`}>
+              <Link
+                to={`/dashboard/people/${r.id}`}
+                className={`${PEOPLE_ROW} py-3 text-sm no-underline transition-colors hover:bg-surface-2`}
+              >
                 <span className="flex min-w-0 flex-col">
                   <span className="truncate font-bold text-ink">{r.name}</span>
                   <span className="text-xs text-ink-3">
@@ -430,11 +507,21 @@ function PeopleReport({ range }) {
                 <span className="hidden pr-4 lg:block">
                   <FlowBars inAmount={r.in_amount} outAmount={r.out_amount} max={max} />
                 </span>
-                <span className="hidden text-right font-semibold text-in tabular-nums sm:block">{r.in_amount ? money(r.in_amount) : '–'}</span>
-                <span className="hidden text-right font-semibold text-out tabular-nums sm:block">{r.out_amount ? money(r.out_amount) : '–'}</span>
-                <span className={`text-right font-extrabold tabular-nums ${n >= 0 ? 'text-ink' : 'text-out'}`}>{money(n, { sign: true })}</span>
-                <span className="hidden text-right font-bold text-attn tabular-nums lg:block">{r.pending_in ? money(r.pending_in) : <span className="text-ink-3">–</span>}</span>
-                <span className="hidden text-right font-bold text-out tabular-nums lg:block">{r.pending_out ? money(r.pending_out) : <span className="text-ink-3">–</span>}</span>
+                <span className="hidden text-right font-semibold text-in tabular-nums sm:block">
+                  {r.in_amount ? money(r.in_amount) : '–'}
+                </span>
+                <span className="hidden text-right font-semibold text-out tabular-nums sm:block">
+                  {r.out_amount ? money(r.out_amount) : '–'}
+                </span>
+                <span className={`text-right font-extrabold tabular-nums ${n >= 0 ? 'text-ink' : 'text-out'}`}>
+                  {money(n, { sign: true })}
+                </span>
+                <span className="hidden text-right font-bold text-attn tabular-nums lg:block">
+                  {r.pending_in ? money(r.pending_in) : <span className="text-ink-3">–</span>}
+                </span>
+                <span className="hidden text-right font-bold text-out tabular-nums lg:block">
+                  {r.pending_out ? money(r.pending_out) : <span className="text-ink-3">–</span>}
+                </span>
               </Link>
             </li>
           )
@@ -462,36 +549,19 @@ function Reports() {
 
   return (
     <div className="page">
-      <header className="flex flex-wrap items-end justify-between gap-4 pt-7">
-        <div className="min-w-0">
-          <h1 className="m-0 text-[26px] leading-tight font-extrabold tracking-tight text-ink">Reports</h1>
-          <p className="m-0 mt-1 text-[15px] font-semibold text-ink-2">{periodText(range)}</p>
-        </div>
-        <div className="toolbar">
-          <DateRange preset={range.preset} from={range.from} to={range.to} onChange={setRange} presets={presets} />
-        </div>
-      </header>
-
-      {/* Report tabs */}
-      <div role="tablist" aria-label="Report" className="-mx-1 flex gap-1 overflow-x-auto border-b border-line px-1">
-        {VIEWS.map(({ value, label, Icon }) => {
-          const active = view === value
-          return (
-            <button
-              key={value}
-              type="button"
-              role="tab"
-              aria-selected={active}
-              onClick={() => setView(value)}
-              className={`relative -mb-px inline-flex shrink-0 cursor-pointer items-center gap-2 border-0 border-b-2 bg-transparent px-3.5 py-2.5 text-sm font-bold whitespace-nowrap transition-colors ${
-                active ? 'border-brand text-brand-text' : 'border-transparent text-ink-3 hover:text-ink'
-              }`}
-            >
+      <Hero
+        title="Reports"
+        subtitle={periodText(range)}
+        actions={<DateRange preset={range.preset} from={range.from} to={range.to} onChange={setRange} presets={presets} />}
+      >
+        <div role="tablist" aria-label="Report" className="hero-tabs">
+          {VIEWS.map(({ value, label, Icon }) => (
+            <button key={value} type="button" role="tab" aria-selected={view === value} onClick={() => setView(value)} className="hero-tab">
               <Icon size={16} aria-hidden="true" /> {label}
             </button>
-          )
-        })}
-      </div>
+          ))}
+        </div>
+      </Hero>
 
       {view === 'people' ? (
         <PeopleReport range={range} />

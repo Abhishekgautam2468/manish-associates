@@ -83,9 +83,9 @@ function HeroHint({ hint, good = 1 }) {
 
 export function HeroStats({ items }) {
   return (
-    <div className={`hero-stats hero-stats--${Math.min(items.length, 4)}`}>
+    <div className={`hero-stats hero-stats--${Math.min(items.length, 4)}`} role={items.some((i) => i.onClick) ? 'tablist' : undefined}>
       {items.map((item) => {
-        const cls = `hero-stat${item.featured ? ' hero-stat--featured' : ''}`
+        const cls = `hero-stat${item.featured || item.active ? ' hero-stat--featured' : ''}${item.onClick ? ' hero-stat--tab' : ''}`
         const body = (
           <>
             <p className="hero-stat__label">
@@ -96,6 +96,12 @@ export function HeroStats({ items }) {
             <HeroHint hint={item.hint} good={item.good} />
           </>
         )
+        if (item.onClick)
+          return (
+            <button key={item.label} type="button" role="tab" aria-selected={Boolean(item.active)} className={cls} onClick={item.onClick}>
+              {body}
+            </button>
+          )
         return item.to ? (
           <Link key={item.label} to={item.to} className={cls}>
             {body}

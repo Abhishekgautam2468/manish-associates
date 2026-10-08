@@ -4,7 +4,7 @@ import { ArrowDownLeft, ArrowUpRight, BellPlus, BellRing, CircleCheck, MessageCi
 import { useContacts, useReminders } from '../../lib/queries.js'
 import { useUI } from '../../dashboard/ui.jsx'
 import Modal from '../../dashboard/Modal.jsx'
-import { Avatar, EmptyState } from '../../dashboard/bits.jsx'
+import { Avatar, EmptyState, Hero } from '../../dashboard/bits.jsx'
 import { daysBetween, displayPhone, dueLabel, money, reminderMessage, todayISO, whatsappLink } from '../../lib/format.js'
 
 /*
@@ -30,44 +30,35 @@ function since(lastDate) {
 }
 
 const SIDE = {
-  in: { label: 'Owe you', Icon: ArrowDownLeft, tone: 'text-attn', soft: 'bg-attn-soft text-attn', bar: 'bg-attn', word: 'owes you', action: 'Received' },
-  out: { label: 'You owe', Icon: ArrowUpRight, tone: 'text-out', soft: 'bg-out-soft text-out', bar: 'bg-out', word: 'you owe', action: 'Paid' },
-}
-
-function SideTab({ side, active, list, onClick }) {
-  const s = SIDE[side]
-  const total = list.reduce((sum, p) => sum + Math.abs(p.balance), 0)
-  return (
-    <button
-      type="button"
-      role="tab"
-      aria-selected={active}
-      onClick={onClick}
-      className={`relative flex min-w-0 cursor-pointer items-center gap-3 overflow-hidden rounded-2xl border px-4 py-3.5 text-left transition sm:px-5 sm:py-4 ${
-        active
-          ? 'border-brand bg-surface shadow-[0_0_0_3px_color-mix(in_oklab,var(--primary)_18%,transparent),0_10px_24px_-18px_var(--primary)]'
-          : 'border-line bg-surface hover:border-brand/40'
-      }`}
-    >
-      <span className={`hidden size-11 shrink-0 place-items-center rounded-xl sm:grid ${s.soft}`} aria-hidden="true">
-        <s.Icon size={20} strokeWidth={2.3} />
-      </span>
-      <span className="flex min-w-0 flex-col">
-        <span className={`text-sm font-bold ${active ? 'text-ink' : 'text-ink-2'}`}>{s.label}</span>
-        <span className={`truncate text-xl font-extrabold tracking-tight tabular-nums sm:text-[26px] ${s.tone}`}>{money(total)}</span>
-        <span className="truncate text-xs font-semibold text-ink-3">
-          {list.length ? `${list.length} ${list.length === 1 ? 'person' : 'people'}` : 'Nobody'}
-        </span>
-      </span>
-      {active && <span className="absolute inset-x-0 bottom-0 h-1 bg-brand" aria-hidden="true" />}
-    </button>
-  )
+  in: {
+    label: 'Owe you',
+    Icon: ArrowDownLeft,
+    tone: 'text-attn',
+    soft: 'bg-attn-soft text-attn',
+    bar: 'bg-attn',
+    word: 'owes you',
+    action: 'Received',
+  },
+  out: {
+    label: 'You owe',
+    Icon: ArrowUpRight,
+    tone: 'text-out',
+    soft: 'bg-out-soft text-out',
+    bar: 'bg-out',
+    word: 'you owe',
+    action: 'Paid',
+  },
 }
 
 function ReminderTag({ reminder }) {
   if (!reminder) return null
   const today = todayISO()
-  const tone = reminder.due_date < today ? 'bg-danger-soft text-danger' : reminder.due_date === today ? 'bg-attn-soft text-attn' : 'bg-surface-3 text-ink-2'
+  const tone =
+    reminder.due_date < today
+      ? 'bg-danger-soft text-danger'
+      : reminder.due_date === today
+        ? 'bg-attn-soft text-attn'
+        : 'bg-surface-3 text-ink-2'
   return (
     <span className={`inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[11px] font-bold ${tone}`}>
       <BellRing size={11} aria-hidden="true" /> {dueLabel(reminder.due_date)}
@@ -121,14 +112,22 @@ function PersonRow({ person: p, side, max, reminder, ui }) {
             <MessageCircle size={16} />
           </a>
         ) : (
-          <span className="icon-button icon-button--bordered size-9 cursor-not-allowed opacity-40" title="No phone saved" aria-label="No phone saved">
+          <span
+            className="icon-button icon-button--bordered size-9 cursor-not-allowed opacity-40"
+            title="No phone saved"
+            aria-label="No phone saved"
+          >
             <MessageCircle size={16} />
           </span>
         )}
         <button
           type="button"
           className={`icon-button icon-button--bordered size-9 ${
-            !reminder ? '' : reminder.due_date < todayISO() ? '!border-danger/40 !bg-danger-soft !text-danger' : '!border-attn-line !bg-attn-soft !text-attn'
+            !reminder
+              ? ''
+              : reminder.due_date < todayISO()
+                ? '!border-danger/40 !bg-danger-soft !text-danger'
+                : '!border-attn-line !bg-attn-soft !text-attn'
           }`}
           onClick={() =>
             reminder
@@ -144,7 +143,12 @@ function PersonRow({ person: p, side, max, reminder, ui }) {
         >
           {reminder ? <BellRing size={16} /> : <BellPlus size={16} />}
         </button>
-        <button type="button" className="btn btn--sm btn--ghost" onClick={() => ui.recordPayment(p)} title={side === 'in' ? 'Record money they paid you' : 'Record money you gave them'}>
+        <button
+          type="button"
+          className="btn btn--sm btn--ghost"
+          onClick={() => ui.recordPayment(p)}
+          title={side === 'in' ? 'Record money they paid you' : 'Record money you gave them'}
+        >
           <Wallet size={14} aria-hidden="true" /> {s.action}
         </button>
       </span>
@@ -213,7 +217,8 @@ function RemindAll({ side, people, onClose }) {
                   <span className="flex min-w-0 flex-1 flex-col">
                     <span className="truncate text-sm font-bold text-ink">{p.name}</span>
                     <span className="text-xs text-ink-3">
-                      <strong className={`font-bold ${side === 'in' ? 'text-attn' : 'text-out'}`}>{money(amount)}</strong> · last entry {since(p.last_date)}
+                      <strong className={`font-bold ${side === 'in' ? 'text-attn' : 'text-out'}`}>{money(amount)}</strong> · last entry{' '}
+                      {since(p.last_date)}
                     </span>
                   </span>
                   {!p.phone ? (
@@ -262,7 +267,8 @@ function Balances() {
   // The soonest open reminder for each person.
   const reminders = useMemo(() => {
     const map = new Map()
-    for (const r of [...open].sort((a, b) => a.due_date.localeCompare(b.due_date))) if (r.contact_id && !map.has(r.contact_id)) map.set(r.contact_id, r)
+    for (const r of [...open].sort((a, b) => a.due_date.localeCompare(b.due_date)))
+      if (r.contact_id && !map.has(r.contact_id)) map.set(r.contact_id, r)
     return map
   }, [open])
 
@@ -284,58 +290,85 @@ function Balances() {
 
   return (
     <div className="page">
-      <header className="flex flex-wrap items-end justify-between gap-4 pt-7">
-        <div className="min-w-0">
-          <h1 className="m-0 text-[26px] leading-tight font-extrabold tracking-tight text-ink">Balances</h1>
-          <p className="m-0 mt-1 text-[15px] font-semibold text-ink-2">
-            What’s left with each person
+      <Hero
+        title="Balances"
+        subtitle={
+          <>
+            What’s left to settle with each person
             {everyone.length > 0 && (
-              <span className={net >= 0 ? 'text-ok' : 'text-out'}>
+              <>
                 {' '}
-                · net {money(Math.abs(net))} {net >= 0 ? 'in your favour' : 'you owe overall'}
-              </span>
+                · net <strong>{money(Math.abs(net))}</strong> {net >= 0 ? 'in your favour' : 'you owe overall'}
+              </>
             )}
-          </p>
-        </div>
-        <div className="toolbar">
-          {sideList.length > 0 && (
-            <button type="button" className="btn btn--ghost" onClick={() => setRemindAll(true)}>
-              <MessageCircle size={16} aria-hidden="true" /> {side === 'in' ? 'Remind everyone' : 'Tell everyone'}
+          </>
+        }
+        actions={
+          <>
+            {sideList.length > 0 && (
+              <button type="button" className="btn" onClick={() => setRemindAll(true)}>
+                <MessageCircle size={16} aria-hidden="true" /> {side === 'in' ? 'Remind everyone' : 'Message everyone'}
+              </button>
+            )}
+            <button
+              type="button"
+              className="btn"
+              onClick={() => ui.newEntry({ type: 'adjust', direction: side === 'in' ? 'owes_you' : 'you_owe' })}
+            >
+              <Plus size={16} aria-hidden="true" /> Opening balance
             </button>
-          )}
-          <button type="button" className="btn btn--ghost" onClick={() => ui.newEntry({ type: 'adjust', direction: side === 'in' ? 'owes_you' : 'you_owe' })}>
-            <Plus size={16} aria-hidden="true" /> Opening balance
-          </button>
-        </div>
-      </header>
-
-      <div role="tablist" aria-label="Which balances" className="grid grid-cols-2 gap-3">
-        <SideTab side="in" active={side === 'in'} list={owed} onClick={() => setParams({}, { replace: true })} />
-        <SideTab side="out" active={side === 'out'} list={held} onClick={() => setParams({ side: 'out' }, { replace: true })} />
-      </div>
+          </>
+        }
+        stats={[
+          {
+            label: 'Owed to you',
+            tone: 'attn',
+            value: money(owed.reduce((s, p) => s + Math.abs(p.balance), 0)),
+            hint: owed.length ? `By ${owed.length} ${owed.length === 1 ? 'person' : 'people'}` : 'Nobody owes you',
+            active: side === 'in',
+            onClick: () => setParams({}, { replace: true }),
+          },
+          {
+            label: 'You owe',
+            tone: 'out',
+            value: money(held.reduce((s, p) => s + Math.abs(p.balance), 0)),
+            hint: held.length ? `To ${held.length} ${held.length === 1 ? 'person' : 'people'}` : 'You owe nobody',
+            active: side === 'out',
+            onClick: () => setParams({ side: 'out' }, { replace: true }),
+          },
+        ]}
+      />
 
       {sideList.length > 0 && (
-        <div className="toolbar">
-          <div className="search-field">
-            <Search size={16} aria-hidden="true" />
-            <input className="field field--compact w-full" type="search" placeholder="Search by name or phone" aria-label="Search balances" value={q} onChange={(e) => setQ(e.target.value)} />
+        <div className="filterbar">
+          <label className="filterbar__search">
+            <Search size={17} aria-hidden="true" />
+            <input
+              type="search"
+              placeholder="Search by name or phone number"
+              aria-label="Search balances"
+              value={q}
+              onChange={(e) => setQ(e.target.value)}
+            />
+          </label>
+          <div className="filterbar__end">
+            <select className="filterbar__select" aria-label="Sort by" value={sort} onChange={(e) => setSort(e.target.value)}>
+              {SORTS.map((o) => (
+                <option key={o.value} value={o.value}>
+                  {o.label}
+                </option>
+              ))}
+            </select>
           </div>
-          <select className="field field--compact" aria-label="Sort" value={sort} onChange={(e) => setSort(e.target.value)}>
-            {SORTS.map((o) => (
-              <option key={o.value} value={o.value}>
-                {o.label}
-              </option>
-            ))}
-          </select>
         </div>
       )}
 
       {isLoading ? (
-        <section className="rounded-2xl border border-line bg-surface">
+        <section className="rounded-[20px] bg-surface shadow-[var(--soft-card)] ring-1 ring-[var(--soft-ring)]">
           <p className="loading">Loading…</p>
         </section>
       ) : sideList.length === 0 ? (
-        <section className="rounded-2xl border border-line bg-surface">
+        <section className="rounded-[20px] bg-surface shadow-[var(--soft-card)] ring-1 ring-[var(--soft-ring)]">
           <EmptyState icon={<CircleCheck size={22} />} title={side === 'in' ? 'Nobody owes you anything' : 'You don’t hold anyone’s money'}>
             {side === 'in'
               ? 'When someone gives you less than you send or give them, the rest shows up here.'
@@ -343,12 +376,18 @@ function Balances() {
           </EmptyState>
         </section>
       ) : list.length === 0 ? (
-        <section className="rounded-2xl border border-line bg-surface">
+        <section className="rounded-[20px] bg-surface shadow-[var(--soft-card)] ring-1 ring-[var(--soft-ring)]">
           <EmptyState icon={<Search size={22} />} title={`No one matching “${q}”`} />
         </section>
       ) : (
-        <section className="overflow-hidden rounded-2xl border border-line bg-surface shadow-[0_1px_2px_rgb(22_24_43/0.04)]" aria-label={SIDE[side].label}>
-          <div className={`${ROW} hidden border-b border-line-soft bg-surface-2 py-2 text-xs font-bold text-ink-3 lg:grid`} aria-hidden="true">
+        <section
+          className="overflow-hidden rounded-[20px] bg-surface shadow-[var(--soft-card)] ring-1 ring-[var(--soft-ring)]"
+          aria-label={SIDE[side].label}
+        >
+          <div
+            className={`${ROW} hidden border-b border-line-soft bg-surface-2 py-2 text-xs font-bold text-ink-3 lg:grid`}
+            aria-hidden="true"
+          >
             <span>Person</span>
             <span>Share of total</span>
             <span className="text-right">Balance</span>

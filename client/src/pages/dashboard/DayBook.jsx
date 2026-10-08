@@ -1,16 +1,42 @@
 import { useEffect, useId, useState } from 'react'
 import { Link, useSearchParams } from 'react-router-dom'
-import { Banknote, Building2, ChevronLeft, ChevronRight, CircleCheck, CreditCard, FileText, Landmark, Printer, ReceiptText, Smartphone, TriangleAlert, Wallet } from 'lucide-react'
+import {
+  Banknote,
+  Building2,
+  ChevronLeft,
+  ChevronRight,
+  CircleCheck,
+  CreditCard,
+  FileText,
+  Landmark,
+  Printer,
+  Smartphone,
+  TriangleAlert,
+  Wallet,
+} from 'lucide-react'
 import { useDaybook, useSave } from '../../lib/queries.js'
 import { useUI } from '../../dashboard/ui.jsx'
-import { addDays, formatDate, formatFullDate, formatLongDate, formatStamp, fromISO, modeLabel, money, rupeesInput, toPaise, todayISO } from '../../lib/format.js'
+import {
+  addDays,
+  formatDate,
+  formatFullDate,
+  formatLongDate,
+  formatStamp,
+  fromISO,
+  modeLabel,
+  money,
+  rupeesInput,
+  toPaise,
+  todayISO,
+} from '../../lib/format.js'
+import { Hero } from '../../dashboard/bits.jsx'
 
 /*
  * Day book: money in and out by payment mode for one day, and the end-of-day cash count.
  * Expected cash in the drawer = opening cash + cash in − cash out. Count it, and see if it's short or extra.
  */
 
-const CARD = 'rounded-2xl border border-line bg-surface shadow-[0_1px_2px_rgb(22_24_43/0.04)]'
+const CARD = 'rounded-[20px] bg-surface shadow-[var(--soft-card)] ring-1 ring-[var(--soft-ring)]'
 const MODE_ICON = { cash: Banknote, upi: Smartphone, bank: Landmark, cheque: FileText, card: CreditCard, other: Wallet }
 
 function ModeCard({ m }) {
@@ -49,9 +75,14 @@ function ModeCard({ m }) {
 
 function Line({ sign, label, hint, value, tone = 'text-ink', strong }) {
   return (
-    <div className={`flex items-center justify-between gap-3 py-2.5 ${strong ? 'border-t-2 border-ink/70 pt-3' : 'border-t border-line-soft first:border-t-0'}`}>
+    <div
+      className={`flex items-center justify-between gap-3 py-2.5 ${strong ? 'border-t-2 border-ink/70 pt-3' : 'border-t border-line-soft first:border-t-0'}`}
+    >
       <span className="flex min-w-0 items-center gap-2.5">
-        <span className={`grid size-6 shrink-0 place-items-center rounded-full text-sm font-extrabold ${strong ? 'bg-brand text-white' : 'bg-surface-3 text-ink-2'}`} aria-hidden="true">
+        <span
+          className={`grid size-6 shrink-0 place-items-center rounded-full text-sm font-extrabold ${strong ? 'bg-brand text-white' : 'bg-surface-3 text-ink-2'}`}
+          aria-hidden="true"
+        >
           {sign}
         </span>
         <span className="min-w-0">
@@ -92,7 +123,13 @@ function CashCount({ data, date }) {
     try {
       await save.mutateAsync({ path: `/daybook/${date}`, method: 'PUT', body: { opening_cash: opening || 0, counted_cash: counted, note } })
       setTouched(false)
-      ui.toast(counted === '' ? 'Opening cash saved' : diff === 0 ? 'Day closed. Cash matches' : `Day closed. ${money(Math.abs(diff))} ${diff < 0 ? 'short' : 'extra'}`)
+      ui.toast(
+        counted === ''
+          ? 'Opening cash saved'
+          : diff === 0
+            ? 'Day closed. Cash matches'
+            : `Day closed. ${money(Math.abs(diff))} ${diff < 0 ? 'short' : 'extra'}`,
+      )
     } catch (err) {
       ui.toast(err.message, 'error')
     }
@@ -120,7 +157,10 @@ function CashCount({ data, date }) {
         <div>
           <div className="flex items-center justify-between gap-3 py-2.5">
             <label htmlFor={ids.opening} className="flex min-w-0 items-center gap-2.5">
-              <span className="grid size-6 shrink-0 place-items-center rounded-full bg-surface-3 text-sm font-extrabold text-ink-2" aria-hidden="true" />
+              <span
+                className="grid size-6 shrink-0 place-items-center rounded-full bg-surface-3 text-sm font-extrabold text-ink-2"
+                aria-hidden="true"
+              />
               <span className="min-w-0">
                 <span className="block text-sm font-semibold text-ink-2">Opening cash</span>
                 <span className="block text-xs text-ink-3">
@@ -129,8 +169,17 @@ function CashCount({ data, date }) {
               </span>
             </label>
             <span className={`${moneyInput} w-36`}>
-              <span className="text-sm font-bold text-ink-3" aria-hidden="true">₹</span>
-              <input id={ids.opening} className="w-full min-w-0 border-0 bg-transparent p-0 text-right text-base font-extrabold text-ink tabular-nums outline-none" inputMode="decimal" placeholder="0" value={opening} onChange={edit(setOpening)} />
+              <span className="text-sm font-bold text-ink-3" aria-hidden="true">
+                ₹
+              </span>
+              <input
+                id={ids.opening}
+                className="w-full min-w-0 border-0 bg-transparent p-0 text-right text-base font-extrabold text-ink tabular-nums outline-none"
+                inputMode="decimal"
+                placeholder="0"
+                value={opening}
+                onChange={edit(setOpening)}
+              />
             </span>
           </div>
           <Line sign="+" label="Cash in" hint="Received in cash today" value={money(cash.in_amount)} tone="text-in" />
@@ -149,8 +198,17 @@ function CashCount({ data, date }) {
             Counted cash
           </label>
           <span className={`${moneyInput} h-14`}>
-            <span className="text-xl font-bold text-ink-3" aria-hidden="true">₹</span>
-            <input id={ids.counted} className="w-full min-w-0 border-0 bg-transparent p-0 text-right text-2xl font-extrabold text-ink tabular-nums outline-none placeholder:text-ink-3/40" inputMode="decimal" placeholder="Count the drawer" value={counted} onChange={edit(setCounted)} />
+            <span className="text-xl font-bold text-ink-3" aria-hidden="true">
+              ₹
+            </span>
+            <input
+              id={ids.counted}
+              className="w-full min-w-0 border-0 bg-transparent p-0 text-right text-2xl font-extrabold text-ink tabular-nums outline-none placeholder:text-ink-3/40"
+              inputMode="decimal"
+              placeholder="Count the drawer"
+              value={counted}
+              onChange={edit(setCounted)}
+            />
           </span>
           {diff != null && (
             <p
@@ -166,9 +224,22 @@ function CashCount({ data, date }) {
           <label htmlFor={ids.note} className="sr-only">
             Note
           </label>
-          <input id={ids.note} className="field h-10 min-h-10 py-0 text-sm" placeholder="Note (optional), e.g. gave ₹500 to the shop" value={note} onChange={(e) => (setNote(e.target.value), setTouched(true))} maxLength={500} />
+          <input
+            id={ids.note}
+            className="field h-10 min-h-10 py-0 text-sm"
+            placeholder="Note (optional), e.g. gave ₹500 to the shop"
+            value={note}
+            onChange={(e) => (setNote(e.target.value), setTouched(true))}
+            maxLength={500}
+          />
           <button type="submit" className="btn btn--primary" disabled={save.isPending}>
-            {save.isPending ? 'Saving…' : counted === '' ? 'Save opening cash' : saved?.counted_cash != null ? 'Update day close' : 'Close the day'}
+            {save.isPending
+              ? 'Saving…'
+              : counted === ''
+                ? 'Save opening cash'
+                : saved?.counted_cash != null
+                  ? 'Update day close'
+                  : 'Close the day'}
           </button>
         </div>
       </div>
@@ -188,16 +259,25 @@ function History({ items }) {
           <thead>
             <tr>
               <th scope="col">Day</th>
-              <th scope="col" className="num">Should be</th>
-              <th scope="col" className="num">Counted</th>
-              <th scope="col" className="num">Difference</th>
+              <th scope="col" className="num">
+                Should be
+              </th>
+              <th scope="col" className="num">
+                Counted
+              </th>
+              <th scope="col" className="num">
+                Difference
+              </th>
             </tr>
           </thead>
           <tbody>
             {items.map((c) => (
               <tr key={c.date}>
                 <td>
-                  <Link to={`/dashboard/daybook?date=${c.date}`} className="inline-flex min-h-8 items-center font-bold text-ink no-underline hover:underline">
+                  <Link
+                    to={`/dashboard/daybook?date=${c.date}`}
+                    className="inline-flex min-h-8 items-center font-bold text-ink no-underline hover:underline"
+                  >
                     {formatFullDate(c.date)}
                   </Link>
                   {c.note && <span className="block text-xs text-ink-3">{c.note}</span>}
@@ -226,56 +306,79 @@ function DayBook() {
 
   return (
     <div className="page">
-      <header className="flex flex-wrap items-end justify-between gap-4 pt-7">
-        <div className="min-w-0">
-          <h1 className="m-0 text-[26px] leading-tight font-extrabold tracking-tight text-ink">Day book</h1>
-          <p className="m-0 mt-1 text-[15px] font-semibold text-ink-2">
+      <Hero
+        title="Day book"
+        subtitle={
+          <>
             {formatLongDate(fromISO(date))}
-            {isToday && <span className="text-ink-3"> · today</span>}
-          </p>
-        </div>
-        <div className="toolbar">
-          <button type="button" className="icon-button icon-button--bordered" onClick={() => go(addDays(date, -1))} aria-label="Previous day" title="Previous day">
-            <ChevronLeft size={17} />
-          </button>
-          <input
-            type="date"
-            className="field field--compact w-auto"
-            aria-label="Pick a day"
-            value={date}
-            max={today}
-            onChange={(e) => e.target.value && go(e.target.value)}
-          />
-          <button type="button" className="icon-button icon-button--bordered" onClick={() => go(addDays(date, 1))} disabled={isToday} aria-label="Next day" title="Next day">
-            <ChevronRight size={17} />
-          </button>
-          {!isToday && (
-            <button type="button" className="btn btn--ghost" onClick={() => go(today)}>
-              Today
+            {isToday && <> · today</>}
+          </>
+        }
+        actions={
+          <>
+            <button
+              type="button"
+              className="icon-button icon-button--bordered"
+              onClick={() => go(addDays(date, -1))}
+              aria-label="Previous day"
+              title="Previous day"
+            >
+              <ChevronLeft size={17} />
             </button>
-          )}
-          <Link className="btn btn--ghost" to={`/register?date=${date}`}>
-            <Printer size={16} aria-hidden="true" /> Print register
-          </Link>
-        </div>
-      </header>
+            <input
+              type="date"
+              className="field field--compact w-auto"
+              aria-label="Pick a day"
+              value={date}
+              max={today}
+              onChange={(e) => e.target.value && go(e.target.value)}
+            />
+            <button
+              type="button"
+              className="icon-button icon-button--bordered"
+              onClick={() => go(addDays(date, 1))}
+              disabled={isToday}
+              aria-label="Next day"
+              title="Next day"
+            >
+              <ChevronRight size={17} />
+            </button>
+            {!isToday && (
+              <button type="button" className="btn btn--ghost" onClick={() => go(today)}>
+                Today
+              </button>
+            )}
+            <Link className="btn btn--ghost" to={`/register?date=${date}`}>
+              <Printer size={16} aria-hidden="true" /> Print register
+            </Link>
+          </>
+        }
+        stats={
+          data
+            ? [
+                {
+                  label: 'Commission',
+                  featured: true,
+                  value: money(data.commission),
+                  hint: `${data.count} ${data.count === 1 ? 'entry' : 'entries'}`,
+                  to: `/dashboard/entries?range=custom&from=${date}&to=${date}`,
+                },
+                { label: 'Money in', tone: 'in', value: money(data.modes.reduce((t, m) => t + m.in_amount, 0)), hint: 'All payment modes' },
+                {
+                  label: 'Money out',
+                  tone: 'out',
+                  value: money(data.modes.reduce((t, m) => t + m.out_amount, 0)),
+                  hint: 'All payment modes',
+                },
+              ]
+            : null
+        }
+      />
 
       {isLoading || !data ? (
         <p className="loading">Loading…</p>
       ) : (
         <>
-          <section aria-label="Summary" className="flex flex-wrap items-center gap-x-6 gap-y-2 rounded-2xl bg-[linear-gradient(120deg,var(--side)_0%,color-mix(in_oklab,var(--side),var(--primary)_40%)_100%)] px-5 py-4 text-white">
-            <span className="flex items-center gap-2 text-sm font-semibold text-white/70">
-              <ReceiptText size={16} aria-hidden="true" /> {data.count} {data.count === 1 ? 'entry' : 'entries'}
-            </span>
-            <span className="text-sm font-semibold text-white/70">
-              Commission <strong className="ml-1 text-xl font-extrabold text-[#7ee2a8] tabular-nums">{money(data.commission)}</strong>
-            </span>
-            <Link to={`/dashboard/entries?range=custom&from=${date}&to=${date}`} className="ml-auto inline-flex min-h-8 items-center text-sm font-bold text-white/80 no-underline hover:text-white hover:underline">
-              See the entries →
-            </Link>
-          </section>
-
           {data.modes.length === 0 ? (
             <section className={`${CARD} px-5 py-10 text-center`}>
               <Building2 size={22} className="mx-auto text-ink-3" aria-hidden="true" />

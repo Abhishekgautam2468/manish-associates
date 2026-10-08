@@ -442,7 +442,7 @@ function Entries() {
       {/* Day book */}
       <section aria-label="Entries by day" aria-busy={isFetching}>
         {isLoading || items.length === 0 ? (
-          <div className="overflow-hidden rounded-2xl border border-line bg-surface">
+          <div className="overflow-hidden rounded-[20px] bg-surface shadow-[var(--soft-card)] ring-1 ring-[var(--soft-ring)]">
             {isLoading ? (
               <p className="loading">Loading entries…</p>
             ) : items.length === 0 ? (

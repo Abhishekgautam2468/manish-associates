@@ -18,7 +18,7 @@ import {
 } from 'lucide-react'
 import { useReminders, useSave } from '../../lib/queries.js'
 import { useUI } from '../../dashboard/ui.jsx'
-import { EmptyState, Menu, MenuItem, Segmented } from '../../dashboard/bits.jsx'
+import { EmptyState, Hero, Menu, MenuItem, Segmented } from '../../dashboard/bits.jsx'
 import {
   addDays,
   addMonths,
@@ -112,18 +112,25 @@ function ReminderRow({ r, bucket, ui, save }) {
       <div className="flex min-w-0 flex-1 items-start gap-3.5">
         <DateTile iso={r.due_date} bucket={bucket} />
         <div className="min-w-0 flex-1">
-          <p className={`m-0 text-[15px] leading-snug font-bold text-ink ${r.done_at ? 'line-through decoration-ink-3/60' : ''}`}>{r.title}</p>
+          <p className={`m-0 text-[15px] leading-snug font-bold text-ink ${r.done_at ? 'line-through decoration-ink-3/60' : ''}`}>
+            {r.title}
+          </p>
           <p className="m-0 mt-1 flex flex-wrap items-center gap-x-3 gap-y-1 text-xs">
             <span className={`font-bold ${TONE[bucket].due}`}>
               {r.done_at ? `Done · was due ${formatDate(r.due_date)}` : dueLabel(r.due_date)}
             </span>
             {amount ? (
-              <span className={`rounded-md px-1.5 py-0.5 font-extrabold tabular-nums ${r.tx_type === 'out' ? 'bg-out-soft text-out' : 'bg-attn-soft text-attn'}`}>
+              <span
+                className={`rounded-md px-1.5 py-0.5 font-extrabold tabular-nums ${r.tx_type === 'out' ? 'bg-out-soft text-out' : 'bg-attn-soft text-attn'}`}
+              >
                 {money(amount)}
               </span>
             ) : null}
             {r.contact_id && (
-              <Link to={`/dashboard/people/${r.contact_id}`} className="inline-flex min-h-7 items-center gap-1 font-semibold text-ink-2 no-underline hover:text-brand-text">
+              <Link
+                to={`/dashboard/people/${r.contact_id}`}
+                className="inline-flex min-h-7 items-center gap-1 font-semibold text-ink-2 no-underline hover:text-brand-text"
+              >
                 <User size={12} aria-hidden="true" /> {r.contact_name}
               </Link>
             )}
@@ -145,7 +152,10 @@ function ReminderRow({ r, bucket, ui, save }) {
         {!r.done_at && r.contact_phone && (
           <a
             className="icon-button size-9"
-            href={whatsappLink(r.contact_phone, reminderMessage({ name: r.contact_name, type: r.tx_type ?? 'in', amount, dueDate: r.due_date }))}
+            href={whatsappLink(
+              r.contact_phone,
+              reminderMessage({ name: r.contact_name, type: r.tx_type ?? 'in', amount, dueDate: r.due_date }),
+            )}
             target="_blank"
             rel="noreferrer"
             aria-label={`WhatsApp ${r.contact_name}`}
@@ -155,20 +165,36 @@ function ReminderRow({ r, bucket, ui, save }) {
           </a>
         )}
         {!r.done_at && (
-          <button type="button" className="icon-button size-9" onClick={() => snooze(1)} aria-label="Snooze to tomorrow" title="Snooze to tomorrow">
+          <button
+            type="button"
+            className="icon-button size-9"
+            onClick={() => snooze(1)}
+            aria-label="Snooze to tomorrow"
+            title="Snooze to tomorrow"
+          >
             <AlarmClockPlus size={17} />
           </button>
         )}
         <Menu label={`More actions for ${r.title}`}>
           {!r.done_at && (
             <>
-              <MenuItem icon={<AlarmClockPlus size={15} />} onSelect={() => snooze(1)}>Snooze to tomorrow</MenuItem>
-              <MenuItem icon={<AlarmClockPlus size={15} />} onSelect={() => snooze(3)}>Snooze 3 days</MenuItem>
-              <MenuItem icon={<AlarmClockPlus size={15} />} onSelect={() => snooze(7)}>Snooze a week</MenuItem>
-              <MenuItem icon={<Pencil size={15} />} onSelect={() => ui.editReminder(r)}>Edit</MenuItem>
+              <MenuItem icon={<AlarmClockPlus size={15} />} onSelect={() => snooze(1)}>
+                Snooze to tomorrow
+              </MenuItem>
+              <MenuItem icon={<AlarmClockPlus size={15} />} onSelect={() => snooze(3)}>
+                Snooze 3 days
+              </MenuItem>
+              <MenuItem icon={<AlarmClockPlus size={15} />} onSelect={() => snooze(7)}>
+                Snooze a week
+              </MenuItem>
+              <MenuItem icon={<Pencil size={15} />} onSelect={() => ui.editReminder(r)}>
+                Edit
+              </MenuItem>
             </>
           )}
-          <MenuItem icon={<Trash2 size={15} />} danger onSelect={remove}>Delete</MenuItem>
+          <MenuItem icon={<Trash2 size={15} />} danger onSelect={remove}>
+            Delete
+          </MenuItem>
         </Menu>
         {r.done_at ? (
           <button type="button" className="btn btn--sm btn--ghost" onClick={() => act(`/reminders/${r.id}/reopen`, 'Reminder reopened')}>
@@ -233,11 +259,23 @@ function WeekStrip({ all, filter, onFilter, today, buckets }) {
   )
   return (
     <div className="-mx-1 flex gap-2 overflow-x-auto px-1 pb-1" role="radiogroup" aria-label="Show reminders for">
-      <button type="button" role="radio" aria-checked={filter === 'open'} className={chip(filter === 'open')} onClick={() => onFilter('open')}>
+      <button
+        type="button"
+        role="radio"
+        aria-checked={filter === 'open'}
+        className={chip(filter === 'open')}
+        onClick={() => onFilter('open')}
+      >
         <span className={`text-[11px] font-bold ${filter === 'open' ? 'text-white/80' : 'text-ink-3'}`}>All open</span>
         {num(open.length, filter === 'open', 'text-ink')}
       </button>
-      <button type="button" role="radio" aria-checked={filter === 'overdue'} className={chip(filter === 'overdue')} onClick={() => onFilter('overdue')}>
+      <button
+        type="button"
+        role="radio"
+        aria-checked={filter === 'overdue'}
+        className={chip(filter === 'overdue')}
+        onClick={() => onFilter('overdue')}
+      >
         <span className={`text-[11px] font-bold ${filter === 'overdue' ? 'text-white/80' : 'text-danger'}`}>Overdue</span>
         {num(buckets.overdue.length, filter === 'overdue', 'text-danger')}
       </button>
@@ -256,11 +294,23 @@ function WeekStrip({ all, filter, onFilter, today, buckets }) {
         )
       })}
       <span className="mx-0.5 w-px shrink-0 self-stretch bg-line" aria-hidden="true" />
-      <button type="button" role="radio" aria-checked={filter === 'later'} className={chip(filter === 'later')} onClick={() => onFilter('later')}>
+      <button
+        type="button"
+        role="radio"
+        aria-checked={filter === 'later'}
+        className={chip(filter === 'later')}
+        onClick={() => onFilter('later')}
+      >
         <span className={`text-[11px] font-bold ${filter === 'later' ? 'text-white/80' : 'text-ink-3'}`}>Later</span>
         {num(buckets.later.length, filter === 'later', 'text-ink-2')}
       </button>
-      <button type="button" role="radio" aria-checked={filter === 'done'} className={chip(filter === 'done')} onClick={() => onFilter('done')}>
+      <button
+        type="button"
+        role="radio"
+        aria-checked={filter === 'done'}
+        className={chip(filter === 'done')}
+        onClick={() => onFilter('done')}
+      >
         <span className={`text-[11px] font-bold ${filter === 'done' ? 'text-white/80' : 'text-ok'}`}>Done</span>
         {num(buckets.done.length, filter === 'done', 'text-ok')}
       </button>
@@ -308,7 +358,9 @@ function MonthView({ month, onMonth, reminders, selected, onSelect, today, weekE
       </div>
       <div className="month__grid" role="grid">
         {WEEKDAYS.map((d) => (
-          <span key={d} className="month__weekday" role="columnheader">{d}</span>
+          <span key={d} className="month__weekday" role="columnheader">
+            {d}
+          </span>
         ))}
         {cells.slice(0, rows * 7).map((iso) => {
           const list = byDay.get(iso) ?? []
@@ -372,9 +424,18 @@ function Reminders() {
   const titles = { overdue: 'Overdue', today: 'Today', week: 'Next 7 days', later: 'Later', done: 'Done' }
   const hints = { overdue: 'follow up now', today: 'due today', week: 'coming up', later: 'after next week', done: 'most recent first' }
   const sections = isDay
-    ? [{ key: 'day', bucket: filter === today ? 'today' : 'week', title: filter === today ? 'Today' : formatFullDate(filter), items: all.filter((r) => !r.done_at && r.due_date === filter) }]
+    ? [
+        {
+          key: 'day',
+          bucket: filter === today ? 'today' : 'week',
+          title: filter === today ? 'Today' : formatFullDate(filter),
+          items: all.filter((r) => !r.done_at && r.due_date === filter),
+        },
+      ]
     : filter === 'open'
-      ? ['overdue', 'today', 'week', 'later'].map((k) => ({ key: k, bucket: k, title: titles[k], hint: hints[k], items: buckets[k] })).filter((x) => x.items.length)
+      ? ['overdue', 'today', 'week', 'later']
+          .map((k) => ({ key: k, bucket: k, title: titles[k], hint: hints[k], items: buckets[k] }))
+          .filter((x) => x.items.length)
       : [{ key: filter, bucket: filter, title: titles[filter], hint: hints[filter], items: buckets[filter] }]
 
   const calendarItems = all.filter((r) => !r.done_at)
@@ -383,43 +444,49 @@ function Reminders() {
 
   return (
     <div className="page">
-      <header className="flex flex-wrap items-end justify-between gap-4 pt-7">
-        <div className="min-w-0">
-          <h1 className="m-0 text-[26px] leading-tight font-extrabold tracking-tight text-ink">Reminders</h1>
-          <p className="m-0 mt-1 text-[15px] font-semibold text-ink-2">
-            {openCount ? (
-              <>
-                {buckets.overdue.length > 0 && <span className="text-danger">{buckets.overdue.length} overdue · </span>}
-                {thisWeek} this week
-                <span className="text-ink-3"> · {openCount} open in all</span>
-              </>
-            ) : (
-              <span className="text-ink-3">Nothing open. You’re all caught up.</span>
-            )}
-          </p>
-        </div>
-        <div className="toolbar">
-          <Segmented
-            label="View"
-            value={view}
-            onChange={(v) => {
-              setView(v)
-              setDay(null)
-            }}
-            options={[
-              { value: 'list', label: 'Agenda', icon: <List size={15} aria-hidden="true" /> },
-              { value: 'calendar', label: 'Calendar', icon: <CalendarDays size={15} aria-hidden="true" /> },
-            ]}
-          />
-          <button
-            type="button"
-            className="btn btn--primary"
-            onClick={() => ui.newReminder(day ? { due_date: day } : isDay ? { due_date: filter } : undefined)}
-          >
-            <Plus size={17} aria-hidden="true" /> New reminder
-          </button>
-        </div>
-      </header>
+      <Hero
+        title="Reminders"
+        subtitle={openCount ? `${thisWeek} due this week · ${openCount} open in all` : 'Nothing open. You’re all caught up.'}
+        actions={
+          <>
+            <Segmented
+              label="View"
+              value={view}
+              onChange={(v) => {
+                setView(v)
+                setDay(null)
+              }}
+              options={[
+                { value: 'list', label: 'Agenda', icon: <List size={15} aria-hidden="true" /> },
+                { value: 'calendar', label: 'Calendar', icon: <CalendarDays size={15} aria-hidden="true" /> },
+              ]}
+            />
+            <button
+              type="button"
+              className="btn btn--primary"
+              onClick={() => ui.newReminder(day ? { due_date: day } : isDay ? { due_date: filter } : undefined)}
+            >
+              <Plus size={17} aria-hidden="true" /> New reminder
+            </button>
+          </>
+        }
+        stats={
+          openCount
+            ? [
+                {
+                  label: 'Overdue',
+                  tone: 'danger',
+                  value: buckets.overdue.length,
+                  hint: buckets.overdue.length ? 'Needs a call or a message' : 'Nothing late',
+                  featured: buckets.overdue.length > 0,
+                },
+                { label: 'Due today', tone: 'attn', value: buckets.today.length, hint: 'Today' },
+                { label: 'Next 7 days', tone: 'in', value: buckets.week.length, hint: 'Coming up' },
+                { label: 'Open in all', value: openCount, hint: `${buckets.done.length} done` },
+              ]
+            : null
+        }
+      />
 
       {view === 'list' && <WeekStrip all={all} filter={filter} onFilter={setFilter} today={today} buckets={buckets} />}
 
@@ -437,11 +504,16 @@ function Reminders() {
             weekEnd={weekEnd}
           />
           {day && (
-            <TimelineGroup id="rem-day" title={formatFullDate(day)} bucket={day === today ? 'today' : day < today ? 'overdue' : 'week'} count={dayItems.length}>
+            <TimelineGroup
+              id="rem-day"
+              title={formatFullDate(day)}
+              bucket={day === today ? 'today' : day < today ? 'overdue' : 'week'}
+              count={dayItems.length}
+            >
               {dayItems.length ? (
                 <ReminderList items={dayItems} today={today} weekEnd={weekEnd} ui={ui} save={save} />
               ) : (
-                <div className="rounded-2xl border border-line bg-surface">
+                <div className="rounded-[20px] bg-surface shadow-[var(--soft-card)] ring-1 ring-[var(--soft-ring)]">
                   <EmptyState
                     title="Nothing on this day"
                     action={
@@ -456,7 +528,7 @@ function Reminders() {
           )}
         </>
       ) : sections.every((x) => x.items.length === 0) ? (
-        <section className="rounded-2xl border border-line bg-surface">
+        <section className="rounded-[20px] bg-surface shadow-[var(--soft-card)] ring-1 ring-[var(--soft-ring)]">
           <EmptyState
             icon={<BellRing size={22} />}
             title={filter === 'open' ? 'You’re all caught up' : `Nothing for ${sections[0].title}`}
