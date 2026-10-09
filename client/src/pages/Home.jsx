@@ -431,19 +431,19 @@ const QUICK = [
 function RotatingWord() {
   const [i, setI] = useState(0)
   useEffect(() => {
-    const t = setInterval(() => setI((x) => (x + 1) % ROTATING.length), 2400)
+    const t = setInterval(() => setI((x) => (x + 1) % ROTATING.length), 2600)
     return () => clearInterval(t)
   }, [])
   return (
-    <span className="relative block h-[1.12em] overflow-hidden" aria-live="polite">
-      <AnimatePresence mode="popLayout" initial={false}>
+    <span className="block overflow-hidden pb-[0.06em]" aria-live="polite">
+      <AnimatePresence mode="wait" initial={false}>
         <motion.span
           key={ROTATING[i]}
-          initial={{ y: '100%', opacity: 0, filter: 'blur(6px)' }}
-          animate={{ y: 0, opacity: 1, filter: 'blur(0px)' }}
-          exit={{ y: '-100%', opacity: 0, filter: 'blur(6px)' }}
-          transition={{ duration: 0.55, ease: [0.22, 1, 0.36, 1] }}
-          className="absolute inset-x-0 top-0 bg-gradient-to-r from-[#b8a8ff] via-[#8fb0ff] to-[#7ad3ff] bg-clip-text whitespace-nowrap text-transparent"
+          initial={{ y: '70%', opacity: 0 }}
+          animate={{ y: 0, opacity: 1 }}
+          exit={{ y: '-70%', opacity: 0 }}
+          transition={{ duration: 0.38, ease: [0.22, 1, 0.36, 1] }}
+          className="inline-block bg-gradient-to-r from-[#b8a8ff] via-[#8fb0ff] to-[#7ad3ff] bg-clip-text whitespace-nowrap text-transparent"
         >
           {ROTATING[i]}.
         </motion.span>
@@ -576,54 +576,29 @@ function Hero() {
                 />
               </picture>
             </motion.div>
-            <div className="absolute inset-0 bg-gradient-to-t from-[#0b1028]/85 via-transparent to-[#0b1028]/30" />
-
-            {/* Visiting card on the photo */}
-            <motion.div
-              initial={{ opacity: 0, y: 16 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.9, duration: 0.6 }}
-              className="absolute inset-x-4 bottom-4 flex items-center gap-3 rounded-2xl bg-[#0b1028]/75 p-2.5 pr-3 shadow-[0_18px_40px_-18px_rgb(0_0_0/0.8)] ring-1 ring-white/15 backdrop-blur-xl sm:inset-x-5 sm:bottom-5"
-            >
-              <img src="/brand/mark-192.png" alt="" width="44" height="44" className="size-11 shrink-0 rounded-xl" />
-              <span className="min-w-0 flex-1 leading-tight">
-                <span className="block text-[15px] font-extrabold whitespace-nowrap text-white">Manish Associates</span>
-                <span className="block text-xs font-semibold whitespace-nowrap text-white/70">
-                  {SINCE.years} years in business · {SINCE.town}
-                </span>
-              </span>
-              <a
-                href="#contact"
-                className="ml-2 hidden h-9 shrink-0 items-center rounded-lg bg-white px-3.5 text-xs font-bold text-[#141b34] no-underline sm:inline-flex"
-              >
-                Visit us
-              </a>
-            </motion.div>
+            <div className="absolute inset-0 bg-gradient-to-t from-[#0b1028]/45 via-transparent to-transparent" />
           </div>
 
-          {/* One floating chip */}
+          {/* Years in business, over the plain wall */}
           <motion.div
-            initial={{ opacity: 0, x: 30 }}
-            animate={{ opacity: 1, x: 0, y: [0, -8, 0] }}
+            initial={{ opacity: 0, x: -24 }}
+            animate={{ opacity: 1, x: 0, y: [0, -6, 0] }}
             transition={{
-              opacity: { delay: 1 },
-              x: { delay: 1, type: 'spring' },
-              y: { delay: 1.6, duration: 5, repeat: Infinity, ease: 'easeInOut' },
+              opacity: { delay: 0.9 },
+              x: { delay: 0.9, type: 'spring' },
+              y: { delay: 1.5, duration: 5, repeat: Infinity, ease: 'easeInOut' },
             }}
-            className="absolute -top-5 right-3 flex items-center gap-2.5 rounded-2xl bg-white px-3.5 py-2.5 shadow-[0_20px_40px_-18px_rgb(0_0_0/0.6)] sm:-right-6 lg:top-[24%] lg:right-auto lg:-left-12"
-            aria-hidden="true"
+            className="absolute top-5 left-5 flex items-center gap-3 rounded-2xl bg-white py-2.5 pr-4 pl-2.5 shadow-[0_20px_40px_-18px_rgb(0_0_0/0.6)] lg:top-10 lg:-left-10"
           >
-            <span className="grid size-9 place-items-center rounded-xl bg-[#e7f7ee] text-[#0f7a45]">
-              <CheckCircle2 size={18} />
-            </span>
+            <img src="/brand/mark-64.png" alt="" width="40" height="40" className="size-10 rounded-xl" />
             <span className="leading-tight">
-              <span className="block text-[11px] font-bold text-[#6b7290]">Fees told upfront</span>
-              <span className="block text-sm font-extrabold text-[#0e1325]">Documents checked twice</span>
+              <span className="block text-[11px] font-bold text-[#6b7290]">Serving {SINCE.town}</span>
+              <span className="block text-sm font-extrabold text-[#0e1325]">{SINCE.years} years in business</span>
             </span>
           </motion.div>
 
           {/* The counter's queue */}
-          <div className="relative mx-auto mt-5 w-[94%] lg:w-[86%]">
+          <div className="relative mx-auto -mt-10 w-[90%] sm:-mt-14 lg:absolute lg:right-0 lg:-bottom-14 lg:left-0 lg:mt-0 lg:w-[86%]">
             <TokenStack />
           </div>
         </motion.div>
