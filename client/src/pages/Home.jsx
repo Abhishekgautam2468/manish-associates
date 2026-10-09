@@ -3,17 +3,25 @@ import { Link } from 'react-router-dom'
 import { AnimatePresence, MotionConfig, motion, useScroll, useSpring, useTransform } from 'framer-motion'
 import {
   ArrowRight,
+  Award,
   BadgeIndianRupee,
   Banknote,
   BookUser,
+  BriefcaseBusiness,
+  Building,
   Building2,
   Bus,
+  Calculator,
   Car,
   CheckCircle2,
   Clock,
+  Factory,
   FileCheck2,
+  FileText,
+  Fingerprint,
   Globe,
   HandCoins,
+  HandHeart,
   HeartPulse,
   IdCard,
   Landmark,
@@ -25,12 +33,18 @@ import {
   Plane,
   Receipt,
   ShieldCheck,
+  Signature,
+  Smartphone,
   Stamp,
   Store,
   TrainFront,
   TreePalm,
+  TrendingUp,
   Umbrella,
+  Users,
+  Utensils,
   X,
+  Zap,
 } from 'lucide-react'
 
 /*
@@ -44,9 +58,9 @@ import {
 const SINCE = { years: 7, town: 'Rewa' }
 
 const CONTACT = {
-  phone: '', // e.g. '+91 98xxx xxxxx'
-  whatsapp: '', // digits only with country code, e.g. '9198xxxxxxxx'
-  address: 'Maa GST Suvidha Kendra, Rewa Super Bazar, Rewa', // shop address
+  phone: '+91 91312 22579',
+  whatsapp: '919131222579', // digits only with country code
+  address: 'Maa GST Suvidha Kendra, Dhekha, Super Bazar, Rewa 486001, Madhya Pradesh',
   hours: 'Open until 8:30 pm', // e.g. 'Monday to Saturday, 9:30 am to 8:30 pm'
 }
 
@@ -55,11 +69,14 @@ const PHOTOS = {
   insurance: { id: '1576091160550-2173dba999ef', alt: 'A stethoscope beside a laptop' },
   banking: { id: '1563013544-824ae1b704d3', alt: 'Paying online with a card' },
   documents: { id: '1554224155-6726b3ff858f', alt: 'Forms and a calculator on a desk' },
+  train: { id: '1474487548417-781cb71495f3', alt: 'A train on the tracks' },
   travel: { id: '1436491865332-7a61a109cc05', alt: 'The wing of a plane above the clouds' },
   hills: { id: '1506905925346-21bda4d32df4', alt: 'Snow mountains above the clouds' },
   pilgrimage: { id: '1548013146-72479768bada', alt: 'The Taj Mahal through a carved archway' },
   beach: { id: '1507525428034-b723cf961d3e', alt: 'A quiet beach at sunset' },
   international: { id: '1512453979798-5ea266f8880c', alt: 'The Dubai skyline at dusk' },
+  business: { id: '1600880292203-757bb62b4baf', alt: 'Two colleagues celebrating at a desk' },
+  signing: { id: '1450101499163-c8848c66ca85', alt: 'Signing a form' },
   handshake: { id: '1521791136064-7986c2920216', alt: 'Two people shaking hands' },
 }
 const photoUrl = (id, w) => `https://images.unsplash.com/photo-${id}?auto=format&fit=crop&q=75&w=${w}`
@@ -82,45 +99,80 @@ const SERVICE_GROUPS = [
   {
     id: 'insurance',
     photo: PHOTOS.insurance,
-    title: 'Insurance advice',
-    blurb: 'Help choosing the right cover, filling the forms and following up on claims.',
+    title: 'Insurance and investments',
+    blurb: 'Help choosing the right cover and plan, filling the forms, and following up on claims.',
     Icon: ShieldCheck,
     tone: 'violet',
     items: [
       { Icon: Umbrella, label: 'Life insurance' },
       { Icon: HeartPulse, label: 'Health insurance' },
-      { Icon: Car, label: 'Motor insurance' },
-      { Icon: Store, label: 'Shop and home insurance' },
-      { Icon: Plane, label: 'Travel insurance' },
+      { Icon: Car, label: 'Motor and general insurance' },
+      { Icon: TrendingUp, label: 'SIP and mutual funds' },
+      { Icon: HandCoins, label: 'Loans' },
     ],
   },
   {
     id: 'banking',
     photo: PHOTOS.banking,
-    title: 'Banking and money',
+    title: 'Banking and payments',
     blurb: 'Everyday banking at the counter, without the queue at the branch.',
     Icon: Landmark,
     tone: 'blue',
     items: [
-      { Icon: Banknote, label: 'Cash withdrawal' },
-      { Icon: BadgeIndianRupee, label: 'Money transfer' },
+      { Icon: BadgeIndianRupee, label: 'Domestic money transfer' },
+      { Icon: Fingerprint, label: 'Aadhaar banking (AEPS)' },
+      { Icon: Banknote, label: 'Micro ATM cash withdrawal' },
       { Icon: Landmark, label: 'Kiosk banking' },
-      { Icon: HandCoins, label: 'Loans' },
+      { Icon: Zap, label: 'Utility bill payments' },
+    ],
+  },
+  {
+    id: 'tax',
+    photo: PHOTOS.documents,
+    title: 'GST and income tax',
+    blurb: 'Registrations, returns and bills filed correctly and on time, so there are no late fees.',
+    Icon: Calculator,
+    tone: 'navy',
+    items: [
+      { Icon: Receipt, label: 'GST registration and returns' },
+      { Icon: FileText, label: 'E-way bill' },
+      { Icon: Stamp, label: 'Income tax returns (ITR)' },
+      { Icon: IdCard, label: 'PAN card' },
+      { Icon: Calculator, label: 'TDS and professional tax' },
+      { Icon: BookUser, label: 'Accounting' },
+    ],
+  },
+  {
+    id: 'business',
+    photo: PHOTOS.business,
+    title: 'Business registrations',
+    blurb: 'Everything a new or growing business needs to be registered and compliant.',
+    Icon: BriefcaseBusiness,
+    tone: 'violet',
+    items: [
+      { Icon: Building2, label: 'Company formation and ROC work' },
+      { Icon: Factory, label: 'Udyog Aadhaar (MSME)' },
+      { Icon: Utensils, label: 'FSSAI food licence' },
+      { Icon: Award, label: 'Trademark' },
+      { Icon: Signature, label: 'Digital signature (DSC)' },
+      { Icon: Users, label: 'EPF and ESIC' },
+      { Icon: Globe, label: 'Import export code (IEC)' },
+      { Icon: Building, label: 'RERA registration' },
+      { Icon: HandHeart, label: 'NGO and trust registration' },
     ],
   },
   {
     id: 'documents',
-    photo: PHOTOS.documents,
-    title: 'Documents and registrations',
+    photo: PHOTOS.signing,
+    title: 'Passport, visa and documents',
     blurb: 'We check every paper before it goes in, so applications don’t come back.',
     Icon: FileCheck2,
-    tone: 'navy',
+    tone: 'blue',
     items: [
       { Icon: BookUser, label: 'Passport, normal and Tatkal' },
       { Icon: Globe, label: 'Visa, normal and urgent' },
-      { Icon: Receipt, label: 'GST registration' },
+      { Icon: Smartphone, label: 'Digital India services' },
       { Icon: Store, label: 'Shop registration' },
-      { Icon: Stamp, label: 'Income tax returns (ITR)' },
     ],
   },
   {
@@ -372,12 +424,13 @@ function TokenStack() {
 }
 
 // The words that cycle at the end of the headline.
-const ROTATING = ['insurance', 'Tatkal tickets', 'passport', 'GST and ITR', 'next holiday', 'banking']
+const ROTATING = ['insurance', 'Tatkal tickets', 'GST returns', 'passport', 'FSSAI licence', 'next holiday']
 
 // Shortcuts under the headline, one per kind of work.
 const QUICK = [
   { label: 'Insurance', Icon: ShieldCheck, href: '#services' },
   { label: 'Banking', Icon: Landmark, href: '#services' },
+  { label: 'GST and tax', Icon: Calculator, href: '#services' },
   { label: 'Passport', Icon: BookUser, href: '#services' },
   { label: 'Tickets', Icon: TrainFront, href: '#services' },
   { label: 'Tours', Icon: TreePalm, href: '#travel' },
@@ -452,8 +505,8 @@ function Hero() {
           </motion.h1>
 
           <motion.p variants={fadeUp} className="m-0 mt-6 max-w-[33rem] text-lg leading-relaxed text-white/70">
-            Insurance, banking, passports, registrations, tickets and tours, handled by people who know the paperwork. No running between
-            offices, no surprises on the fee.
+            Insurance, banking, GST and tax, business registrations, passports, tickets and tours, handled by people who know the paperwork.
+            No running between offices, no surprises on the fee.
           </motion.p>
 
           <motion.div variants={fadeUp} className="mt-8 flex flex-wrap gap-3">
@@ -636,7 +689,7 @@ function Services() {
           <div className="max-w-xl">
             <p className="m-0 text-sm font-bold text-[#6d4aff]">What we do</p>
             <h2 className="m-0 mt-2 text-3xl leading-[1.1] font-extrabold tracking-[-0.03em] text-[#0e1325] sm:text-[2.6rem]">
-              Four offices’ work, at one counter.
+              Every office’s work, at one counter.
             </h2>
           </div>
           <p className="m-0 max-w-md text-base leading-relaxed text-[#5a6280]">
@@ -659,7 +712,10 @@ function Services() {
                   type="button"
                   role="tab"
                   aria-selected={on}
-                  onClick={() => setActive(x.id)}
+                  onClick={(e) => {
+                    setActive(x.id)
+                    e.currentTarget.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' })
+                  }}
                   className={`relative flex shrink-0 cursor-pointer items-center gap-3 rounded-2xl border-0 bg-transparent px-3 py-3 text-left transition-colors lg:w-full ${on ? '' : 'hover:bg-[#f4f5fa]'}`}
                 >
                   {on && (
@@ -752,118 +808,103 @@ const TATKAL_NEEDS = [
   { Icon: Phone, text: 'A mobile number for the ticket' },
 ]
 
-const URGENT = [
-  { Icon: BookUser, title: 'Passport, Tatkal', body: 'Form filled and appointment booked for the earliest slot.' },
-  { Icon: Globe, title: 'Visa, urgent', body: 'Documents arranged in the format the embassy asks for.' },
-]
-
 function Highlight() {
+  const ref = useRef(null)
+  const { scrollYProgress } = useScroll({ target: ref, offset: ['start end', 'end start'] })
+  const y = useTransform(scrollYProgress, [0, 1], ['-10%', '10%'])
   return (
-    <section className="bg-[#f6f7fb] px-5 pb-20 sm:px-8">
-      <Reveal className="relative mx-auto max-w-7xl overflow-hidden rounded-[36px] bg-[#0f1530] text-white shadow-[0_50px_100px_-50px_rgb(15_21_48/0.9)]">
-        <div className="pointer-events-none absolute inset-0" aria-hidden="true">
-          <div className="absolute -top-32 -left-24 size-96 rounded-full bg-[#6d4aff]/35 blur-[110px]" />
-          <div className="absolute -right-24 -bottom-32 size-96 rounded-full bg-[#ffb648]/12 blur-[110px]" />
+    <section ref={ref} className="bg-[#f6f7fb] px-5 pb-20 sm:px-8">
+      <Reveal className="relative mx-auto grid max-w-7xl grid-cols-[minmax(0,1fr)] overflow-hidden rounded-[36px] bg-[#0f1530] text-white shadow-[0_50px_100px_-50px_rgb(15_21_48/0.9)] lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)]">
+        {/* Copy */}
+        <div className="relative z-10 p-6 sm:p-12 lg:p-14">
+          <div
+            className="pointer-events-none absolute -top-28 -left-28 size-80 rounded-full bg-[#6d4aff]/40 blur-[100px]"
+            aria-hidden="true"
+          />
+          <p className="relative m-0 inline-flex items-center gap-2 rounded-full bg-[#ffb648]/15 px-3 py-1 text-sm font-bold text-[#ffcf85] ring-1 ring-[#ffb648]/30">
+            <Clock size={14} aria-hidden="true" /> Tatkal and urgent work
+          </p>
+          <h2 className="relative m-0 mt-5 text-3xl leading-tight font-extrabold tracking-tight text-white sm:text-[2.6rem]">
+            Tatkal seats go in minutes. Your booking will be ready before that.
+          </h2>
+          <p className="relative m-0 mt-4 max-w-lg text-base leading-relaxed text-white/70 sm:text-[17px]">
+            Send your details a day before. We fill the booking in advance and submit it the moment the window opens. The same goes for
+            Tatkal passports and urgent visas.
+          </p>
+
+          <p className="relative m-0 mt-8 text-sm font-bold text-white/85">For a Tatkal train ticket, send us:</p>
+          <ul className="relative m-0 mt-3 flex list-none flex-col gap-2 p-0">
+            {TATKAL_NEEDS.map(({ Icon, text }, k) => (
+              <motion.li
+                key={text}
+                initial={{ opacity: 0, x: -14 }}
+                whileInView={{ opacity: 1, x: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: 0.15 + k * 0.08 }}
+                className="flex items-center gap-3 text-[15px] font-semibold text-white/90"
+              >
+                <span className="grid size-9 shrink-0 place-items-center rounded-xl bg-[#2f6bff]/25 text-[#a9c2ff] ring-1 ring-[#2f6bff]/30">
+                  <Icon size={17} aria-hidden="true" />
+                </span>
+                {text}
+              </motion.li>
+            ))}
+          </ul>
+
+          <motion.a
+            whileHover={{ y: -3 }}
+            whileTap={{ scale: 0.97 }}
+            href={waHref}
+            className="relative mt-8 inline-flex h-13 items-center gap-2.5 rounded-2xl bg-white px-6 font-bold text-[#141b34] no-underline shadow-[0_16px_30px_-14px_rgb(0_0_0/0.6)]"
+          >
+            <MessageCircle size={18} aria-hidden="true" /> Send details on WhatsApp
+          </motion.a>
         </div>
 
-        <div className="relative grid grid-cols-[minmax(0,1fr)] gap-10 p-6 sm:p-12 lg:grid-cols-[minmax(0,1fr)_minmax(0,0.95fr)] lg:items-center lg:gap-14 lg:p-14">
-          {/* Copy */}
-          <div>
-            <p className="m-0 inline-flex items-center gap-2 rounded-full bg-[#ffb648]/15 px-3 py-1 text-sm font-bold text-[#ffcf85] ring-1 ring-[#ffb648]/30">
-              <Clock size={14} aria-hidden="true" /> Tatkal and urgent work
-            </p>
-            <h2 className="m-0 mt-5 text-3xl leading-tight font-extrabold tracking-tight text-white sm:text-[2.6rem]">
-              Tatkal seats go in minutes. Your details will be ready before that.
-            </h2>
-            <p className="m-0 mt-4 max-w-lg text-base leading-relaxed text-white/70 sm:text-[17px]">
-              Send us everything a day before. We fill the booking in advance and submit it the moment the window opens, so nothing is typed
-              while the seats are running out.
-            </p>
+        {/* Train photo, with the booking times on it */}
+        <div className="relative min-h-[420px] overflow-hidden lg:min-h-full">
+          <motion.div style={{ y }} className="absolute -inset-y-[12%] inset-x-0">
+            <Photo photo={PHOTOS.train} sizes="(min-width: 1024px) 640px, 100vw" />
+          </motion.div>
+          <div className="absolute inset-0 bg-gradient-to-r from-[#0f1530] via-[#0f1530]/25 to-transparent max-lg:bg-gradient-to-b" />
 
-            <p className="m-0 mt-8 text-sm font-bold text-white/85">For a Tatkal train ticket, send us:</p>
-            <ul className="m-0 mt-3 flex list-none flex-col gap-2 p-0">
-              {TATKAL_NEEDS.map(({ Icon, text }, k) => (
-                <motion.li
-                  key={text}
-                  initial={{ opacity: 0, x: -14 }}
-                  whileInView={{ opacity: 1, x: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ delay: 0.15 + k * 0.08 }}
-                  className="flex items-center gap-3 text-[15px] font-semibold text-white/90"
-                >
-                  <span className="grid size-9 shrink-0 place-items-center rounded-xl bg-[#2f6bff]/25 text-[#a9c2ff] ring-1 ring-[#2f6bff]/30">
-                    <Icon size={17} aria-hidden="true" />
-                  </span>
-                  {text}
-                </motion.li>
-              ))}
-            </ul>
-
-            <motion.a
-              whileHover={{ y: -3 }}
-              whileTap={{ scale: 0.97 }}
-              href={waHref}
-              className="mt-8 inline-flex h-13 items-center gap-2.5 rounded-2xl bg-white px-6 font-bold text-[#141b34] no-underline shadow-[0_16px_30px_-14px_rgb(0_0_0/0.6)]"
-            >
-              <MessageCircle size={18} aria-hidden="true" /> Send details on WhatsApp
-            </motion.a>
+          <div className="absolute top-5 right-5 flex flex-wrap justify-end gap-2">
+            {['Tatkal train', 'Tatkal passport', 'Urgent visa'].map((x) => (
+              <span
+                key={x}
+                className="rounded-full bg-[#0b1028]/60 px-3.5 py-1.5 text-sm font-bold text-white ring-1 ring-white/20 backdrop-blur"
+              >
+                {x}
+              </span>
+            ))}
           </div>
 
-          {/* Booking windows, as a ticket */}
-          <div className="flex flex-col gap-4">
-            <motion.div
-              initial={{ opacity: 0, y: 30, rotate: -1.5 }}
-              whileInView={{ opacity: 1, y: 0, rotate: 0 }}
-              viewport={{ once: true, margin: '-60px' }}
-              transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
-              className="relative overflow-hidden rounded-[28px] bg-white text-[#0e1325] shadow-[0_40px_80px_-40px_rgb(0_0_0/0.9)]"
-            >
-              <div className="flex items-center justify-between gap-3 whitespace-nowrap bg-gradient-to-r from-[#6d4aff] to-[#2f6bff] px-6 py-4 text-white">
-                <span className="flex items-center gap-2.5 text-sm font-bold">
-                  <TrainFront size={18} aria-hidden="true" /> Tatkal booking opens
-                </span>
-                <span className="rounded-full bg-white/15 px-2.5 py-1 text-xs font-bold whitespace-nowrap ring-1 ring-white/25">
-                  1 day before
-                </span>
-              </div>
-              <div className="grid grid-cols-2">
-                {TATKAL_WINDOWS.map((w, k) => (
-                  <div key={w.label} className={`px-5 py-6 sm:px-6 ${k ? 'border-0 border-l-2 border-dashed border-[#e3e6f0]' : ''}`}>
-                    <p className="m-0 text-xs font-bold text-[#6b7290]">{w.label}</p>
-                    <p className="m-0 mt-1 flex items-baseline gap-1.5">
-                      <span className="text-[2rem] font-extrabold tracking-tight tabular-nums sm:text-5xl">{w.time}</span>
-                      <span className="text-sm font-bold text-[#5a6280]">{w.meridiem}</span>
-                    </p>
-                    <p className="m-0 mt-1 text-xs text-[#8a90a8]">{w.note}</p>
-                  </div>
-                ))}
-              </div>
-              <p className="m-0 border-t border-[#eceef5] bg-[#f6f7fb] px-6 py-3 text-xs text-[#6b7290]">
-                Seats depend on availability. Tatkal fares are set by the railways.
-              </p>
-            </motion.div>
-
-            <div className="grid gap-3 sm:grid-cols-2">
-              {URGENT.map(({ Icon, title, body }, k) => (
-                <motion.div
-                  key={title}
-                  initial={{ opacity: 0, y: 20 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ delay: 0.25 + k * 0.1, duration: 0.6 }}
-                  className="rounded-2xl bg-white/[0.06] p-4 ring-1 ring-white/10"
-                >
-                  <span className="flex items-center gap-2.5 text-[15px] font-bold text-white">
-                    <span className="grid size-9 place-items-center rounded-xl bg-[#ffb648]/15 text-[#ffcf85]">
-                      <Icon size={17} aria-hidden="true" />
-                    </span>
-                    {title}
-                  </span>
-                  <p className="m-0 mt-2 text-sm leading-relaxed text-white/65">{body}</p>
-                </motion.div>
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: '-60px' }}
+            transition={{ delay: 0.2, duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
+            className="absolute inset-x-4 bottom-4 overflow-hidden rounded-[24px] bg-white/95 text-[#0e1325] shadow-[0_30px_60px_-30px_rgb(0_0_0/0.9)] backdrop-blur sm:inset-x-6 sm:bottom-6"
+          >
+            <p className="m-0 flex items-center justify-between gap-3 border-b border-[#eceef5] px-5 py-3 text-sm font-bold whitespace-nowrap">
+              <span className="inline-flex items-center gap-2">
+                <TrainFront size={16} className="text-[#5b37f0]" aria-hidden="true" /> Tatkal booking opens
+              </span>
+              <span className="text-xs text-[#6b7290]">1 day before travel</span>
+            </p>
+            <div className="grid grid-cols-2">
+              {TATKAL_WINDOWS.map((w, k) => (
+                <div key={w.label} className={`px-5 py-4 ${k ? 'border-0 border-l border-[#eceef5]' : ''}`}>
+                  <p className="m-0 text-xs font-bold text-[#6b7290]">{w.label}</p>
+                  <p className="m-0 mt-0.5 flex items-baseline gap-1">
+                    <span className="text-[1.75rem] leading-none font-extrabold tracking-tight tabular-nums sm:text-[2rem]">{w.time}</span>
+                    <span className="text-xs font-bold text-[#5a6280]">{w.meridiem}</span>
+                  </p>
+                  <p className="m-0 mt-1 text-xs text-[#8a90a8]">{w.note}</p>
+                </div>
               ))}
             </div>
-          </div>
+          </motion.div>
         </div>
       </Reveal>
     </section>
@@ -1241,7 +1282,7 @@ function Footer() {
           <div className="col-span-2 lg:col-span-1">
             <BrandMark light />
             <p className="m-0 mt-4 max-w-xs text-sm leading-relaxed text-white/60">
-              Insurance advice, banking, documents, registrations, tickets and tours, at one counter.
+              Insurance, banking, GST and tax, registrations, passports, tickets and tours, at one counter.
             </p>
             <a
               href={waHref}
