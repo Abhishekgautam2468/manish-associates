@@ -246,9 +246,8 @@ function Detail({ value, placeholder, href }) {
     return (
       <a
         href={href}
-        target="_blank"
-        rel="noreferrer"
-        className="text-white underline decoration-white/30 underline-offset-4 hover:decoration-white"
+        {...(href.startsWith('tel:') ? {} : { target: '_blank', rel: 'noreferrer' })}
+        className="inline-flex min-h-8 items-center text-white underline decoration-white/30 underline-offset-4 hover:decoration-white"
       >
         {value}
       </a>
@@ -259,7 +258,19 @@ function Detail({ value, placeholder, href }) {
 
 const telHref = CONTACT.phone ? `tel:${CONTACT.phone.replace(/\s+/g, '')}` : '#contact'
 const mapsHref = CONTACT.address ? `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(CONTACT.address)}` : undefined
-const waHref = CONTACT.whatsapp ? `https://wa.me/${CONTACT.whatsapp}` : '#contact'
+// A WhatsApp chat with the shop, with a ready-written first message.
+const waLink = (text = 'Namaste, I would like to know about your services.') =>
+  CONTACT.whatsapp ? `https://wa.me/${CONTACT.whatsapp}?text=${encodeURIComponent(text)}` : '#contact'
+const waHref = waLink()
+
+// The WhatsApp logo, in the current text colour.
+function WhatsAppIcon({ size = 18, className = '' }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" className={className}>
+      <path d="M17.47 14.38c-.3-.15-1.75-.86-2.02-.96-.27-.1-.47-.15-.67.15-.2.3-.77.96-.94 1.16-.17.2-.35.22-.64.07-.3-.15-1.25-.46-2.38-1.47-.88-.79-1.47-1.76-1.65-2.06-.17-.3-.02-.46.13-.6.13-.14.3-.35.45-.52.15-.18.2-.3.3-.5.1-.2.05-.37-.03-.52-.07-.15-.67-1.61-.92-2.2-.24-.58-.49-.5-.67-.51h-.57c-.2 0-.52.07-.79.37-.27.3-1.04 1.02-1.04 2.48 0 1.46 1.07 2.87 1.21 3.07.15.2 2.1 3.2 5.08 4.49.71.31 1.26.49 1.69.63.71.22 1.36.19 1.87.12.57-.09 1.75-.72 2-1.41.25-.69.25-1.28.17-1.41-.07-.12-.27-.2-.57-.35M12.04 21.78h-.01a9.87 9.87 0 0 1-5.03-1.38l-.36-.21-3.74.98 1-3.65-.24-.37a9.86 9.86 0 0 1-1.51-5.26c0-5.45 4.44-9.88 9.89-9.88a9.82 9.82 0 0 1 6.99 2.9 9.82 9.82 0 0 1 2.89 6.99c0 5.45-4.43 9.88-9.88 9.88M20.45 3.49A11.81 11.81 0 0 0 12.04 0C5.48 0 .13 5.34.13 11.9c0 2.1.55 4.14 1.59 5.95L.03 24l6.3-1.65a11.88 11.88 0 0 0 5.71 1.45h.01c6.56 0 11.9-5.34 11.9-11.9 0-3.18-1.24-6.17-3.48-8.41" />
+    </svg>
+  )
+}
 
 function BrandMark({ light = false }) {
   return <Logo size="md" onLight={!light} />
@@ -307,9 +318,11 @@ function TopNav() {
         </ul>
         <a
           href={waHref}
+          target="_blank"
+          rel="noreferrer"
           className="ml-auto hidden h-11 items-center gap-2 rounded-xl bg-white px-4 text-[15px] font-bold whitespace-nowrap text-[#141b34] no-underline shadow-[0_10px_24px_-12px_rgb(0_0_0/0.6)] transition-transform hover:-translate-y-0.5 sm:inline-flex lg:ml-2"
         >
-          <MessageCircle size={17} aria-hidden="true" /> WhatsApp us
+          <WhatsAppIcon size={18} className="text-[#25D366]" /> WhatsApp us
         </a>
         <button
           type="button"
@@ -343,10 +356,12 @@ function TopNav() {
             <li className="pt-2">
               <a
                 href={waHref}
+                target="_blank"
+                rel="noreferrer"
                 onClick={() => setOpen(false)}
                 className="flex h-12 items-center justify-center gap-2 rounded-xl bg-white font-bold text-[#141b34] no-underline"
               >
-                <MessageCircle size={17} aria-hidden="true" /> WhatsApp us
+                <WhatsAppIcon size={18} className="text-[#25D366]" /> WhatsApp us
               </a>
             </li>
           </motion.ul>
@@ -476,7 +491,7 @@ function Hero() {
         <div className="absolute inset-0 bg-[linear-gradient(rgb(255_255_255/0.04)_1px,transparent_1px),linear-gradient(90deg,rgb(255_255_255/0.04)_1px,transparent_1px)] bg-[size:64px_64px] [mask-image:radial-gradient(ellipse_at_30%_20%,black_25%,transparent_70%)]" />
       </motion.div>
 
-      <div className="mx-auto grid max-w-7xl items-center gap-12 px-5 pt-10 pb-16 sm:px-8 lg:grid-cols-[minmax(0,1.08fr)_minmax(0,0.92fr)] lg:gap-16 lg:pt-16 lg:pb-32">
+      <div className="mx-auto grid max-w-7xl items-center gap-12 px-5 pt-8 pb-16 sm:px-8 lg:grid-cols-[minmax(0,1.08fr)_minmax(0,0.92fr)] lg:gap-16 lg:pt-10 lg:pb-24">
         <motion.div style={{ y: copyY }} initial="hidden" animate="show" variants={{ show: { transition: { staggerChildren: 0.09 } } }}>
           <motion.p
             variants={fadeUp}
@@ -506,9 +521,11 @@ function Hero() {
               whileHover={{ y: -3 }}
               whileTap={{ scale: 0.97 }}
               href={waHref}
+              target="_blank"
+              rel="noreferrer"
               className="inline-flex h-14 items-center gap-2.5 rounded-2xl bg-gradient-to-r from-[#7b5eff] to-[#4f6bff] px-6 text-base font-bold text-white no-underline shadow-[0_18px_40px_-14px_rgb(109_74_255/0.95),inset_0_1px_0_rgb(255_255_255/0.25)]"
             >
-              <MessageCircle size={19} aria-hidden="true" /> Message us on WhatsApp
+              <WhatsAppIcon size={20} /> Message us on WhatsApp
             </motion.a>
             <motion.a
               whileHover={{ y: -3 }}
@@ -550,7 +567,7 @@ function Hero() {
           initial={{ opacity: 0, scale: 0.94, rotate: 1.5 }}
           animate={{ opacity: 1, scale: 1, rotate: 0 }}
           transition={{ delay: 0.25, duration: 1, ease: [0.22, 1, 0.36, 1] }}
-          className="relative mx-auto w-full max-w-[540px]"
+          className="relative mx-auto w-full max-w-[540px] lg:max-w-[480px]"
         >
           {/* Glow ring behind the photo */}
           <div
@@ -558,7 +575,7 @@ function Hero() {
             aria-hidden="true"
           />
 
-          <div className="relative aspect-[1.05/1] overflow-hidden rounded-[36px] shadow-[0_50px_100px_-40px_rgb(0_0_0/0.9)] ring-1 ring-white/15">
+          <div className="relative aspect-[1.05/1] overflow-hidden rounded-[36px] lg:aspect-[1.15/1] shadow-[0_50px_100px_-40px_rgb(0_0_0/0.9)] ring-1 ring-white/15">
             <motion.div style={{ y: imgY, scale: imgScale }} className="absolute inset-0">
               <picture>
                 <source
@@ -598,7 +615,7 @@ function Hero() {
           </motion.div>
 
           {/* The counter's queue */}
-          <div className="relative mx-auto -mt-10 w-[90%] sm:-mt-14 lg:absolute lg:right-0 lg:-bottom-14 lg:left-0 lg:mt-0 lg:w-[86%]">
+          <div className="relative mx-auto -mt-7 w-[90%] sm:-mt-10 lg:absolute lg:right-0 lg:-bottom-[4.75rem] lg:left-0 lg:mt-0 lg:w-[86%]">
             <TokenStack />
           </div>
         </motion.div>
@@ -617,7 +634,7 @@ function Marquee() {
   const row = [...STRIP, ...STRIP]
   return (
     <div
-      className="relative overflow-hidden bg-[#f6f7fb] py-6 [mask-image:linear-gradient(90deg,transparent,black_8%,black_92%,transparent)]"
+      className="relative z-10 -mt-9 overflow-hidden py-4 [mask-image:linear-gradient(90deg,transparent,black_8%,black_92%,transparent)]"
       aria-hidden="true"
     >
       <motion.div
@@ -740,7 +757,9 @@ function Services() {
                   ))}
                 </ul>
                 <a
-                  href={waHref}
+                  href={waLink(`Namaste, I need help with ${g.title.toLowerCase()}.`)}
+                  target="_blank"
+                  rel="noreferrer"
                   className="group mt-6 inline-flex min-h-10 items-center gap-2 text-[15px] font-bold text-[#5b37f0] no-underline"
                 >
                   Ask about {g.title.toLowerCase()}{' '}
@@ -819,10 +838,12 @@ function Highlight() {
           <motion.a
             whileHover={{ y: -3 }}
             whileTap={{ scale: 0.97 }}
-            href={waHref}
+            href={waLink('Namaste, I want to book a Tatkal ticket. Here are the details:')}
+            target="_blank"
+            rel="noreferrer"
             className="relative mt-8 inline-flex h-13 items-center gap-2.5 rounded-2xl bg-white px-6 font-bold text-[#141b34] no-underline shadow-[0_16px_30px_-14px_rgb(0_0_0/0.6)]"
           >
-            <MessageCircle size={18} aria-hidden="true" /> Send details on WhatsApp
+            <WhatsAppIcon size={19} className="text-[#25D366]" /> Send details on WhatsApp
           </motion.a>
         </div>
 
@@ -939,7 +960,9 @@ function Tours() {
                 <h3 className="m-0 text-xl font-extrabold text-white">{t.title}</h3>
                 <p className="m-0 mt-1 text-sm text-white/75">{t.note}</p>
                 <a
-                  href={waHref}
+                  href={waLink(`Namaste, I want to plan a trip: ${t.title.toLowerCase()}.`)}
+                  target="_blank"
+                  rel="noreferrer"
                   className="mt-3 inline-flex min-h-10 items-center gap-1.5 rounded-xl bg-white/15 px-3 text-sm font-bold text-white no-underline ring-1 ring-white/25 backdrop-blur transition-colors hover:bg-white hover:text-[#141b34]"
                 >
                   Plan this trip <ArrowRight size={15} aria-hidden="true" />
@@ -1109,7 +1132,12 @@ function Faq() {
           <p className="m-0 mt-4 max-w-sm text-base leading-relaxed text-[#5a6280] sm:text-lg">
             Can’t find your question? Send it to us on WhatsApp and we’ll reply during office hours.
           </p>
-          <a href={waHref} className="group mt-6 inline-flex min-h-10 items-center gap-2 text-[15px] font-bold text-[#5b37f0] no-underline">
+          <a
+            href={waHref}
+            target="_blank"
+            rel="noreferrer"
+            className="group mt-6 inline-flex min-h-10 items-center gap-2 text-[15px] font-bold text-[#5b37f0] no-underline"
+          >
             Ask a question <ArrowRight size={16} className="transition-transform group-hover:translate-x-1" aria-hidden="true" />
           </a>
         </Reveal>
@@ -1187,9 +1215,11 @@ function ContactSection() {
                 whileHover={{ y: -3 }}
                 whileTap={{ scale: 0.97 }}
                 href={waHref}
+                target="_blank"
+                rel="noreferrer"
                 className="inline-flex h-14 items-center gap-2.5 rounded-2xl bg-white px-6 font-bold text-[#141b34] no-underline shadow-[0_16px_30px_-14px_rgb(0_0_0/0.6)]"
               >
-                <MessageCircle size={19} aria-hidden="true" /> WhatsApp us
+                <WhatsAppIcon size={20} className="text-[#25D366]" /> WhatsApp us
               </motion.a>
               <motion.a
                 whileHover={{ y: -3 }}
@@ -1203,7 +1233,7 @@ function ContactSection() {
           </div>
           <dl className="m-0 grid gap-3">
             {[
-              { Icon: Phone, label: 'Phone and WhatsApp', value: CONTACT.phone, ph: 'Phone number' },
+              { Icon: Phone, label: 'Phone and WhatsApp', value: CONTACT.phone, ph: 'Phone number', href: telHref },
               { Icon: MapPin, label: 'Visit the office', value: CONTACT.address, ph: 'Shop address', href: mapsHref },
               { Icon: Clock, label: 'Opening hours', value: CONTACT.hours, ph: 'Opening hours' },
             ].map(({ Icon, label, value, ph, href }) => (
@@ -1251,9 +1281,11 @@ function Footer() {
             </p>
             <a
               href={waHref}
+              target="_blank"
+              rel="noreferrer"
               className="mt-5 inline-flex h-11 items-center gap-2 rounded-xl bg-white/[0.07] px-4 text-sm font-bold text-white no-underline ring-1 ring-white/12 hover:bg-white/[0.12]"
             >
-              <MessageCircle size={16} aria-hidden="true" /> WhatsApp us
+              <WhatsAppIcon size={17} className="text-[#25D366]" /> WhatsApp us
             </a>
           </div>
           {[
