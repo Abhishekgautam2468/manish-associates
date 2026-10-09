@@ -48,7 +48,6 @@ const CONTACT = {
 
 // Unsplash photos (free to use under the Unsplash licence). Swap an id to change a photo.
 const PHOTOS = {
-  counter: { id: '1556742049-0cfed4f6a45d', alt: 'A customer being served at a shop counter' },
   insurance: { id: '1576091160550-2173dba999ef', alt: 'A stethoscope beside a laptop' },
   banking: { id: '1563013544-824ae1b704d3', alt: 'Paying online with a card' },
   documents: { id: '1554224155-6726b3ff858f', alt: 'Forms and a calculator on a desk' },
@@ -383,7 +382,7 @@ function Hero() {
         <div className="absolute inset-0 bg-[linear-gradient(rgb(255_255_255/0.04)_1px,transparent_1px),linear-gradient(90deg,rgb(255_255_255/0.04)_1px,transparent_1px)] bg-[size:64px_64px] [mask-image:radial-gradient(ellipse_at_30%_20%,black_25%,transparent_70%)]" />
       </motion.div>
 
-      <div className="mx-auto grid max-w-7xl items-center gap-16 px-5 pt-12 pb-28 sm:px-8 lg:grid-cols-[minmax(0,1.05fr)_minmax(0,0.95fr)] lg:pt-20 lg:pb-40">
+      <div className="mx-auto grid max-w-7xl items-center gap-12 px-5 pt-12 pb-14 sm:gap-16 sm:px-8 sm:pb-28 lg:grid-cols-[minmax(0,1.05fr)_minmax(0,0.95fr)] lg:pt-20 lg:pb-40">
         <motion.div style={{ y: copyY }} initial="hidden" animate="show" variants={{ show: { transition: { staggerChildren: 0.08 } } }}>
           <motion.p
             variants={fadeUp}
@@ -455,12 +454,25 @@ function Hero() {
           className="relative mx-auto w-full max-w-[560px]"
         >
           {/* Photo with a soft violet frame */}
-          <div className="relative aspect-[4/4.4] overflow-hidden rounded-[34px] shadow-[0_50px_100px_-40px_rgb(0_0_0/0.9)] ring-1 ring-white/15 sm:aspect-[4/4]">
+          <div className="relative aspect-[1.09/1] overflow-hidden rounded-[34px] shadow-[0_50px_100px_-40px_rgb(0_0_0/0.9)] ring-1 ring-white/15">
             <motion.div style={{ y: imgY, scale: imgScale }} className="absolute inset-0">
-              <Photo photo={PHOTOS.counter} eager sizes="(min-width: 1024px) 560px, 92vw" />
+              <picture>
+                <source
+                  type="image/webp"
+                  srcSet="/images/office-640.webp 640w, /images/office-1100.webp 1100w"
+                  sizes="(min-width: 1024px) 560px, 92vw"
+                />
+                <img
+                  src="/images/office-1100.jpg"
+                  srcSet="/images/office-640.jpg 640w, /images/office-1100.jpg 1100w"
+                  sizes="(min-width: 1024px) 560px, 92vw"
+                  alt="At the desk in the Manish Associates office"
+                  fetchPriority="high"
+                  className="h-full w-full bg-[#1a2147] object-cover object-[50%_30%]"
+                />
+              </picture>
             </motion.div>
-            <div className="absolute inset-0 bg-gradient-to-t from-[#0b1028] via-[#0b1028]/20 to-transparent" />
-            <div className="absolute inset-0 bg-gradient-to-br from-[#6d4aff]/25 to-transparent mix-blend-soft-light" />
+            <div className="absolute inset-0 bg-gradient-to-t from-[#0b1028]/85 via-transparent to-transparent" />
           </div>
 
           {/* Floating chips */}
@@ -500,7 +512,7 @@ function Hero() {
             <span className="text-sm font-bold">Train · Flight · Bus</span>
           </motion.div>
 
-          <div className="absolute -bottom-16 left-1/2 w-[88%] -translate-x-1/2">
+          <div className="relative mx-auto -mt-6 w-[92%] sm:absolute sm:-bottom-16 sm:left-1/2 sm:mt-0 sm:w-[88%] sm:-translate-x-1/2">
             <TokenStack />
           </div>
         </motion.div>
@@ -543,71 +555,116 @@ function Marquee() {
   )
 }
 
-/* ---------- Services ---------- */
-
-function ServiceCard({ group, index }) {
-  const t = TONES[group.tone]
-  return (
-    <motion.article
-      initial={{ opacity: 0, y: 40 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true, margin: '-60px' }}
-      transition={{ duration: 0.7, delay: index * 0.08, ease: [0.22, 1, 0.36, 1] }}
-      whileHover={{ y: -8 }}
-      className={`group flex h-full flex-col overflow-hidden rounded-[30px] bg-white shadow-[0_1px_2px_rgb(15_21_48/0.05),0_24px_50px_-32px_rgb(15_21_48/0.45)] ring-1 ring-[#e3e6f0] transition-shadow duration-300 hover:shadow-[0_40px_70px_-34px_rgb(40_40_120/0.55)] ${t.ring}`}
-    >
-      <div className="relative h-44 overflow-hidden">
-        <Photo
-          photo={group.photo}
-          sizes="(min-width: 1280px) 300px, (min-width: 640px) 45vw, 92vw"
-          className="transition-transform duration-700 ease-out group-hover:scale-110"
-        />
-        <div className="absolute inset-0 bg-gradient-to-t from-[#0b1028]/70 via-[#0b1028]/10 to-transparent" />
-        <span className="absolute bottom-4 left-5 grid size-12 place-items-center rounded-2xl bg-white text-[#141b34] shadow-[0_10px_24px_-10px_rgb(0_0_0/0.6)]">
-          <group.Icon size={22} strokeWidth={2.1} aria-hidden="true" />
-        </span>
-        <span className="absolute right-4 bottom-4 rounded-full bg-white/15 px-2.5 py-1 text-xs font-bold text-white ring-1 ring-white/25 backdrop-blur">
-          {group.items.length} services
-        </span>
-      </div>
-      <div className="flex flex-1 flex-col p-6">
-        <h3 className="m-0 text-[22px] font-extrabold tracking-tight text-[#0e1325]">{group.title}</h3>
-        <p className="m-0 mt-2 text-[15px] leading-relaxed text-[#5a6280]">{group.blurb}</p>
-        <ul className="m-0 mt-5 flex list-none flex-col gap-0.5 border-t border-[#eceef5] p-0 pt-4">
-          {group.items.map((it) => (
-            <li key={it.label} className="flex items-center gap-3 rounded-xl px-1.5 py-2 text-[15px] font-semibold text-[#1d2340]">
-              <span className={`grid size-7 shrink-0 place-items-center rounded-lg ${t.tile}`}>
-                <it.Icon size={14} aria-hidden="true" />
-              </span>
-              {it.label}
-            </li>
-          ))}
-        </ul>
-      </div>
-    </motion.article>
-  )
-}
+/* ---------- Services: one panel, a tab per group ---------- */
 
 function Services() {
+  const [active, setActive] = useState(SERVICE_GROUPS[0].id)
+  const g = SERVICE_GROUPS.find((x) => x.id === active)
+  const t = TONES[g.tone]
   return (
-    <section id="services" className="scroll-mt-20 bg-[#f6f7fb] px-5 pt-16 pb-24 sm:px-8 lg:pt-20">
+    <section id="services" className="scroll-mt-20 bg-[#f6f7fb] px-5 pt-14 pb-20 sm:px-8 lg:pt-16">
       <div className="mx-auto max-w-7xl">
-        <Reveal className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_minmax(0,0.75fr)] lg:items-end">
-          <div>
+        <Reveal className="flex flex-wrap items-end justify-between gap-x-10 gap-y-4">
+          <div className="max-w-xl">
             <p className="m-0 text-sm font-bold text-[#6d4aff]">What we do</p>
-            <h2 className="m-0 mt-3 text-4xl leading-[1.08] font-extrabold tracking-[-0.035em] text-[#0e1325] sm:text-5xl">
-              Everything you’d otherwise queue for at four different offices.
+            <h2 className="m-0 mt-2 text-3xl leading-[1.1] font-extrabold tracking-[-0.03em] text-[#0e1325] sm:text-[2.6rem]">
+              Four offices’ work, at one counter.
             </h2>
           </div>
-          <p className="m-0 text-lg leading-relaxed text-[#5a6280]">
-            Bring the job to one counter. We know the forms, the documents each office asks for and the deadlines that matter.
+          <p className="m-0 max-w-md text-base leading-relaxed text-[#5a6280]">
+            We know the forms, the documents each office asks for and the deadlines that matter.
           </p>
         </Reveal>
-        <div className="mt-14 grid gap-6 sm:grid-cols-2 xl:grid-cols-4">
-          {SERVICE_GROUPS.map((g, i) => (
-            <ServiceCard key={g.id} group={g} index={i} />
-          ))}
-        </div>
+
+        <Reveal className="mt-10 grid overflow-hidden rounded-[32px] bg-white shadow-[0_1px_2px_rgb(15_21_48/0.05),0_30px_60px_-40px_rgb(15_21_48/0.5)] ring-1 ring-[#e3e6f0] lg:grid-cols-[17rem_minmax(0,1fr)]">
+          {/* Tabs: a column on wide screens, a sliding row on phones */}
+          <div
+            role="tablist"
+            aria-label="Services"
+            className="flex gap-1.5 overflow-x-auto border-b border-[#eceef5] p-2.5 [scrollbar-width:none] lg:flex-col lg:border-r lg:border-b-0 lg:p-3"
+          >
+            {SERVICE_GROUPS.map((x) => {
+              const on = x.id === active
+              return (
+                <button
+                  key={x.id}
+                  type="button"
+                  role="tab"
+                  aria-selected={on}
+                  onClick={() => setActive(x.id)}
+                  className={`relative flex shrink-0 cursor-pointer items-center gap-3 rounded-2xl border-0 bg-transparent px-3 py-3 text-left transition-colors lg:w-full ${on ? '' : 'hover:bg-[#f4f5fa]'}`}
+                >
+                  {on && (
+                    <motion.span
+                      layoutId="service-tab"
+                      className="absolute inset-0 rounded-2xl bg-[#141b34] shadow-[0_14px_28px_-16px_rgb(20_27_52/0.9)]"
+                      transition={{ type: 'spring', stiffness: 380, damping: 32 }}
+                    />
+                  )}
+                  <span
+                    className={`relative grid size-10 shrink-0 place-items-center rounded-xl ${on ? 'bg-white/12 text-white' : TONES[x.tone].tile}`}
+                  >
+                    <x.Icon size={19} strokeWidth={2.1} aria-hidden="true" />
+                  </span>
+                  <span className="relative min-w-0">
+                    <span
+                      className={`block text-[15px] leading-snug font-bold whitespace-nowrap lg:whitespace-normal ${on ? 'text-white' : 'text-[#1d2340]'}`}
+                    >
+                      {x.title}
+                    </span>
+                    <span className={`block text-xs ${on ? 'text-white/60' : 'text-[#8a90a8]'}`}>{x.items.length} services</span>
+                  </span>
+                </button>
+              )
+            })}
+          </div>
+
+          {/* The chosen group */}
+          <AnimatePresence mode="wait">
+            <motion.div
+              key={g.id}
+              initial={{ opacity: 0, y: 14 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -10 }}
+              transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
+              className="grid gap-6 p-5 sm:p-7 md:grid-cols-[minmax(0,1fr)_minmax(0,0.85fr)] md:items-center"
+              role="tabpanel"
+              aria-label={g.title}
+            >
+              <div>
+                <h3 className="m-0 text-2xl font-extrabold tracking-tight text-[#0e1325]">{g.title}</h3>
+                <p className="m-0 mt-2 text-[15px] leading-relaxed text-[#5a6280]">{g.blurb}</p>
+                <ul className="m-0 mt-5 grid list-none gap-2 p-0 sm:grid-cols-2">
+                  {g.items.map((it, k) => (
+                    <motion.li
+                      key={it.label}
+                      initial={{ opacity: 0, x: -8 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      transition={{ delay: 0.08 + k * 0.04 }}
+                      className="flex items-center gap-3 rounded-2xl bg-[#f6f7fb] px-3 py-2 text-[14px] font-semibold text-[#1d2340] ring-1 ring-[#eceef5] sm:py-2.5"
+                    >
+                      <span className={`grid size-8 shrink-0 place-items-center rounded-xl ${t.tile}`}>
+                        <it.Icon size={15} aria-hidden="true" />
+                      </span>
+                      {it.label}
+                    </motion.li>
+                  ))}
+                </ul>
+                <a
+                  href={waHref}
+                  className="group mt-6 inline-flex min-h-10 items-center gap-2 text-[15px] font-bold text-[#5b37f0] no-underline"
+                >
+                  Ask about {g.title.toLowerCase()}{' '}
+                  <ArrowRight size={16} className="transition-transform group-hover:translate-x-1" aria-hidden="true" />
+                </a>
+              </div>
+              <div className="relative hidden aspect-[4/3] overflow-hidden rounded-3xl md:block">
+                <Photo photo={g.photo} sizes="420px" />
+                <div className="absolute inset-0 bg-gradient-to-t from-[#0b1028]/40 to-transparent" />
+              </div>
+            </motion.div>
+          </AnimatePresence>
+        </Reveal>
       </div>
     </section>
   )
@@ -620,7 +677,7 @@ function Highlight() {
   const { scrollYProgress } = useScroll({ target: ref, offset: ['start end', 'end start'] })
   const y = useTransform(scrollYProgress, [0, 1], ['-10%', '10%'])
   return (
-    <section ref={ref} className="bg-[#f6f7fb] px-5 pb-24 sm:px-8">
+    <section ref={ref} className="bg-[#f6f7fb] px-5 pb-20 sm:px-8">
       <Reveal className="relative mx-auto grid max-w-7xl overflow-hidden rounded-[40px] bg-[#0f1530] text-white shadow-[0_50px_100px_-50px_rgb(15_21_48/0.9)] lg:grid-cols-2">
         <div className="relative z-10 p-8 sm:p-12 lg:p-16">
           <div
@@ -672,7 +729,7 @@ function Highlight() {
 
 function Tours() {
   return (
-    <section id="travel" className="scroll-mt-20 bg-white px-5 py-24 sm:px-8 lg:py-28">
+    <section id="travel" className="scroll-mt-20 bg-white px-5 py-20 sm:px-8 lg:py-24">
       <div className="mx-auto max-w-7xl">
         <Reveal className="flex flex-wrap items-end justify-between gap-6">
           <div className="max-w-2xl">
@@ -736,7 +793,7 @@ function Tours() {
 
 function HowItWorks() {
   return (
-    <section id="how" className="scroll-mt-20 bg-[#f6f7fb] px-5 py-24 sm:px-8 lg:pt-36 lg:pb-28">
+    <section id="how" className="scroll-mt-20 bg-[#f6f7fb] px-5 py-20 sm:px-8 lg:pt-32 lg:pb-24">
       <div className="mx-auto max-w-7xl">
         <Reveal className="mx-auto max-w-2xl text-center">
           <p className="m-0 text-sm font-bold text-[#6d4aff]">How it works</p>
@@ -786,7 +843,7 @@ function HowItWorks() {
 
 function ContactSection() {
   return (
-    <section id="contact" className="scroll-mt-20 bg-[#f6f7fb] px-5 pb-24 sm:px-8">
+    <section id="contact" className="scroll-mt-20 bg-[#f6f7fb] px-5 pb-20 sm:px-8">
       <Reveal className="relative mx-auto max-w-7xl overflow-hidden rounded-[40px] bg-[#0b1028] text-white">
         <div className="pointer-events-none absolute inset-0" aria-hidden="true">
           <div className="absolute -right-32 -bottom-40 size-[460px] rounded-full bg-[#2f6bff]/30 blur-[110px]" />
