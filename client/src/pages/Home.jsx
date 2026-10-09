@@ -1227,116 +1227,96 @@ const FAQS = [
   },
 ]
 
+// The questions shown, picked from each topic.
+const FAQ_LIST = [
+  FAQS[0].items[0], // documents
+  FAQS[0].items[2], // fees
+  FAQS[1].items[0], // Tatkal tickets
+  FAQS[2].items[0], // passport
+  FAQS[3].items[0], // GST
+  FAQS[3].items[1], // ITR
+  FAQS[4].items[0], // insurance
+  FAQS[4].items[1], // AEPS
+]
+
 function Faq() {
-  const [topic, setTopic] = useState(0)
   const [open, setOpen] = useState(0)
-  const items = FAQS[topic].items
   return (
     <section className="scroll-mt-20 bg-[#f6f7fb] px-5 py-8 sm:px-8 lg:py-10">
-      <div className="mx-auto max-w-7xl">
-        <Reveal className="flex flex-wrap items-end justify-between gap-x-10 gap-y-4">
-          <div className="max-w-xl">
-            <p className="m-0 text-sm font-bold text-[#6d4aff]">Questions</p>
-            <h2 className="m-0 mt-2 text-3xl leading-[1.1] font-extrabold tracking-[-0.03em] text-[#0e1325] sm:text-[2.25rem]">
-              Answers before you come in.
-            </h2>
-          </div>
-          <p className="m-0 max-w-md text-base leading-relaxed text-[#5a6280]">
-            Can’t find yours?{' '}
-            <a
-              href={waLink('Namaste, I have a question:')}
-              target="_blank"
-              rel="noreferrer"
-              className="inline-flex min-h-7 items-center font-bold text-[#5b37f0] no-underline hover:underline"
-            >
-              Ask us on WhatsApp
-            </a>{' '}
-            and we’ll reply during office hours.
+      <div className="mx-auto grid max-w-7xl gap-8 lg:grid-cols-[minmax(0,0.75fr)_minmax(0,1.25fr)] lg:gap-14">
+        <Reveal className="lg:sticky lg:top-28 lg:self-start">
+          <p className="m-0 text-sm font-bold text-[#6d4aff]">Questions</p>
+          <h2 className="m-0 mt-2 text-3xl leading-[1.1] font-extrabold tracking-[-0.03em] text-[#0e1325] sm:text-[2.25rem]">
+            Answers before you come in.
+          </h2>
+          <p className="m-0 mt-4 max-w-sm text-base leading-relaxed text-[#5a6280]">
+            The things people ask us most. Can’t find yours? Send it on WhatsApp and we’ll reply during office hours.
           </p>
-        </Reveal>
-
-        <Reveal className="mt-8 grid overflow-hidden rounded-[32px] bg-white shadow-[0_1px_2px_rgb(15_21_48/0.05),0_30px_60px_-40px_rgb(15_21_48/0.5)] ring-1 ring-[#e3e6f0] lg:grid-cols-[16rem_minmax(0,1fr)]">
-          {/* Topics */}
-          <div
-            role="tablist"
-            aria-label="Question topics"
-            className="flex gap-1.5 overflow-x-auto border-b border-[#eceef5] p-2.5 [scrollbar-width:none] lg:flex-col lg:border-r lg:border-b-0 lg:p-3"
+          <motion.a
+            whileHover={{ y: -3 }}
+            whileTap={{ scale: 0.97 }}
+            href={waLink('Namaste, I have a question:')}
+            target="_blank"
+            rel="noreferrer"
+            className="mt-6 inline-flex h-12 items-center gap-2.5 rounded-2xl bg-[#141b34] px-5 font-bold text-white no-underline shadow-[0_14px_30px_-14px_rgb(20_27_52/0.8)]"
           >
-            {FAQS.map((t, i) => {
-              const on = i === topic
-              return (
-                <button
-                  key={t.topic}
-                  type="button"
-                  role="tab"
-                  aria-selected={on}
-                  onClick={(e) => {
-                    setTopic(i)
-                    setOpen(0)
-                    e.currentTarget.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' })
-                  }}
-                  className={`relative flex shrink-0 cursor-pointer items-center justify-between gap-3 rounded-2xl border-0 bg-transparent px-4 py-3 text-left text-[15px] font-bold whitespace-nowrap transition-colors lg:w-full ${
-                    on ? 'text-white' : 'text-[#1d2340] hover:bg-[#f4f5fa]'
-                  }`}
-                >
-                  {on && (
-                    <motion.span
-                      layoutId="faq-tab"
-                      className="absolute inset-0 rounded-2xl bg-[#141b34] shadow-[0_14px_28px_-16px_rgb(20_27_52/0.9)]"
-                      transition={{ type: 'spring', stiffness: 380, damping: 32 }}
-                    />
-                  )}
-                  <span className="relative">{t.topic}</span>
-                  <span className={`relative text-xs ${on ? 'text-white/60' : 'text-[#8a90a8]'}`}>{t.items.length}</span>
-                </button>
-              )
-            })}
-          </div>
-
-          {/* Questions in the chosen topic */}
-          <ul className="m-0 flex list-none flex-col divide-y divide-[#eceef5] p-0 px-5 sm:px-7">
-            {items.map((item, i) => {
-              const on = open === i
-              return (
-                <li key={item.q}>
-                  <h3 className="m-0">
-                    <button
-                      type="button"
-                      aria-expanded={on}
-                      onClick={() => setOpen(on ? -1 : i)}
-                      className="flex w-full cursor-pointer items-center justify-between gap-4 border-0 bg-transparent px-0 py-5 text-left text-base font-bold text-[#0e1325]"
-                    >
-                      {item.q}
-                      <motion.span
-                        animate={{ rotate: on ? 45 : 0 }}
-                        transition={{ type: 'spring', stiffness: 300, damping: 20 }}
-                        className={`grid size-8 shrink-0 place-items-center rounded-full text-lg leading-none font-bold transition-colors ${
-                          on ? 'bg-[#6d4aff] text-white' : 'bg-[#eef0f7] text-[#141b34]'
-                        }`}
-                        aria-hidden="true"
-                      >
-                        +
-                      </motion.span>
-                    </button>
-                  </h3>
-                  <AnimatePresence initial={false}>
-                    {on && (
-                      <motion.div
-                        initial={{ height: 0, opacity: 0 }}
-                        animate={{ height: 'auto', opacity: 1 }}
-                        exit={{ height: 0, opacity: 0 }}
-                        transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
-                        className="overflow-hidden"
-                      >
-                        <p className="m-0 max-w-2xl pr-10 pb-5 text-[15px] leading-relaxed text-[#5a6280]">{item.a}</p>
-                      </motion.div>
-                    )}
-                  </AnimatePresence>
-                </li>
-              )
-            })}
-          </ul>
+            <WhatsAppIcon size={18} className="text-[#25D366]" /> Ask a question
+          </motion.a>
         </Reveal>
+
+        <ul className="m-0 flex list-none flex-col gap-3 p-0">
+          {FAQ_LIST.map((item, i) => {
+            const on = open === i
+            return (
+              <motion.li
+                key={item.q}
+                initial={{ opacity: 0, y: 16 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true, margin: '-40px' }}
+                transition={{ duration: 0.45, delay: i * 0.04 }}
+                className={`overflow-hidden rounded-[24px] bg-white ring-1 transition-shadow ${
+                  on
+                    ? 'shadow-[0_24px_50px_-34px_rgb(40_40_120/0.55)] ring-[#d6d2f5]'
+                    : 'shadow-[0_1px_2px_rgb(15_21_48/0.05)] ring-[#e3e6f0]'
+                }`}
+              >
+                <h3 className="m-0">
+                  <button
+                    type="button"
+                    aria-expanded={on}
+                    onClick={() => setOpen(on ? -1 : i)}
+                    className="flex w-full cursor-pointer items-center justify-between gap-4 border-0 bg-transparent px-5 py-4 text-left text-base font-bold text-[#0e1325] sm:px-6 sm:py-5"
+                  >
+                    {item.q}
+                    <motion.span
+                      animate={{ rotate: on ? 45 : 0 }}
+                      transition={{ type: 'spring', stiffness: 300, damping: 20 }}
+                      className={`grid size-8 shrink-0 place-items-center rounded-full text-lg leading-none font-bold transition-colors ${
+                        on ? 'bg-[#6d4aff] text-white' : 'bg-[#eef0f7] text-[#141b34]'
+                      }`}
+                      aria-hidden="true"
+                    >
+                      +
+                    </motion.span>
+                  </button>
+                </h3>
+                <AnimatePresence initial={false}>
+                  {on && (
+                    <motion.div
+                      initial={{ height: 0, opacity: 0 }}
+                      animate={{ height: 'auto', opacity: 1 }}
+                      exit={{ height: 0, opacity: 0 }}
+                      transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
+                      className="overflow-hidden"
+                    >
+                      <p className="m-0 px-5 pb-5 text-[15px] leading-relaxed text-[#5a6280] sm:px-6">{item.a}</p>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </motion.li>
+            )
+          })}
+        </ul>
       </div>
     </section>
   )
