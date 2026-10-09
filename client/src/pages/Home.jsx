@@ -1137,93 +1137,206 @@ function WhyUs() {
 
 /* ---------- Questions ---------- */
 
+// Questions people ask at the counter, grouped by topic.
 const FAQS = [
   {
-    q: 'Which documents should I bring?',
-    a: 'It depends on the work. Send us a WhatsApp message saying what you need, and we’ll reply with the exact list, so you only make one trip.',
+    topic: 'Getting started',
+    items: [
+      {
+        q: 'Which documents should I bring?',
+        a: 'It depends on the work. Send us a WhatsApp message saying what you need, and we’ll reply with the exact list, so the job is done in one visit.',
+      },
+      {
+        q: 'Can I start without visiting the office?',
+        a: 'Yes, for most work. Send clear photos of your documents on WhatsApp and we’ll begin. We’ll tell you if anything has to be signed or verified in person.',
+      },
+      {
+        q: 'How much do you charge?',
+        a: 'Each job has its own fee, plus any government or provider charges. We tell you the full amount before we start, and you get a receipt for every payment.',
+      },
+      { q: 'How can I pay?', a: 'Cash, UPI or bank transfer, whichever suits you.' },
+    ],
   },
   {
-    q: 'Can I start without visiting the office?',
-    a: 'Yes, for most work. Send clear photos of your documents on WhatsApp. We’ll tell you if anything has to be signed in person.',
+    topic: 'Tickets and travel',
+    items: [
+      {
+        q: 'How do Tatkal train tickets work?',
+        a: 'Tatkal booking opens one day before the journey: 10:00 am for AC classes and 11:00 am for Sleeper and 2S. Send the traveller details the day before and we book the moment it opens. Seats depend on availability.',
+      },
+      {
+        q: 'Can you plan a full tour package?',
+        a: 'Yes. Tell us where, when and how many people. We put together tickets, hotels, cabs and sightseeing to fit your budget.',
+      },
+      {
+        q: 'Do you book flights and buses too?',
+        a: 'Yes, domestic and international flights, and bus tickets on most routes.',
+      },
+    ],
   },
   {
-    q: 'Do you help with insurance claims and renewals?',
-    a: 'Yes. We help you fill in the claim forms, follow up with the insurer, and remind you before your policy is due for renewal.',
+    topic: 'Passport and documents',
+    items: [
+      {
+        q: 'What is the difference between a normal and a Tatkal passport?',
+        a: 'Tatkal is the faster option for urgent travel, with a higher government fee and some extra documents. We fill the form and book the earliest appointment either way.',
+      },
+      {
+        q: 'Can you help with a visa?',
+        a: 'Yes. We prepare the application and arrange your documents in the format the embassy asks for, for normal and urgent visas.',
+      },
+      {
+        q: 'Do you make PAN cards?',
+        a: 'Yes, new PAN cards and corrections to an existing one.',
+      },
+    ],
   },
   {
-    q: 'How can I pay?',
-    a: 'Cash, UPI or bank transfer. You’ll know the full fee before we start, and you get a receipt for every payment.',
+    topic: 'GST, tax and business',
+    items: [
+      {
+        q: 'Can you register my business for GST?',
+        a: 'Yes. We handle GST registration, and after that the monthly or quarterly returns and e-way bills, so you don’t miss a due date.',
+      },
+      {
+        q: 'Do you file income tax returns?',
+        a: 'Yes, ITR for salaried people, shop owners and small businesses. Bring your Form 16 or account details and we take care of the rest.',
+      },
+      {
+        q: 'What registrations do you handle for a new business?',
+        a: 'Company formation, Udyog Aadhaar (MSME), FSSAI food licence, shop registration, trademark, digital signature, EPF and ESIC, IEC and more. Ask us which ones your business needs.',
+      },
+    ],
   },
   {
-    q: 'Do you book Tatkal tickets?',
-    a: 'Yes. Send the traveller details the day before, and we book the moment the Tatkal window opens. Seats depend on availability.',
+    topic: 'Insurance and banking',
+    items: [
+      {
+        q: 'Do you help with insurance claims and renewals?',
+        a: 'Yes. We help you choose a life, health or motor policy, remind you before it’s due for renewal, and help you fill in the forms when you claim.',
+      },
+      {
+        q: 'Can I withdraw cash with my Aadhaar?',
+        a: 'Yes, with Aadhaar banking (AEPS) or a Micro ATM, using your fingerprint and your bank account linked to Aadhaar.',
+      },
+      {
+        q: 'Can I send money to any bank account?',
+        a: 'Yes. Give us the cash and the receiver’s account details, and we transfer it for a small fee.',
+      },
+    ],
   },
 ]
 
 function Faq() {
+  const [topic, setTopic] = useState(0)
   const [open, setOpen] = useState(0)
+  const items = FAQS[topic].items
   return (
     <section className="scroll-mt-20 bg-[#f6f7fb] px-5 py-8 sm:px-8 lg:py-10">
-      <div className="mx-auto grid max-w-7xl gap-10 lg:grid-cols-[minmax(0,0.8fr)_minmax(0,1.2fr)]">
-        <Reveal>
-          <p className="m-0 text-sm font-bold text-[#6d4aff]">Questions</p>
-          <h2 className="m-0 mt-2 text-3xl leading-[1.1] font-extrabold tracking-[-0.03em] text-[#0e1325] sm:text-[2.25rem]">
-            Before you come in.
-          </h2>
-          <p className="m-0 mt-4 max-w-sm text-base leading-relaxed text-[#5a6280] sm:text-lg">
-            Can’t find your question? Send it to us on WhatsApp and we’ll reply during office hours.
+      <div className="mx-auto max-w-7xl">
+        <Reveal className="flex flex-wrap items-end justify-between gap-x-10 gap-y-4">
+          <div className="max-w-xl">
+            <p className="m-0 text-sm font-bold text-[#6d4aff]">Questions</p>
+            <h2 className="m-0 mt-2 text-3xl leading-[1.1] font-extrabold tracking-[-0.03em] text-[#0e1325] sm:text-[2.25rem]">
+              Answers before you come in.
+            </h2>
+          </div>
+          <p className="m-0 max-w-md text-base leading-relaxed text-[#5a6280]">
+            Can’t find yours?{' '}
+            <a
+              href={waLink('Namaste, I have a question:')}
+              target="_blank"
+              rel="noreferrer"
+              className="inline-flex min-h-7 items-center font-bold text-[#5b37f0] no-underline hover:underline"
+            >
+              Ask us on WhatsApp
+            </a>{' '}
+            and we’ll reply during office hours.
           </p>
-          <a
-            href={waHref}
-            target="_blank"
-            rel="noreferrer"
-            className="group mt-6 inline-flex min-h-10 items-center gap-2 text-[15px] font-bold text-[#5b37f0] no-underline"
-          >
-            Ask a question <ArrowRight size={16} className="transition-transform group-hover:translate-x-1" aria-hidden="true" />
-          </a>
         </Reveal>
-        <ul className="m-0 flex list-none flex-col gap-3 p-0">
-          {FAQS.map((item, i) => {
-            const on = open === i
-            return (
-              <li
-                key={item.q}
-                className={`overflow-hidden rounded-3xl ring-1 transition-colors ${on ? 'bg-[#f6f7fb] ring-[#d9dcf0]' : 'bg-white ring-[#e3e6f0]'}`}
-              >
-                <h3 className="m-0">
-                  <button
-                    type="button"
-                    aria-expanded={on}
-                    onClick={() => setOpen(on ? -1 : i)}
-                    className="flex w-full cursor-pointer items-center justify-between gap-4 border-0 bg-transparent px-5 py-4.5 text-left text-base font-bold text-[#0e1325] sm:px-6"
-                  >
-                    {item.q}
-                    <motion.span
-                      animate={{ rotate: on ? 45 : 0 }}
-                      transition={{ type: 'spring', stiffness: 300, damping: 20 }}
-                      className={`grid size-8 shrink-0 place-items-center rounded-full text-lg leading-none font-bold ${on ? 'bg-[#6d4aff] text-white' : 'bg-[#eef0f7] text-[#141b34]'}`}
-                      aria-hidden="true"
-                    >
-                      +
-                    </motion.span>
-                  </button>
-                </h3>
-                <AnimatePresence initial={false}>
+
+        <Reveal className="mt-8 grid overflow-hidden rounded-[32px] bg-white shadow-[0_1px_2px_rgb(15_21_48/0.05),0_30px_60px_-40px_rgb(15_21_48/0.5)] ring-1 ring-[#e3e6f0] lg:grid-cols-[16rem_minmax(0,1fr)]">
+          {/* Topics */}
+          <div
+            role="tablist"
+            aria-label="Question topics"
+            className="flex gap-1.5 overflow-x-auto border-b border-[#eceef5] p-2.5 [scrollbar-width:none] lg:flex-col lg:border-r lg:border-b-0 lg:p-3"
+          >
+            {FAQS.map((t, i) => {
+              const on = i === topic
+              return (
+                <button
+                  key={t.topic}
+                  type="button"
+                  role="tab"
+                  aria-selected={on}
+                  onClick={(e) => {
+                    setTopic(i)
+                    setOpen(0)
+                    e.currentTarget.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' })
+                  }}
+                  className={`relative flex shrink-0 cursor-pointer items-center justify-between gap-3 rounded-2xl border-0 bg-transparent px-4 py-3 text-left text-[15px] font-bold whitespace-nowrap transition-colors lg:w-full ${
+                    on ? 'text-white' : 'text-[#1d2340] hover:bg-[#f4f5fa]'
+                  }`}
+                >
                   {on && (
-                    <motion.div
-                      initial={{ height: 0, opacity: 0 }}
-                      animate={{ height: 'auto', opacity: 1 }}
-                      exit={{ height: 0, opacity: 0 }}
-                      transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
-                    >
-                      <p className="m-0 px-5 pb-5 text-[15px] leading-relaxed text-[#5a6280] sm:px-6">{item.a}</p>
-                    </motion.div>
+                    <motion.span
+                      layoutId="faq-tab"
+                      className="absolute inset-0 rounded-2xl bg-[#141b34] shadow-[0_14px_28px_-16px_rgb(20_27_52/0.9)]"
+                      transition={{ type: 'spring', stiffness: 380, damping: 32 }}
+                    />
                   )}
-                </AnimatePresence>
-              </li>
-            )
-          })}
-        </ul>
+                  <span className="relative">{t.topic}</span>
+                  <span className={`relative text-xs ${on ? 'text-white/60' : 'text-[#8a90a8]'}`}>{t.items.length}</span>
+                </button>
+              )
+            })}
+          </div>
+
+          {/* Questions in the chosen topic */}
+          <ul className="m-0 flex list-none flex-col divide-y divide-[#eceef5] p-0 px-5 sm:px-7">
+            {items.map((item, i) => {
+              const on = open === i
+              return (
+                <li key={item.q}>
+                  <h3 className="m-0">
+                    <button
+                      type="button"
+                      aria-expanded={on}
+                      onClick={() => setOpen(on ? -1 : i)}
+                      className="flex w-full cursor-pointer items-center justify-between gap-4 border-0 bg-transparent px-0 py-5 text-left text-base font-bold text-[#0e1325]"
+                    >
+                      {item.q}
+                      <motion.span
+                        animate={{ rotate: on ? 45 : 0 }}
+                        transition={{ type: 'spring', stiffness: 300, damping: 20 }}
+                        className={`grid size-8 shrink-0 place-items-center rounded-full text-lg leading-none font-bold transition-colors ${
+                          on ? 'bg-[#6d4aff] text-white' : 'bg-[#eef0f7] text-[#141b34]'
+                        }`}
+                        aria-hidden="true"
+                      >
+                        +
+                      </motion.span>
+                    </button>
+                  </h3>
+                  <AnimatePresence initial={false}>
+                    {on && (
+                      <motion.div
+                        initial={{ height: 0, opacity: 0 }}
+                        animate={{ height: 'auto', opacity: 1 }}
+                        exit={{ height: 0, opacity: 0 }}
+                        transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
+                        className="overflow-hidden"
+                      >
+                        <p className="m-0 max-w-2xl pr-10 pb-5 text-[15px] leading-relaxed text-[#5a6280]">{item.a}</p>
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+                </li>
+              )
+            })}
+          </ul>
+        </Reveal>
       </div>
     </section>
   )
@@ -1381,7 +1494,7 @@ function Home() {
     <MotionConfig reducedMotion="user">
       <div
         onClick={scrollToHash}
-        className="min-h-screen bg-[#f6f7fb] font-[Manrope,system-ui,sans-serif] text-[#0e1325] antialiased [scroll-behavior:smooth]"
+        className="min-h-screen bg-[#f6f7fb] font-[Manrope,system-ui,sans-serif] [&_button]:[font-family:inherit] text-[#0e1325] antialiased [scroll-behavior:smooth]"
       >
         <TopNav />
         <main>
