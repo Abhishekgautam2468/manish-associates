@@ -1075,62 +1075,88 @@ const REASONS = [
   { Icon: ShieldCheck, title: 'Help after the sale', body: 'Renewal reminders for your policies, and help with the forms when you claim.' },
 ]
 
+// Figures for the promise section, worked out from the content above.
+const SERVICE_COUNT = SERVICE_GROUPS.reduce((n, g) => n + g.items.length, 0)
+
 function WhyUs() {
+  const stats = [
+    { value: `${SINCE.years} years`, label: `serving ${SINCE.town}` },
+    { value: `${SERVICE_COUNT}+`, label: 'services at one counter' },
+    { value: SERVICE_GROUPS.length, label: 'kinds of work, from tax to travel' },
+  ]
   return (
     <section className="scroll-mt-20 bg-[#f6f7fb] px-5 py-8 sm:px-8 lg:py-10">
-      <div className="mx-auto max-w-7xl">
-        <Reveal className="flex flex-wrap items-end justify-between gap-x-10 gap-y-4">
-          <div className="max-w-xl">
+      <Reveal className="mx-auto max-w-7xl overflow-hidden rounded-[32px] bg-white shadow-[0_1px_2px_rgb(15_21_48/0.05),0_30px_60px_-40px_rgb(15_21_48/0.5)] ring-1 ring-[#e3e6f0]">
+        <div className="grid lg:grid-cols-[minmax(0,1.1fr)_minmax(0,0.9fr)]">
+          {/* Promises */}
+          <div className="p-6 sm:p-10 lg:p-12">
             <p className="m-0 text-sm font-bold text-[#6d4aff]">Our promise</p>
             <h2 className="m-0 mt-2 text-3xl leading-[1.1] font-extrabold tracking-[-0.03em] text-[#0e1325] sm:text-[2.25rem]">
               Small promises, kept every time.
             </h2>
+            <p className="m-0 mt-3 max-w-md text-base leading-relaxed text-[#5a6280]">
+              Whether it’s a bus ticket or a life policy, this is how every job at our counter is handled.
+            </p>
+            <ul className="m-0 mt-8 grid list-none gap-x-8 gap-y-6 p-0 sm:grid-cols-2">
+              {REASONS.map(({ Icon, title, body }, i) => (
+                <motion.li
+                  key={title}
+                  initial={{ opacity: 0, y: 18 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true, margin: '-40px' }}
+                  transition={{ duration: 0.5, delay: i * 0.08, ease: [0.22, 1, 0.36, 1] }}
+                  className="flex gap-4"
+                >
+                  <span className="relative grid size-11 shrink-0 place-items-center rounded-2xl bg-[#f1f0fb] text-[#5b37f0]">
+                    <Icon size={20} aria-hidden="true" />
+                    <motion.span
+                      initial={{ scale: 0 }}
+                      whileInView={{ scale: 1 }}
+                      viewport={{ once: true }}
+                      transition={{ delay: 0.4 + i * 0.1, type: 'spring', stiffness: 400, damping: 16 }}
+                      className="absolute -right-1.5 -bottom-1.5 grid size-5 place-items-center rounded-full bg-[#16a34a] text-white ring-2 ring-white"
+                    >
+                      <CheckCircle2 size={12} strokeWidth={3} aria-hidden="true" />
+                    </motion.span>
+                  </span>
+                  <div className="min-w-0">
+                    <h3 className="m-0 text-[17px] font-extrabold text-[#0e1325]">{title}</h3>
+                    <p className="m-0 mt-1 text-[15px] leading-relaxed text-[#5a6280]">{body}</p>
+                  </div>
+                </motion.li>
+              ))}
+            </ul>
           </div>
-          <p className="m-0 max-w-md text-base leading-relaxed text-[#5a6280]">
-            Whether it’s a bus ticket or a life policy, this is how every job at our counter is handled.
-          </p>
-        </Reveal>
 
-        <div className="mt-8 grid gap-4 lg:grid-cols-[minmax(0,0.95fr)_minmax(0,1.05fr)]">
-          {/* Photo with the shop's track record */}
-          <Reveal className="relative min-h-[260px] overflow-hidden rounded-[28px] sm:min-h-[320px] shadow-[0_30px_60px_-34px_rgb(15_21_48/0.7)] lg:min-h-0">
-            <Photo photo={PHOTOS.promise} sizes="(min-width: 1024px) 600px, 92vw" className="absolute inset-0" />
-            <div className="absolute inset-0 bg-gradient-to-t from-[#0b1028]/90 via-[#0b1028]/25 to-transparent" />
-            <div className="absolute inset-x-0 bottom-0 p-6 text-white sm:p-7">
-              <p className="m-0 text-sm font-bold text-[#c9bfff]">Serving {SINCE.town}</p>
-              <p className="m-0 mt-1 text-[2.5rem] leading-none font-extrabold tracking-tight">{SINCE.years} years</p>
-              <p className="m-0 mt-2 max-w-xs text-[15px] leading-relaxed text-white/75">
-                of tickets, policies, returns and registrations, from one counter at Super Bazar.
+          {/* Photo */}
+          <div className="relative min-h-[280px] p-3 pt-0 lg:min-h-0 lg:p-3 lg:pl-0">
+            <div className="relative h-full min-h-[280px] overflow-hidden rounded-[26px]">
+              <Photo photo={PHOTOS.promise} sizes="(min-width: 1024px) 560px, 92vw" className="absolute inset-0" />
+              <div className="absolute inset-0 bg-gradient-to-t from-[#0b1028]/70 via-transparent to-transparent" />
+              <p className="absolute bottom-5 left-5 m-0 max-w-[15rem] text-lg leading-snug font-extrabold text-white">
+                Advice that fits your family and your budget.
               </p>
             </div>
-          </Reveal>
-
-          {/* The promises */}
-          <ul className="m-0 grid list-none gap-4 p-0 sm:grid-cols-2">
-            {REASONS.map(({ Icon, title, body }, i) => (
-              <motion.li
-                key={title}
-                initial={{ opacity: 0, y: 28 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true, margin: '-60px' }}
-                transition={{ duration: 0.6, delay: i * 0.08, ease: [0.22, 1, 0.36, 1] }}
-                whileHover={{ y: -5 }}
-                className="group relative grid grid-cols-[auto_minmax(0,1fr)] content-start gap-x-4 overflow-hidden rounded-[24px] bg-white p-5 shadow sm:p-6-[0_24px_50px_-36px_rgb(15_21_48/0.5)] ring-1 ring-[#e3e6f0] transition-shadow hover:shadow-[0_34px_60px_-34px_rgb(40_40_120/0.5)]"
-              >
-                <span
-                  className="pointer-events-none absolute -top-10 -right-10 size-32 rounded-full bg-gradient-to-br from-[#6d4aff]/12 to-[#2f6bff]/5 transition-transform duration-500 group-hover:scale-125"
-                  aria-hidden="true"
-                />
-                <span className="relative row-span-2 grid size-11 place-items-center rounded-2xl bg-gradient-to-br from-[#6d4aff] to-[#2f6bff] text-white sm:row-span-1 sm:size-12 shadow-[0_12px_24px_-12px_rgb(79_90_255/0.9)]">
-                  <Icon size={21} aria-hidden="true" />
-                </span>
-                <h3 className="relative m-0 self-center text-lg font-extrabold text-[#0e1325] sm:col-span-2 sm:mt-5">{title}</h3>
-                <p className="relative m-0 mt-1 text-[15px] leading-relaxed text-[#5a6280] sm:col-span-2 sm:mt-1.5">{body}</p>
-              </motion.li>
-            ))}
-          </ul>
+          </div>
         </div>
-      </div>
+
+        {/* Figures */}
+        <dl className="m-0 grid border-t border-[#eceef5] bg-[#0f1530] text-white sm:grid-cols-3">
+          {stats.map((st, i) => (
+            <motion.div
+              key={st.label}
+              initial={{ opacity: 0, y: 12 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ delay: 0.15 + i * 0.1 }}
+              className={`flex items-baseline gap-3 px-6 py-5 sm:flex-col sm:gap-1 sm:px-10 sm:py-6 ${i ? 'border-t border-white/10 sm:border-t-0 sm:border-l' : ''}`}
+            >
+              <dt className="order-2 text-sm text-white/65 sm:order-none">{st.label}</dt>
+              <dd className="m-0 text-2xl font-extrabold tracking-tight sm:order-first sm:text-[2rem]">{st.value}</dd>
+            </motion.div>
+          ))}
+        </dl>
+      </Reveal>
     </section>
   )
 }
@@ -1234,36 +1260,81 @@ const FAQ_LIST = [
   FAQS[1].items[0], // Tatkal tickets
   FAQS[2].items[0], // passport
   FAQS[3].items[0], // GST
-  FAQS[3].items[1], // ITR
   FAQS[4].items[0], // insurance
   FAQS[4].items[1], // AEPS
+]
+
+// A sample WhatsApp exchange, to show how quick asking is.
+const CHAT = [
+  { me: true, text: 'Namaste, what do I need for a Tatkal passport?' },
+  { me: false, text: 'Aadhaar, PAN and your old passport if you have one. Come in tomorrow at 11 and we’ll book your slot.' },
+  { me: true, text: 'Great, thank you 🙏' },
 ]
 
 function Faq() {
   const [open, setOpen] = useState(0)
   return (
     <section className="scroll-mt-20 bg-[#f6f7fb] px-5 py-8 sm:px-8 lg:py-10">
-      <div className="mx-auto grid max-w-7xl gap-8 lg:grid-cols-[minmax(0,0.75fr)_minmax(0,1.25fr)] lg:gap-14">
-        <Reveal className="lg:sticky lg:top-28 lg:self-start">
-          <p className="m-0 text-sm font-bold text-[#6d4aff]">Questions</p>
-          <h2 className="m-0 mt-2 text-3xl leading-[1.1] font-extrabold tracking-[-0.03em] text-[#0e1325] sm:text-[2.25rem]">
+      <div className="mx-auto grid max-w-7xl gap-4 lg:grid-cols-[minmax(0,0.85fr)_minmax(0,1.15fr)]">
+        {/* Navy panel: the heading and a sample chat */}
+        <Reveal className="relative flex flex-col overflow-hidden rounded-[32px] bg-[#0f1530] p-6 text-white shadow-[0_40px_80px_-48px_rgb(15_21_48/0.9)] sm:p-10">
+          <div
+            className="pointer-events-none absolute -top-24 -left-20 size-80 rounded-full bg-[#6d4aff]/35 blur-[100px]"
+            aria-hidden="true"
+          />
+          <div
+            className="pointer-events-none absolute -right-24 -bottom-28 size-80 rounded-full bg-[#2f6bff]/25 blur-[100px]"
+            aria-hidden="true"
+          />
+          <p className="relative m-0 text-sm font-bold text-[#a9b8ff]">Questions</p>
+          <h2 className="relative m-0 mt-2 text-3xl leading-[1.1] font-extrabold tracking-[-0.03em] text-white sm:text-[2.25rem]">
             Answers before you come in.
           </h2>
-          <p className="m-0 mt-4 max-w-sm text-base leading-relaxed text-[#5a6280]">
-            The things people ask us most. Can’t find yours? Send it on WhatsApp and we’ll reply during office hours.
+          <p className="relative m-0 mt-3 max-w-sm text-base leading-relaxed text-white/65">
+            The things people ask us most. Anything else, just send a message.
           </p>
-          <motion.a
-            whileHover={{ y: -3 }}
-            whileTap={{ scale: 0.97 }}
-            href={waLink('Namaste, I have a question:')}
-            target="_blank"
-            rel="noreferrer"
-            className="mt-6 inline-flex h-12 items-center gap-2.5 rounded-2xl bg-[#141b34] px-5 font-bold text-white no-underline shadow-[0_14px_30px_-14px_rgb(20_27_52/0.8)]"
-          >
-            <WhatsAppIcon size={18} className="text-[#25D366]" /> Ask a question
-          </motion.a>
+
+          <div className="relative mt-8 flex flex-1 flex-col justify-end">
+            <div className="rounded-[24px] bg-[#0b1028]/70 p-4 ring-1 ring-white/10" aria-hidden="true">
+              <div className="flex items-center gap-2.5 border-b border-white/10 pb-3">
+                <img src="/brand/mark-64.png" alt="" width="32" height="32" className="size-8 rounded-lg" />
+                <span className="leading-tight">
+                  <span className="block text-sm font-bold text-white">Manish Associates</span>
+                  <span className="block text-[11px] text-[#7ff0b6]">usually replies in office hours</span>
+                </span>
+                <WhatsAppIcon size={18} className="ml-auto text-[#25D366]" />
+              </div>
+              <div className="flex flex-col gap-2 pt-3">
+                {CHAT.map((m, k) => (
+                  <motion.p
+                    key={k}
+                    initial={{ opacity: 0, y: 10, scale: 0.96 }}
+                    whileInView={{ opacity: 1, y: 0, scale: 1 }}
+                    viewport={{ once: true }}
+                    transition={{ delay: 0.3 + k * 0.45, duration: 0.4 }}
+                    className={`m-0 max-w-[85%] rounded-2xl px-3.5 py-2 text-[13px] leading-snug ${
+                      m.me ? 'self-end rounded-br-md bg-[#25D366]/90 text-[#062b16]' : 'self-start rounded-bl-md bg-white/10 text-white/90'
+                    }`}
+                  >
+                    {m.text}
+                  </motion.p>
+                ))}
+              </div>
+            </div>
+            <motion.a
+              whileHover={{ y: -3 }}
+              whileTap={{ scale: 0.97 }}
+              href={waLink('Namaste, I have a question:')}
+              target="_blank"
+              rel="noreferrer"
+              className="mt-5 inline-flex h-12 items-center justify-center gap-2.5 self-start rounded-2xl bg-white px-5 font-bold text-[#141b34] no-underline shadow-[0_16px_30px_-14px_rgb(0_0_0/0.6)]"
+            >
+              <WhatsAppIcon size={18} className="text-[#25D366]" /> Ask your question
+            </motion.a>
+          </div>
         </Reveal>
 
+        {/* The questions */}
         <ul className="m-0 flex list-none flex-col gap-3 p-0">
           {FAQ_LIST.map((item, i) => {
             const on = open === i
@@ -1285,15 +1356,18 @@ function Faq() {
                     type="button"
                     aria-expanded={on}
                     onClick={() => setOpen(on ? -1 : i)}
-                    className="flex w-full cursor-pointer items-center justify-between gap-4 border-0 bg-transparent px-5 py-4 text-left text-base font-bold text-[#0e1325] sm:px-6 sm:py-5"
+                    className="flex w-full cursor-pointer items-center gap-4 border-0 bg-transparent px-5 py-4 text-left text-base font-bold text-[#0e1325] sm:px-6"
                   >
-                    {item.q}
+                    <span
+                      className={`grid size-9 shrink-0 place-items-center rounded-xl text-sm font-extrabold transition-colors ${on ? 'bg-gradient-to-br from-[#6d4aff] to-[#2f6bff] text-white' : 'bg-[#f1f0fb] text-[#5b37f0]'}`}
+                    >
+                      {String(i + 1).padStart(2, '0')}
+                    </span>
+                    <span className="flex-1">{item.q}</span>
                     <motion.span
                       animate={{ rotate: on ? 45 : 0 }}
                       transition={{ type: 'spring', stiffness: 300, damping: 20 }}
-                      className={`grid size-8 shrink-0 place-items-center rounded-full text-lg leading-none font-bold transition-colors ${
-                        on ? 'bg-[#6d4aff] text-white' : 'bg-[#eef0f7] text-[#141b34]'
-                      }`}
+                      className={`grid size-8 shrink-0 place-items-center rounded-full text-lg leading-none font-bold transition-colors ${on ? 'bg-[#141b34] text-white' : 'bg-[#eef0f7] text-[#141b34]'}`}
                       aria-hidden="true"
                     >
                       +
@@ -1309,7 +1383,7 @@ function Faq() {
                       transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
                       className="overflow-hidden"
                     >
-                      <p className="m-0 px-5 pb-5 text-[15px] leading-relaxed text-[#5a6280] sm:px-6">{item.a}</p>
+                      <p className="m-0 pr-6 pb-5 pl-[4.5rem] text-[15px] leading-relaxed text-[#5a6280] sm:pl-[4.75rem]">{item.a}</p>
                     </motion.div>
                   )}
                 </AnimatePresence>
