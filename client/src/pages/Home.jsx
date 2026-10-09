@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
 import Logo from '../components/Logo.jsx'
-import { AnimatePresence, MotionConfig, motion, useScroll, useSpring, useTransform } from 'framer-motion'
+import { AnimatePresence, MotionConfig, motion, useScroll, useTransform } from 'framer-motion'
 import {
   ArrowRight,
   Award,
@@ -78,7 +78,7 @@ const PHOTOS = {
   international: { id: '1512453979798-5ea266f8880c', alt: 'The Dubai skyline at dusk' },
   business: { id: '1600880292203-757bb62b4baf', alt: 'Two colleagues celebrating at a desk' },
   signing: { id: '1450101499163-c8848c66ca85', alt: 'Signing a form' },
-  promise: { id: '1556742049-0cfed4f6a45d', alt: 'A customer being helped at a shop counter' },
+  promise: { id: '1551836022-d5d88e9218df', alt: 'An advisor going through a plan with a customer at a desk' },
 }
 const photoUrl = (id, w) => `https://images.unsplash.com/photo-${id}?auto=format&fit=crop&q=75&w=${w}`
 
@@ -207,9 +207,24 @@ const TOURS = [
 ]
 
 const STEPS = [
-  { title: 'Tell us what you need', body: 'Walk in, call or send a WhatsApp message. We tell you the documents and the fee upfront.' },
-  { title: 'Share your documents', body: 'Bring the papers or send clear photos. We check everything before anything is submitted.' },
-  { title: 'We handle the rest', body: 'We file, book or apply for you and keep you posted until it’s done.' },
+  {
+    Icon: MessageCircle,
+    title: 'Tell us what you need',
+    body: 'Walk in, call or send a WhatsApp message. We reply with the documents to bring and the full fee.',
+    tag: 'Same day',
+  },
+  {
+    Icon: FileCheck2,
+    title: 'Share your documents',
+    body: 'Bring the papers or send clear photos. We check every page before anything is submitted.',
+    tag: 'Checked twice',
+  },
+  {
+    Icon: CheckCircle2,
+    title: 'We handle the rest',
+    body: 'We file, book or apply for you, and send updates on WhatsApp until the job is done.',
+    tag: 'Updates on WhatsApp',
+  },
 ]
 
 // The tickets that cycle in the hero, like tokens at a service counter.
@@ -665,12 +680,12 @@ function Services() {
   const g = SERVICE_GROUPS.find((x) => x.id === active)
   const t = TONES[g.tone]
   return (
-    <section id="services" className="scroll-mt-20 bg-[#f6f7fb] px-5 pt-14 pb-20 sm:px-8 lg:pt-16">
+    <section id="services" className="scroll-mt-20 bg-[#f6f7fb] px-5 py-8 sm:px-8 lg:py-10 pt-14 lg:pt-16">
       <div className="mx-auto max-w-7xl">
         <Reveal className="flex flex-wrap items-end justify-between gap-x-10 gap-y-4">
           <div className="max-w-xl">
             <p className="m-0 text-sm font-bold text-[#6d4aff]">What we do</p>
-            <h2 className="m-0 mt-2 text-3xl leading-[1.1] font-extrabold tracking-[-0.03em] text-[#0e1325] sm:text-[2.6rem]">
+            <h2 className="m-0 mt-2 text-3xl leading-[1.1] font-extrabold tracking-[-0.03em] text-[#0e1325] sm:text-[2.25rem]">
               Every office’s work, at one counter.
             </h2>
           </div>
@@ -679,7 +694,7 @@ function Services() {
           </p>
         </Reveal>
 
-        <Reveal className="mt-10 grid overflow-hidden rounded-[32px] bg-white shadow-[0_1px_2px_rgb(15_21_48/0.05),0_30px_60px_-40px_rgb(15_21_48/0.5)] ring-1 ring-[#e3e6f0] lg:grid-cols-[17rem_minmax(0,1fr)]">
+        <Reveal className="mt-8 grid overflow-hidden rounded-[32px] bg-white shadow-[0_1px_2px_rgb(15_21_48/0.05),0_30px_60px_-40px_rgb(15_21_48/0.5)] ring-1 ring-[#e3e6f0] lg:grid-cols-[17rem_minmax(0,1fr)]">
           {/* Tabs: a column on wide screens, a sliding row on phones */}
           <div
             role="tablist"
@@ -797,18 +812,16 @@ function Highlight() {
   const { scrollYProgress } = useScroll({ target: ref, offset: ['start end', 'end start'] })
   const y = useTransform(scrollYProgress, [0, 1], ['-10%', '10%'])
   return (
-    <section ref={ref} className="bg-[#f6f7fb] px-5 pb-20 sm:px-8">
-      <Reveal className="relative mx-auto grid max-w-7xl grid-cols-[minmax(0,1fr)] overflow-hidden rounded-[36px] bg-[#0f1530] text-white shadow-[0_50px_100px_-50px_rgb(15_21_48/0.9)] lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)]">
+    <section ref={ref} className="scroll-mt-20 bg-[#f6f7fb] px-5 py-8 sm:px-8 lg:py-10">
+      <Reveal className="relative mx-auto grid max-w-7xl grid-cols-[minmax(0,1fr)] overflow-hidden rounded-[32px] bg-[#0f1530] text-white shadow-[0_40px_80px_-48px_rgb(15_21_48/0.9)] lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)]">
         {/* Copy */}
-        <div className="relative z-10 p-6 sm:p-12 lg:p-14">
+        <div className="relative z-10 p-6 sm:p-10 lg:p-12">
           <div
             className="pointer-events-none absolute -top-28 -left-28 size-80 rounded-full bg-[#6d4aff]/40 blur-[100px]"
             aria-hidden="true"
           />
-          <p className="relative m-0 inline-flex items-center gap-2 rounded-full bg-[#ffb648]/15 px-3 py-1 text-sm font-bold text-[#ffcf85] ring-1 ring-[#ffb648]/30">
-            <Clock size={14} aria-hidden="true" /> Tatkal and urgent work
-          </p>
-          <h2 className="relative m-0 mt-5 text-3xl leading-tight font-extrabold tracking-tight text-white sm:text-[2.6rem]">
+          <p className="relative m-0 text-sm font-bold text-[#a9b8ff]">Tatkal and urgent work</p>
+          <h2 className="relative m-0 mt-5 text-3xl leading-tight font-extrabold tracking-tight text-white sm:text-[2.25rem]">
             Tatkal seats go in minutes. Your booking will be ready before that.
           </h2>
           <p className="relative m-0 mt-4 max-w-lg text-base leading-relaxed text-white/70 sm:text-[17px]">
@@ -816,7 +829,7 @@ function Highlight() {
             Tatkal passports and urgent visas.
           </p>
 
-          <p className="relative m-0 mt-8 text-sm font-bold text-white/85">For a Tatkal train ticket, send us:</p>
+          <p className="relative m-0 mt-6 text-sm font-bold text-white/85">For a Tatkal train ticket, send us:</p>
           <ul className="relative m-0 mt-3 flex list-none flex-col gap-2 p-0">
             {TATKAL_NEEDS.map(({ Icon, text }, k) => (
               <motion.li
@@ -841,14 +854,14 @@ function Highlight() {
             href={waLink('Namaste, I want to book a Tatkal ticket. Here are the details:')}
             target="_blank"
             rel="noreferrer"
-            className="relative mt-8 inline-flex h-13 items-center gap-2.5 rounded-2xl bg-white px-6 font-bold text-[#141b34] no-underline shadow-[0_16px_30px_-14px_rgb(0_0_0/0.6)]"
+            className="relative mt-6 inline-flex h-12 items-center gap-2.5 rounded-2xl bg-white px-6 font-bold text-[#141b34] no-underline shadow-[0_16px_30px_-14px_rgb(0_0_0/0.6)]"
           >
             <WhatsAppIcon size={19} className="text-[#25D366]" /> Send details on WhatsApp
           </motion.a>
         </div>
 
         {/* Train photo, with the booking times on it */}
-        <div className="relative min-h-[420px] overflow-hidden lg:min-h-full">
+        <div className="relative min-h-[380px] overflow-hidden lg:min-h-full">
           <motion.div style={{ y }} className="absolute -inset-y-[12%] inset-x-0">
             <Photo photo={PHOTOS.train} sizes="(min-width: 1024px) 640px, 100vw" />
           </motion.div>
@@ -908,12 +921,12 @@ const INCLUDED = [
 
 function Tours() {
   return (
-    <section id="travel" className="scroll-mt-20 bg-white px-5 py-20 sm:px-8 lg:py-24">
+    <section id="travel" className="scroll-mt-20 bg-[#f6f7fb] px-5 py-8 sm:px-8 lg:py-10">
       <div className="mx-auto max-w-7xl">
         <Reveal className="grid gap-8 lg:grid-cols-[minmax(0,1fr)_minmax(0,0.9fr)] lg:items-end">
           <div>
-            <p className="m-0 text-sm font-bold text-[#2f6bff]">Tour packages</p>
-            <h2 className="m-0 mt-2 text-3xl leading-[1.1] font-extrabold tracking-[-0.03em] text-[#0e1325] sm:text-[2.6rem]">
+            <p className="m-0 text-sm font-bold text-[#6d4aff]">Tour packages</p>
+            <h2 className="m-0 mt-2 text-3xl leading-[1.1] font-extrabold tracking-[-0.03em] text-[#0e1325] sm:text-[2.25rem]">
               Holidays planned for you, from the first ticket to the last night.
             </h2>
             <p className="m-0 mt-4 max-w-xl text-base leading-relaxed text-[#5a6280] sm:text-lg">
@@ -924,7 +937,7 @@ function Tours() {
             {INCLUDED.map(({ Icon, label }) => (
               <li
                 key={label}
-                className="flex items-center gap-3 rounded-2xl bg-[#f6f7fb] px-3.5 py-3 text-sm font-bold text-[#1d2340] ring-1 ring-[#eceef5]"
+                className="flex items-center gap-3 rounded-2xl bg-white px-3.5 py-3 text-sm font-bold text-[#1d2340] shadow-[0_1px_2px_rgb(15_21_48/0.05)] ring-1 ring-[#e3e6f0]"
               >
                 <span className="grid size-9 shrink-0 place-items-center rounded-xl bg-[#e4f4ff] text-[#0b6fb0]">
                   <Icon size={17} aria-hidden="true" />
@@ -935,7 +948,7 @@ function Tours() {
           </ul>
         </Reveal>
 
-        <div className="mt-12 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
+        <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
           {TOURS.map((t, i) => (
             <motion.article
               key={t.title}
@@ -943,9 +956,9 @@ function Tours() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true, margin: '-60px' }}
               transition={{ duration: 0.7, delay: i * 0.08, ease: [0.22, 1, 0.36, 1] }}
-              className={`group relative overflow-hidden rounded-[28px] shadow-[0_30px_60px_-34px_rgb(15_21_48/0.7)] ${i % 2 ? 'lg:mt-10' : ''}`}
+              className={`group relative overflow-hidden rounded-[28px] shadow-[0_30px_60px_-34px_rgb(15_21_48/0.7)] ${i % 2 ? 'lg:mt-6' : ''}`}
             >
-              <div className="aspect-[4/3] sm:aspect-[4/5]">
+              <div className="aspect-[4/3] sm:aspect-[4/4.6]">
                 <Photo
                   photo={t.photo}
                   sizes="(min-width: 1024px) 300px, (min-width: 640px) 45vw, 92vw"
@@ -980,52 +993,67 @@ function Tours() {
 
 function HowItWorks() {
   return (
-    <section id="how" className="scroll-mt-20 bg-[#f6f7fb] px-5 py-20 sm:px-8 lg:pt-28 lg:pb-20">
-      <div className="mx-auto max-w-7xl">
-        <Reveal className="mx-auto max-w-2xl text-center">
-          <p className="m-0 text-sm font-bold text-[#6d4aff]">How it works</p>
-          <h2 className="m-0 mt-2 text-3xl leading-[1.1] font-extrabold tracking-[-0.03em] text-[#0e1325] sm:text-[2.6rem]">
-            Three steps, and the job is done.
-          </h2>
-          <p className="m-0 mt-4 text-base text-[#5a6280] sm:text-lg">
+    <section id="how" className="scroll-mt-20 bg-[#f6f7fb] px-5 py-8 sm:px-8 lg:py-10">
+      <Reveal className="relative mx-auto max-w-7xl overflow-hidden rounded-[32px] bg-[#0f1530] p-6 text-white shadow-[0_40px_80px_-48px_rgb(15_21_48/0.9)] sm:p-10 lg:p-12">
+        <div className="pointer-events-none absolute inset-0" aria-hidden="true">
+          <div className="absolute -top-32 left-1/4 size-[420px] rounded-full bg-[#6d4aff]/30 blur-[110px]" />
+          <div className="absolute -right-24 -bottom-40 size-[420px] rounded-full bg-[#2f6bff]/25 blur-[110px]" />
+          <div className="absolute inset-0 bg-[linear-gradient(rgb(255_255_255/0.035)_1px,transparent_1px),linear-gradient(90deg,rgb(255_255_255/0.035)_1px,transparent_1px)] bg-[size:56px_56px] [mask-image:radial-gradient(ellipse_at_center,black_20%,transparent_70%)]" />
+        </div>
+
+        <div className="relative flex flex-wrap items-end justify-between gap-x-10 gap-y-4">
+          <div className="max-w-xl">
+            <p className="m-0 text-sm font-bold text-[#a9b8ff]">How it works</p>
+            <h2 className="m-0 mt-2 text-3xl leading-[1.1] font-extrabold tracking-[-0.03em] text-white sm:text-[2.25rem]">
+              Three steps, and the job is done.
+            </h2>
+          </div>
+          <p className="m-0 max-w-sm text-base leading-relaxed text-white/65">
             The same simple routine, whether it’s a bus ticket or a GST registration.
           </p>
-        </Reveal>
-        <ol className="relative m-0 mt-14 grid list-none gap-5 p-0 md:grid-cols-3">
-          <motion.span
-            initial={{ scaleX: 0 }}
-            whileInView={{ scaleX: 1 }}
-            viewport={{ once: true, margin: '-100px' }}
-            transition={{ duration: 1.2, ease: [0.22, 1, 0.36, 1] }}
-            className="absolute top-[58px] right-[17%] left-[17%] hidden h-[2px] origin-left bg-gradient-to-r from-[#6d4aff] via-[#4f6bff] to-[#38a8f0] md:block"
-            aria-hidden="true"
-          />
-          {STEPS.map((step, i) => (
+        </div>
+
+        <ol className="relative m-0 mt-8 grid list-none gap-3 p-0 md:grid-cols-3 md:gap-4">
+          {STEPS.map(({ Icon, title, body, tag }, i) => (
             <motion.li
-              key={step.title}
-              initial={{ opacity: 0, y: 30 }}
+              key={title}
+              initial={{ opacity: 0, y: 24 }}
               whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, margin: '-80px' }}
-              transition={{ duration: 0.6, delay: 0.25 + i * 0.18, ease: [0.22, 1, 0.36, 1] }}
-              className="relative flex gap-4 rounded-[28px] bg-white p-6 shadow-[0_24px_50px_-36px_rgb(15_21_48/0.5)] ring-1 ring-[#e3e6f0] md:flex-col md:items-center md:px-7 md:pt-8 md:pb-9 md:text-center"
+              viewport={{ once: true, margin: '-60px' }}
+              transition={{ duration: 0.55, delay: 0.1 + i * 0.12, ease: [0.22, 1, 0.36, 1] }}
+              className="relative flex gap-4 rounded-[24px] bg-white/[0.05] p-5 ring-1 ring-white/10"
             >
-              <motion.span
-                initial={{ scale: 0.5, rotate: -12 }}
-                whileInView={{ scale: 1, rotate: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: 0.35 + i * 0.18, type: 'spring', stiffness: 300, damping: 16 }}
-                className="relative grid size-[52px] shrink-0 place-items-center rounded-2xl bg-gradient-to-br from-[#6d4aff] to-[#2f6bff] text-lg font-extrabold text-white shadow-[0_16px_30px_-12px_rgb(79_90_255/0.9)] md:size-[60px] md:text-xl md:ring-8 md:ring-[#f6f7fb]"
-              >
-                {i + 1}
-              </motion.span>
-              <div>
-                <h3 className="m-0 text-lg font-extrabold text-[#0e1325] md:mt-5 md:text-xl">{step.title}</h3>
-                <p className="m-0 mt-1.5 text-[15px] leading-relaxed text-[#5a6280]">{step.body}</p>
+              <span className="relative grid size-12 shrink-0 place-items-center rounded-2xl bg-gradient-to-br from-[#7b5eff] to-[#2f6bff] shadow-[0_14px_28px_-12px_rgb(79_90_255/0.9)]">
+                <Icon size={22} strokeWidth={2} aria-hidden="true" />
+                <span className="absolute -top-1.5 -right-1.5 grid size-5 place-items-center rounded-full bg-white text-[11px] font-extrabold text-[#141b34]">
+                  {i + 1}
+                </span>
+              </span>
+              <div className="min-w-0">
+                <h3 className="m-0 text-[17px] font-extrabold text-white">{title}</h3>
+                <p className="m-0 mt-1 text-sm leading-relaxed text-white/65">{body}</p>
+                <span className="mt-2.5 inline-flex rounded-full bg-white/[0.07] px-2.5 py-0.5 text-[11px] font-bold text-[#c9d4ff] ring-1 ring-white/10">
+                  {tag}
+                </span>
               </div>
             </motion.li>
           ))}
         </ol>
-      </div>
+
+        <div className="relative mt-7 flex flex-wrap items-center gap-x-6 gap-y-3 border-t border-white/10 pt-6">
+          <p className="m-0 flex-1 text-base font-bold text-white">Ready to start? Send us a message and we’ll tell you what to bring.</p>
+          <motion.a
+            whileHover={{ y: -3 }}
+            whileTap={{ scale: 0.97 }}
+            href={waHref}
+            target="_blank"
+            rel="noreferrer"
+            className="inline-flex h-13 items-center gap-2.5 rounded-2xl bg-white px-6 font-bold text-[#141b34] no-underline shadow-[0_16px_30px_-14px_rgb(0_0_0/0.6)]"
+          >
+            <WhatsAppIcon size={19} className="text-[#25D366]" /> Start on WhatsApp
+          </motion.a>
+        </div>
+      </Reveal>
     </section>
   )
 }
@@ -1049,12 +1077,12 @@ const REASONS = [
 
 function WhyUs() {
   return (
-    <section className="bg-[#f6f7fb] px-5 pb-20 sm:px-8">
+    <section className="scroll-mt-20 bg-[#f6f7fb] px-5 py-8 sm:px-8 lg:py-10">
       <div className="mx-auto max-w-7xl">
         <Reveal className="flex flex-wrap items-end justify-between gap-x-10 gap-y-4">
           <div className="max-w-xl">
             <p className="m-0 text-sm font-bold text-[#6d4aff]">Our promise</p>
-            <h2 className="m-0 mt-2 text-3xl leading-[1.1] font-extrabold tracking-[-0.03em] text-[#0e1325] sm:text-[2.6rem]">
+            <h2 className="m-0 mt-2 text-3xl leading-[1.1] font-extrabold tracking-[-0.03em] text-[#0e1325] sm:text-[2.25rem]">
               Small promises, kept every time.
             </h2>
           </div>
@@ -1063,9 +1091,9 @@ function WhyUs() {
           </p>
         </Reveal>
 
-        <div className="mt-10 grid gap-4 lg:grid-cols-[minmax(0,0.95fr)_minmax(0,1.05fr)]">
+        <div className="mt-8 grid gap-4 lg:grid-cols-[minmax(0,0.95fr)_minmax(0,1.05fr)]">
           {/* Photo with the shop's track record */}
-          <Reveal className="relative min-h-[260px] overflow-hidden rounded-[30px] sm:min-h-[320px] shadow-[0_30px_60px_-34px_rgb(15_21_48/0.7)] lg:min-h-0">
+          <Reveal className="relative min-h-[260px] overflow-hidden rounded-[28px] sm:min-h-[320px] shadow-[0_30px_60px_-34px_rgb(15_21_48/0.7)] lg:min-h-0">
             <Photo photo={PHOTOS.promise} sizes="(min-width: 1024px) 600px, 92vw" className="absolute inset-0" />
             <div className="absolute inset-0 bg-gradient-to-t from-[#0b1028]/90 via-[#0b1028]/25 to-transparent" />
             <div className="absolute inset-x-0 bottom-0 p-6 text-white sm:p-7">
@@ -1087,7 +1115,7 @@ function WhyUs() {
                 viewport={{ once: true, margin: '-60px' }}
                 transition={{ duration: 0.6, delay: i * 0.08, ease: [0.22, 1, 0.36, 1] }}
                 whileHover={{ y: -5 }}
-                className="group relative grid grid-cols-[auto_minmax(0,1fr)] content-start gap-x-4 overflow-hidden rounded-[26px] bg-white p-5 shadow sm:p-6-[0_24px_50px_-36px_rgb(15_21_48/0.5)] ring-1 ring-[#e3e6f0] transition-shadow hover:shadow-[0_34px_60px_-34px_rgb(40_40_120/0.5)]"
+                className="group relative grid grid-cols-[auto_minmax(0,1fr)] content-start gap-x-4 overflow-hidden rounded-[24px] bg-white p-5 shadow sm:p-6-[0_24px_50px_-36px_rgb(15_21_48/0.5)] ring-1 ring-[#e3e6f0] transition-shadow hover:shadow-[0_34px_60px_-34px_rgb(40_40_120/0.5)]"
               >
                 <span
                   className="pointer-events-none absolute -top-10 -right-10 size-32 rounded-full bg-gradient-to-br from-[#6d4aff]/12 to-[#2f6bff]/5 transition-transform duration-500 group-hover:scale-125"
@@ -1135,11 +1163,11 @@ const FAQS = [
 function Faq() {
   const [open, setOpen] = useState(0)
   return (
-    <section className="bg-white px-5 py-20 sm:px-8 lg:py-24">
+    <section className="scroll-mt-20 bg-[#f6f7fb] px-5 py-8 sm:px-8 lg:py-10">
       <div className="mx-auto grid max-w-7xl gap-10 lg:grid-cols-[minmax(0,0.8fr)_minmax(0,1.2fr)]">
         <Reveal>
-          <p className="m-0 text-sm font-bold text-[#2f6bff]">Questions</p>
-          <h2 className="m-0 mt-2 text-3xl leading-[1.1] font-extrabold tracking-[-0.03em] text-[#0e1325] sm:text-[2.6rem]">
+          <p className="m-0 text-sm font-bold text-[#6d4aff]">Questions</p>
+          <h2 className="m-0 mt-2 text-3xl leading-[1.1] font-extrabold tracking-[-0.03em] text-[#0e1325] sm:text-[2.25rem]">
             Before you come in.
           </h2>
           <p className="m-0 mt-4 max-w-sm text-base leading-relaxed text-[#5a6280] sm:text-lg">
@@ -1205,8 +1233,8 @@ function Faq() {
 
 function ContactSection() {
   return (
-    <section id="contact" className="scroll-mt-20 bg-white px-5 pb-20 sm:px-8">
-      <Reveal className="relative mx-auto max-w-7xl overflow-hidden rounded-[36px] bg-[#0b1028] text-white">
+    <section id="contact" className="scroll-mt-20 bg-[#f6f7fb] px-5 py-8 sm:px-8 lg:py-10 pb-16 lg:pb-20">
+      <Reveal className="relative mx-auto max-w-7xl overflow-hidden rounded-[32px] bg-[#0f1530] text-white shadow-[0_40px_80px_-48px_rgb(15_21_48/0.9)]">
         <div className="pointer-events-none absolute inset-0" aria-hidden="true">
           <motion.div
             animate={{ x: [0, -30, 0] }}
@@ -1215,9 +1243,10 @@ function ContactSection() {
           />
           <div className="absolute -top-32 left-1/3 size-[380px] rounded-full bg-[#6d4aff]/25 blur-[110px]" />
         </div>
-        <div className="relative grid gap-10 p-7 sm:p-12 lg:grid-cols-[minmax(0,1fr)_minmax(0,0.8fr)] lg:items-center lg:p-14">
+        <div className="relative grid gap-8 p-6 sm:p-10 lg:grid-cols-[minmax(0,1fr)_minmax(0,0.8fr)] lg:items-center lg:p-12">
           <div>
-            <h2 className="m-0 text-3xl leading-[1.1] font-extrabold tracking-[-0.03em] text-white sm:text-5xl">
+            <p className="m-0 mb-2 text-sm font-bold text-[#a9b8ff]">Contact</p>
+            <h2 className="m-0 text-3xl leading-[1.1] font-extrabold tracking-[-0.03em] text-white sm:text-[2.25rem]">
               Tell us what you need. We’ll take it from there.
             </h2>
             <p className="m-0 mt-4 max-w-lg text-base leading-relaxed text-white/70 sm:text-lg">
@@ -1269,22 +1298,9 @@ function ContactSection() {
   )
 }
 
-/* ---------- Scroll progress ---------- */
-
-function ScrollProgress() {
-  const { scrollYProgress } = useScroll()
-  const scaleX = useSpring(scrollYProgress, { stiffness: 120, damping: 30 })
-  return (
-    <motion.div
-      style={{ scaleX }}
-      className="fixed inset-x-0 top-0 z-[60] h-[3px] origin-left bg-gradient-to-r from-[#6d4aff] via-[#4f6bff] to-[#38a8f0]"
-    />
-  )
-}
-
 function Footer() {
   return (
-    <footer className="bg-[#0b1028] px-5 pt-14 pb-8 text-white sm:px-8">
+    <footer className="bg-[#0b1028] px-5 pt-12 pb-8 text-white sm:px-8">
       <div className="mx-auto max-w-7xl">
         <div className="grid grid-cols-2 gap-x-6 gap-y-10 lg:grid-cols-[minmax(0,1.3fr)_repeat(3,minmax(0,1fr))]">
           <div className="col-span-2 lg:col-span-1">
@@ -1367,7 +1383,6 @@ function Home() {
         onClick={scrollToHash}
         className="min-h-screen bg-[#f6f7fb] font-[Manrope,system-ui,sans-serif] text-[#0e1325] antialiased [scroll-behavior:smooth]"
       >
-        <ScrollProgress />
         <TopNav />
         <main>
           <Hero />
