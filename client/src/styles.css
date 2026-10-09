@@ -1386,3 +1386,26 @@ a.hero-stat:hover {
   align-items: center;
   min-height: 2rem;
 }
+
+/* Landing page: the moving services strip. Runs on the GPU and pauses on hover. */
+@keyframes marquee-scroll {
+  from {
+    transform: translate3d(0, 0, 0);
+  }
+  to {
+    transform: translate3d(-50%, 0, 0);
+  }
+}
+.marquee__track {
+  animation: marquee-scroll 70s linear infinite;
+  will-change: transform;
+  backface-visibility: hidden;
+}
+.marquee:hover .marquee__track {
+  animation-play-state: paused;
+}
+@media (prefers-reduced-motion: reduce) {
+  .marquee__track {
+    animation: none;
+  }
+}

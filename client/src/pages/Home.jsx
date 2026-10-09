@@ -272,7 +272,9 @@ function Detail({ value, placeholder, href }) {
 }
 
 const telHref = CONTACT.phone ? `tel:${CONTACT.phone.replace(/\s+/g, '')}` : '#contact'
-const mapsHref = CONTACT.address ? `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(CONTACT.address)}` : undefined
+// The office on the map.
+const MAP = { lat: 24.54142, lng: 81.279617 }
+const mapsHref = `https://maps.google.com/?q=${MAP.lat},${MAP.lng}`
 // A WhatsApp chat with the shop, with a ready-written first message.
 const waLink = (text = 'Namaste, I would like to know about your services.') =>
   CONTACT.whatsapp ? `https://wa.me/${CONTACT.whatsapp}?text=${encodeURIComponent(text)}` : '#contact'
@@ -415,7 +417,7 @@ function TokenStack() {
               </span>
               <div className="min-w-0 flex-1">
                 <p className="m-0 text-xs font-bold tracking-wide text-[#6b7290]">Token {t.no}</p>
-                <p className="m-0 truncate text-base font-extrabold text-[#0e1325]">{t.label}</p>
+                <p className="m-0 truncate text-[15px] font-extrabold text-[#0e1325] sm:text-base">{t.label}</p>
               </div>
               {k === 0 ? (
                 <motion.span
@@ -458,6 +460,8 @@ const QUICK = [
   { label: 'Tours', Icon: TreePalm, href: '#travel' },
 ]
 
+// The last words of the headline roll like a counter display: the next word slides in as the old one slides out,
+// inside a fixed-height window, so the line never goes blank or changes height.
 function RotatingWord() {
   const [i, setI] = useState(0)
   useEffect(() => {
@@ -465,15 +469,15 @@ function RotatingWord() {
     return () => clearInterval(t)
   }, [])
   return (
-    <span className="block overflow-hidden pb-[0.06em]" aria-live="polite">
-      <AnimatePresence mode="wait" initial={false}>
+    <span className="relative block h-[1.16em] overflow-hidden" aria-live="polite">
+      <AnimatePresence initial={false}>
         <motion.span
           key={ROTATING[i]}
-          initial={{ y: '70%', opacity: 0 }}
-          animate={{ y: 0, opacity: 1 }}
-          exit={{ y: '-70%', opacity: 0 }}
-          transition={{ duration: 0.38, ease: [0.22, 1, 0.36, 1] }}
-          className="inline-block bg-gradient-to-r from-[#b8a8ff] via-[#8fb0ff] to-[#7ad3ff] bg-clip-text whitespace-nowrap text-transparent"
+          initial={{ y: '105%' }}
+          animate={{ y: '0%' }}
+          exit={{ y: '-105%' }}
+          transition={{ duration: 0.6, ease: [0.65, 0, 0.35, 1] }}
+          className="absolute inset-x-0 top-0 block bg-gradient-to-r from-[#b8a8ff] via-[#8fb0ff] to-[#7ad3ff] bg-clip-text whitespace-nowrap text-transparent will-change-transform"
         >
           {ROTATING[i]}.
         </motion.span>
@@ -485,77 +489,81 @@ function RotatingWord() {
 function Hero() {
   const ref = useRef(null)
   const { scrollYProgress } = useScroll({ target: ref, offset: ['start start', 'end start'] })
-  const imgY = useTransform(scrollYProgress, [0, 1], ['0%', '12%'])
-  const imgScale = useTransform(scrollYProgress, [0, 1], [1.03, 1.12])
-  const copyY = useTransform(scrollYProgress, [0, 1], [0, -50])
-  const glow = useTransform(scrollYProgress, [0, 1], [1, 0.3])
+  // Only the photo drifts with the scroll, and only on the GPU (no opacity or blur changes), so nothing flickers.
+  const imgY = useTransform(scrollYProgress, [0, 1], ['0%', '8%'])
 
   return (
     <section ref={ref} id="top" className="relative isolate overflow-hidden bg-[#0b1028] pt-[72px] text-white">
-      <motion.div style={{ opacity: glow }} className="pointer-events-none absolute inset-0 -z-10" aria-hidden="true">
-        <motion.div
-          animate={{ x: [0, 40, 0], y: [0, 30, 0] }}
-          transition={{ duration: 18, repeat: Infinity, ease: 'easeInOut' }}
-          className="absolute -top-48 -left-40 size-[620px] rounded-full bg-[#6d4aff]/35 blur-[130px]"
-        />
-        <motion.div
-          animate={{ x: [0, -50, 0], y: [0, 40, 0] }}
-          transition={{ duration: 22, repeat: Infinity, ease: 'easeInOut' }}
-          className="absolute top-24 right-[-160px] size-[560px] rounded-full bg-[#2f6bff]/30 blur-[130px]"
-        />
+      {/* Soft light behind the headline: painted once as gradients, not as moving blurred shapes */}
+      <div
+        className="pointer-events-none absolute inset-0 -z-10 bg-[radial-gradient(620px_circle_at_8%_0%,rgb(109_74_255/0.32),transparent_70%),radial-gradient(560px_circle_at_100%_35%,rgb(47_107_255/0.26),transparent_70%)]"
+        aria-hidden="true"
+      >
         <div className="absolute inset-0 bg-[linear-gradient(rgb(255_255_255/0.04)_1px,transparent_1px),linear-gradient(90deg,rgb(255_255_255/0.04)_1px,transparent_1px)] bg-[size:64px_64px] [mask-image:radial-gradient(ellipse_at_30%_20%,black_25%,transparent_70%)]" />
-      </motion.div>
+      </div>
 
-      <div className="mx-auto grid max-w-7xl items-center gap-12 px-5 pt-8 pb-16 sm:px-8 lg:grid-cols-[minmax(0,1.08fr)_minmax(0,0.92fr)] lg:gap-16 lg:pt-10 lg:pb-24">
-        <motion.div style={{ y: copyY }} initial="hidden" animate="show" variants={{ show: { transition: { staggerChildren: 0.09 } } }}>
+      <div className="mx-auto flex max-w-7xl flex-col px-5 pt-6 pb-14 sm:px-8 md:grid md:grid-cols-[minmax(0,1.1fr)_minmax(0,0.9fr)] md:items-center md:gap-8 md:pt-8 md:pb-20 lg:grid-cols-[minmax(0,1.08fr)_minmax(0,0.92fr)] lg:gap-16 lg:pt-10 lg:pb-24">
+        <motion.div
+          className="max-md:contents"
+          initial="hidden"
+          animate="show"
+          variants={{ show: { transition: { staggerChildren: 0.09 } } }}
+        >
           <motion.p
             variants={fadeUp}
-            className="m-0 inline-flex items-center gap-2 rounded-full bg-white/[0.07] py-1 pr-3.5 pl-1 text-sm font-semibold text-white/80 ring-1 ring-white/12 backdrop-blur"
+            className="m-0 inline-flex items-center gap-2 self-start rounded-full bg-white/[0.07] py-1 pr-3.5 pl-1 text-sm font-semibold text-white/80 ring-1 ring-white/12 backdrop-blur max-md:order-1"
           >
             <span className="grid size-6 place-items-center rounded-full bg-gradient-to-br from-[#7b5eff] to-[#2f6bff]">
               <ShieldCheck size={13} aria-hidden="true" />
             </span>
-            Insurance advisor and service centre in Rewa
+            <span>
+              Insurance advisor<span className="max-sm:hidden"> and service centre</span> in Rewa
+            </span>
           </motion.p>
 
           <motion.h1
             variants={fadeUp}
-            className="m-0 mt-6 text-[2.6rem] leading-[1.06] font-extrabold tracking-[-0.04em] text-white sm:text-6xl lg:text-[4.1rem]"
+            className="m-0 mt-5 text-[clamp(2.1rem,5.6vw,4.1rem)] leading-[1.06] lg:text-[4.1rem] font-extrabold tracking-[-0.04em] text-white max-md:order-2 md:mt-6"
           >
             One counter for your
             <RotatingWord />
           </motion.h1>
 
-          <motion.p variants={fadeUp} className="m-0 mt-6 max-w-[33rem] text-lg leading-relaxed text-white/70">
+          <motion.p
+            variants={fadeUp}
+            className="m-0 mt-5 max-w-[33rem] text-[clamp(0.95rem,1.7vw,1.125rem)] leading-relaxed text-white/70 lg:text-[1.125rem] max-md:order-4 md:mt-6"
+          >
             Insurance, banking, GST and tax, business registrations, passports, tickets and tours, handled by people who know the paperwork.
             No running between offices, no surprises on the fee.
           </motion.p>
 
-          <motion.div variants={fadeUp} className="mt-8 flex flex-wrap gap-3">
+          <motion.div variants={fadeUp} className="mt-6 grid grid-cols-2 gap-2.5 max-md:order-5 sm:flex sm:flex-wrap sm:gap-3 md:mt-8">
             <motion.a
               whileHover={{ y: -3 }}
               whileTap={{ scale: 0.97 }}
               href={waHref}
               target="_blank"
               rel="noreferrer"
-              className="inline-flex h-14 items-center gap-2.5 rounded-2xl bg-gradient-to-r from-[#7b5eff] to-[#4f6bff] px-6 text-base font-bold text-white no-underline shadow-[0_18px_40px_-14px_rgb(109_74_255/0.95),inset_0_1px_0_rgb(255_255_255/0.25)]"
+              className="inline-flex h-12 items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-[#7b5eff] to-[#4f6bff] px-4 text-[15px] font-bold whitespace-nowrap text-white no-underline sm:h-14 sm:gap-2.5 sm:px-6 sm:text-base shadow-[0_18px_40px_-14px_rgb(109_74_255/0.95),inset_0_1px_0_rgb(255_255_255/0.25)]"
             >
-              <WhatsAppIcon size={20} /> Message us on WhatsApp
+              <WhatsAppIcon size={20} /> <span className="sm:hidden">WhatsApp</span>
+              <span className="max-sm:hidden">Message us on WhatsApp</span>
             </motion.a>
             <motion.a
               whileHover={{ y: -3 }}
               whileTap={{ scale: 0.97 }}
               href={telHref}
-              className="inline-flex h-14 items-center gap-2.5 rounded-2xl px-6 text-base font-bold text-white no-underline ring-1 ring-white/20 backdrop-blur transition-colors hover:bg-white/[0.06]"
+              className="inline-flex h-12 items-center justify-center gap-2 rounded-2xl px-4 text-[15px] font-bold whitespace-nowrap text-white no-underline ring-1 ring-white/20 sm:h-14 sm:gap-2.5 sm:px-6 sm:text-base backdrop-blur transition-colors hover:bg-white/[0.06]"
             >
-              <Phone size={18} aria-hidden="true" /> Call the office
+              <Phone size={18} aria-hidden="true" /> <span className="sm:hidden">Call us</span>
+              <span className="max-sm:hidden">Call the office</span>
             </motion.a>
           </motion.div>
 
           {/* What we handle, as shortcuts */}
-          <motion.div variants={fadeUp} className="mt-10">
+          <motion.div variants={fadeUp} className="mt-6 max-md:order-6 md:mt-10">
             <p className="m-0 text-sm font-semibold text-white/50">What can we help with?</p>
-            <ul className="m-0 mt-3 flex list-none flex-wrap gap-2 p-0">
+            <ul className="m-0 mt-3 flex list-none gap-2 p-0 max-sm:-mx-5 max-sm:overflow-x-auto max-sm:px-5 max-sm:[scrollbar-width:none] sm:flex-wrap">
               {QUICK.map(({ label, Icon, href }, k) => (
                 <motion.li
                   key={label}
@@ -565,7 +573,7 @@ function Hero() {
                 >
                   <a
                     href={href}
-                    className="group inline-flex h-11 items-center gap-2 rounded-xl bg-white/[0.06] pr-3.5 pl-2 text-sm font-bold text-white/85 no-underline ring-1 ring-white/10 transition-colors hover:bg-white/[0.12] hover:text-white"
+                    className="group inline-flex h-11 shrink-0 items-center gap-2 rounded-xl whitespace-nowrap bg-white/[0.06] pr-3.5 pl-2 text-sm font-bold text-white/85 no-underline ring-1 ring-white/10 transition-colors hover:bg-white/[0.12] hover:text-white"
                   >
                     <span className="grid size-7 place-items-center rounded-lg bg-white/10 text-[#a9c2ff] transition-colors group-hover:bg-[#6d4aff] group-hover:text-white">
                       <Icon size={15} aria-hidden="true" />
@@ -582,7 +590,7 @@ function Hero() {
           initial={{ opacity: 0, scale: 0.94, rotate: 1.5 }}
           animate={{ opacity: 1, scale: 1, rotate: 0 }}
           transition={{ delay: 0.25, duration: 1, ease: [0.22, 1, 0.36, 1] }}
-          className="relative mx-auto w-full max-w-[540px] lg:max-w-[480px]"
+          className="relative mt-6 w-full max-md:order-3 md:mx-auto md:mt-0 lg:max-w-[480px]"
         >
           {/* Glow ring behind the photo */}
           <div
@@ -590,8 +598,8 @@ function Hero() {
             aria-hidden="true"
           />
 
-          <div className="relative aspect-[1.05/1] overflow-hidden rounded-[36px] lg:aspect-[1.15/1] shadow-[0_50px_100px_-40px_rgb(0_0_0/0.9)] ring-1 ring-white/15">
-            <motion.div style={{ y: imgY, scale: imgScale }} className="absolute inset-0">
+          <div className="relative aspect-[16/10] overflow-hidden rounded-[26px] sm:aspect-[16/9] md:aspect-[1.05/1] md:rounded-[36px] lg:aspect-[1.15/1] shadow-[0_50px_100px_-40px_rgb(0_0_0/0.9)] ring-1 ring-white/15">
+            <motion.div style={{ y: imgY, scale: 1.06 }} className="absolute inset-0 will-change-transform">
               <picture>
                 <source
                   type="image/webp"
@@ -604,7 +612,7 @@ function Hero() {
                   sizes="(min-width: 1024px) 540px, 92vw"
                   alt="At the desk in the Manish Associates office"
                   fetchPriority="high"
-                  className="h-full w-full bg-[#1a2147] object-cover object-[50%_28%]"
+                  className="h-full w-full bg-[#1a2147] object-cover object-[50%_22%] md:object-[50%_28%]"
                 />
               </picture>
             </motion.div>
@@ -620,9 +628,9 @@ function Hero() {
               x: { delay: 0.9, type: 'spring' },
               y: { delay: 1.5, duration: 5, repeat: Infinity, ease: 'easeInOut' },
             }}
-            className="absolute top-5 left-5 flex items-center gap-3 rounded-2xl bg-white py-2.5 pr-4 pl-2.5 shadow-[0_20px_40px_-18px_rgb(0_0_0/0.6)] lg:top-10 lg:-left-10"
+            className="absolute bottom-3 left-3 flex items-center gap-2.5 rounded-2xl bg-white py-2 pr-3.5 pl-2 md:top-5 md:bottom-auto md:left-5 md:gap-3 md:py-2.5 md:pr-4 md:pl-2.5 shadow-[0_20px_40px_-18px_rgb(0_0_0/0.6)] lg:top-10 lg:-left-10"
           >
-            <img src="/brand/mark-64.png" alt="" width="40" height="40" className="size-10 rounded-xl" />
+            <img src="/brand/mark-64.png" alt="" width="40" height="40" className="size-8 rounded-lg md:size-10 md:rounded-xl" />
             <span className="leading-tight">
               <span className="block text-[11px] font-bold text-[#6b7290]">Serving {SINCE.town}</span>
               <span className="block text-sm font-extrabold text-[#0e1325]">{SINCE.years} years in business</span>
@@ -630,7 +638,7 @@ function Hero() {
           </motion.div>
 
           {/* The counter's queue */}
-          <div className="relative mx-auto -mt-7 w-[90%] sm:-mt-10 lg:absolute lg:right-0 lg:-bottom-[4.75rem] lg:left-0 lg:mt-0 lg:w-[86%]">
+          <div className="relative mx-auto -mt-7 w-[90%] max-md:hidden sm:-mt-10 lg:absolute lg:right-0 lg:-bottom-[4.75rem] lg:left-0 lg:mt-0 lg:w-[86%]">
             <TokenStack />
           </div>
         </motion.div>
@@ -645,30 +653,32 @@ function Hero() {
 
 const STRIP = SERVICE_GROUPS.flatMap((g) => g.items.map((it) => ({ ...it, tone: g.tone })))
 
+// Two identical rows side by side; the track moves exactly one row's width, so the loop has no jump.
 function Marquee() {
-  const row = [...STRIP, ...STRIP]
+  const row = (copy) => (
+    <ul className="m-0 flex shrink-0 list-none gap-2 p-0 pr-2 sm:gap-3 sm:pr-3" aria-hidden={copy || undefined}>
+      {STRIP.map((it) => (
+        <li
+          key={it.label}
+          className="inline-flex shrink-0 items-center gap-2 rounded-full bg-white py-1.5 pr-3.5 pl-1.5 text-[13px] font-bold sm:gap-2.5 sm:py-2.5 sm:pr-5 sm:pl-2.5 sm:text-[15px] whitespace-nowrap text-[#1d2340] shadow-[0_1px_2px_rgb(15_21_48/0.05)] ring-1 ring-[#e3e6f0]"
+        >
+          <span className={`grid size-6 place-items-center rounded-full sm:size-8 ${TONES[it.tone].tile}`}>
+            <it.Icon size={14} aria-hidden="true" />
+          </span>
+          {it.label}
+        </li>
+      ))}
+    </ul>
+  )
   return (
     <div
-      className="relative z-10 -mt-9 overflow-hidden py-4 [mask-image:linear-gradient(90deg,transparent,black_8%,black_92%,transparent)]"
-      aria-hidden="true"
+      className="marquee relative z-10 -mt-9 overflow-hidden py-3 sm:py-4 [mask-image:linear-gradient(90deg,transparent,black_6%,black_94%,transparent)]"
+      aria-label="Our services"
     >
-      <motion.div
-        className="flex w-max gap-3"
-        animate={{ x: ['0%', '-50%'] }}
-        transition={{ duration: 45, repeat: Infinity, ease: 'linear' }}
-      >
-        {row.map((it, k) => (
-          <span
-            key={k}
-            className="inline-flex shrink-0 items-center gap-2.5 rounded-full bg-white py-2.5 pr-5 pl-2.5 text-[15px] font-bold whitespace-nowrap text-[#1d2340] shadow-[0_1px_2px_rgb(15_21_48/0.05)] ring-1 ring-[#e3e6f0]"
-          >
-            <span className={`grid size-8 place-items-center rounded-full ${TONES[it.tone].tile}`}>
-              <it.Icon size={15} />
-            </span>
-            {it.label}
-          </span>
-        ))}
-      </motion.div>
+      <div className="marquee__track flex w-max">
+        {row(false)}
+        {row(true)}
+      </div>
     </div>
   )
 }
@@ -680,12 +690,12 @@ function Services() {
   const g = SERVICE_GROUPS.find((x) => x.id === active)
   const t = TONES[g.tone]
   return (
-    <section id="services" className="scroll-mt-20 bg-[#f6f7fb] px-5 py-8 sm:px-8 lg:py-10 pt-14 lg:pt-16">
+    <section id="services" className="scroll-mt-20 bg-[#f6f7fb] px-5 pt-4 pb-8 sm:px-8 sm:pt-10 lg:pt-16 lg:pb-10">
       <div className="mx-auto max-w-7xl">
         <Reveal className="flex flex-wrap items-end justify-between gap-x-10 gap-y-4">
           <div className="max-w-xl">
             <p className="m-0 text-sm font-bold text-[#6d4aff]">What we do</p>
-            <h2 className="m-0 mt-2 text-3xl leading-[1.1] font-extrabold tracking-[-0.03em] text-[#0e1325] sm:text-[2.25rem]">
+            <h2 className="m-0 mt-2 text-[clamp(1.7rem,3.6vw,2.25rem)] leading-[1.1] font-extrabold tracking-[-0.03em] text-[#0e1325]">
               Every office’s work, at one counter.
             </h2>
           </div>
@@ -748,7 +758,7 @@ function Services() {
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -10 }}
               transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
-              className="grid gap-6 p-5 sm:p-7 md:grid-cols-[minmax(0,1fr)_minmax(0,0.85fr)] md:items-center"
+              className="grid gap-6 p-5 sm:p-7 lg:grid-cols-[minmax(0,1fr)_minmax(0,0.85fr)] lg:items-center"
               role="tabpanel"
               aria-label={g.title}
             >
@@ -781,7 +791,7 @@ function Services() {
                   <ArrowRight size={16} className="transition-transform group-hover:translate-x-1" aria-hidden="true" />
                 </a>
               </div>
-              <div className="relative hidden aspect-[4/3] overflow-hidden rounded-3xl md:block">
+              <div className="relative hidden aspect-[4/3] overflow-hidden rounded-3xl lg:block">
                 <Photo photo={g.photo} sizes="420px" />
                 <div className="absolute inset-0 bg-gradient-to-t from-[#0b1028]/40 to-transparent" />
               </div>
@@ -802,9 +812,9 @@ const TATKAL_WINDOWS = [
 ]
 
 const TATKAL_NEEDS = [
-  { Icon: IdCard, text: 'Name, age and ID of each traveller' },
-  { Icon: TrainFront, text: 'Train, route, class and date' },
-  { Icon: Phone, text: 'A mobile number for the ticket' },
+  { Icon: IdCard, text: 'Name, age and ID of each traveller', short: 'Name, age and ID' },
+  { Icon: TrainFront, text: 'Train, route, class and date', short: 'Train, class and date' },
+  { Icon: Phone, text: 'A mobile number for the ticket', short: 'Mobile number' },
 ]
 
 function Highlight() {
@@ -815,22 +825,22 @@ function Highlight() {
     <section ref={ref} className="scroll-mt-20 bg-[#f6f7fb] px-5 py-8 sm:px-8 lg:py-10">
       <Reveal className="relative mx-auto grid max-w-7xl grid-cols-[minmax(0,1fr)] overflow-hidden rounded-[32px] bg-[#0f1530] text-white shadow-[0_40px_80px_-48px_rgb(15_21_48/0.9)] lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)]">
         {/* Copy */}
-        <div className="relative z-10 p-6 sm:p-10 lg:p-12">
+        <div className="relative z-10 px-5 pt-6 pb-4 sm:p-10 lg:p-12">
           <div
-            className="pointer-events-none absolute -top-28 -left-28 size-80 rounded-full bg-[#6d4aff]/40 blur-[100px]"
+            className="pointer-events-none absolute -top-28 -left-28 size-80 rounded-full bg-[radial-gradient(closest-side,rgb(109_74_255/0.4),transparent)]"
             aria-hidden="true"
           />
           <p className="relative m-0 text-sm font-bold text-[#a9b8ff]">Tatkal and urgent work</p>
-          <h2 className="relative m-0 mt-5 text-3xl leading-tight font-extrabold tracking-tight text-white sm:text-[2.25rem]">
+          <h2 className="relative m-0 mt-3 sm:mt-5 text-[clamp(1.7rem,3.6vw,2.25rem)] leading-tight font-extrabold tracking-tight text-white">
             Tatkal seats go in minutes. Your booking will be ready before that.
           </h2>
-          <p className="relative m-0 mt-4 max-w-lg text-base leading-relaxed text-white/70 sm:text-[17px]">
-            Send your details a day before. We fill the booking in advance and submit it the moment the window opens. The same goes for
-            Tatkal passports and urgent visas.
+          <p className="relative m-0 mt-3 max-w-lg text-[15px] leading-relaxed text-white/70 sm:mt-4 sm:text-[17px]">
+            Send your details a day before. We fill the booking in advance and submit it the moment the window opens.
+            <span className="max-sm:hidden"> The same goes for Tatkal passports and urgent visas.</span>
           </p>
 
-          <p className="relative m-0 mt-6 text-sm font-bold text-white/85">For a Tatkal train ticket, send us:</p>
-          <ul className="relative m-0 mt-3 flex list-none flex-col gap-2 p-0">
+          <p className="relative m-0 mt-6 text-sm font-bold text-white/85 max-lg:hidden">For a Tatkal train ticket, send us:</p>
+          <ul className="relative m-0 mt-3 flex list-none flex-col gap-2 p-0 max-lg:hidden">
             {TATKAL_NEEDS.map(({ Icon, text }, k) => (
               <motion.li
                 key={text}
@@ -854,28 +864,30 @@ function Highlight() {
             href={waLink('Namaste, I want to book a Tatkal ticket. Here are the details:')}
             target="_blank"
             rel="noreferrer"
-            className="relative mt-6 inline-flex h-12 items-center gap-2.5 rounded-2xl bg-white px-6 font-bold text-[#141b34] no-underline shadow-[0_16px_30px_-14px_rgb(0_0_0/0.6)]"
+            className="relative mt-6 inline-flex h-12 items-center gap-2.5 rounded-2xl bg-white px-6 font-bold whitespace-nowrap text-[#141b34] no-underline shadow-[0_16px_30px_-14px_rgb(0_0_0/0.6)] max-lg:hidden"
           >
             <WhatsAppIcon size={19} className="text-[#25D366]" /> Send details on WhatsApp
           </motion.a>
         </div>
 
         {/* Train photo, with the booking times on it */}
-        <div className="relative min-h-[380px] overflow-hidden lg:min-h-full">
-          <motion.div style={{ y }} className="absolute -inset-y-[12%] inset-x-0">
-            <Photo photo={PHOTOS.train} sizes="(min-width: 1024px) 640px, 100vw" />
-          </motion.div>
-          <div className="absolute inset-0 bg-gradient-to-r from-[#0f1530] via-[#0f1530]/25 to-transparent max-lg:bg-gradient-to-b" />
+        <div className="relative lg:min-h-[380px]">
+          <div className="relative overflow-hidden max-lg:aspect-[16/9] lg:absolute lg:inset-0">
+            <motion.div style={{ y }} className="absolute -inset-y-[12%] inset-x-0">
+              <Photo photo={PHOTOS.train} sizes="(min-width: 1024px) 640px, 100vw" />
+            </motion.div>
+            <div className="absolute inset-0 bg-gradient-to-r from-[#0f1530] via-[#0f1530]/25 to-transparent max-lg:bg-[linear-gradient(to_bottom,#0f1530,transparent_28%,transparent_62%,#0f1530)]" />
 
-          <div className="absolute top-5 right-5 flex flex-wrap justify-end gap-2">
-            {['Tatkal train', 'Tatkal passport', 'Urgent visa'].map((x) => (
-              <span
-                key={x}
-                className="rounded-full bg-[#0b1028]/60 px-3.5 py-1.5 text-sm font-bold text-white ring-1 ring-white/20 backdrop-blur"
-              >
-                {x}
-              </span>
-            ))}
+            <div className="absolute top-3 right-4 left-4 flex flex-wrap gap-1.5 lg:top-5 lg:right-5 lg:left-auto lg:justify-end lg:gap-2">
+              {['Tatkal train', 'Tatkal passport', 'Urgent visa'].map((x) => (
+                <span
+                  key={x}
+                  className="rounded-full bg-[#0b1028]/65 px-2.5 py-1 text-xs max-[380px]:px-2 max-[380px]:text-[11px] font-bold whitespace-nowrap text-white ring-1 ring-white/20 backdrop-blur lg:px-3.5 lg:py-1.5 lg:text-sm"
+                >
+                  {x}
+                </span>
+              ))}
+            </div>
           </div>
 
           <motion.div
@@ -883,17 +895,17 @@ function Highlight() {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, margin: '-60px' }}
             transition={{ delay: 0.2, duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
-            className="absolute inset-x-4 bottom-4 overflow-hidden rounded-[24px] bg-white/95 text-[#0e1325] shadow-[0_30px_60px_-30px_rgb(0_0_0/0.9)] backdrop-blur sm:inset-x-6 sm:bottom-6"
+            className="relative z-10 mx-4 -mt-14 overflow-hidden rounded-[22px] bg-white/95 text-[#0e1325] shadow-[0_30px_60px_-30px_rgb(0_0_0/0.9)] backdrop-blur sm:mx-6 lg:absolute lg:inset-x-6 lg:bottom-6 lg:mx-0 lg:mt-0 lg:rounded-[24px]"
           >
-            <p className="m-0 flex items-center justify-between gap-3 border-b border-[#eceef5] px-5 py-3 text-sm font-bold whitespace-nowrap">
+            <p className="m-0 flex items-center justify-between gap-3 border-b border-[#eceef5] px-4 py-2.5 text-sm font-bold whitespace-nowrap sm:px-5 sm:py-3">
               <span className="inline-flex items-center gap-2">
                 <TrainFront size={16} className="text-[#5b37f0]" aria-hidden="true" /> Tatkal booking opens
               </span>
-              <span className="text-xs text-[#6b7290]">1 day before travel</span>
+              <span className="text-xs text-[#6b7290] max-sm:hidden">1 day before travel</span>
             </p>
             <div className="grid grid-cols-2">
               {TATKAL_WINDOWS.map((w, k) => (
-                <div key={w.label} className={`px-5 py-4 ${k ? 'border-0 border-l border-[#eceef5]' : ''}`}>
+                <div key={w.label} className={`px-4 py-3 sm:px-5 sm:py-4 ${k ? 'border-0 border-l border-[#eceef5]' : ''}`}>
                   <p className="m-0 text-xs font-bold text-[#6b7290]">{w.label}</p>
                   <p className="m-0 mt-0.5 flex items-baseline gap-1">
                     <span className="text-[1.75rem] leading-none font-extrabold tracking-tight tabular-nums sm:text-[2rem]">{w.time}</span>
@@ -904,6 +916,40 @@ function Highlight() {
               ))}
             </div>
           </motion.div>
+        </div>
+        {/* What to send, under the photo (phones and tablets) */}
+        <div className="relative z-10 flex flex-col gap-3 px-4 pt-3 pb-4 sm:gap-4 sm:px-8 lg:hidden sm:pb-8 lg:col-span-2 lg:flex-row lg:items-end lg:gap-10 lg:border-0 lg:border-t lg:border-solid lg:border-white/10 lg:px-12 lg:py-8">
+          <div className="min-w-0 flex-1">
+            <p className="m-0 text-sm font-bold text-white/85 max-sm:px-1">For a Tatkal train ticket, send us:</p>
+            <ul className="m-0 mt-2.5 grid list-none grid-cols-3 gap-2 p-0 sm:mt-3 sm:grid-cols-1 sm:gap-2.5 lg:grid-cols-3 lg:gap-4">
+              {TATKAL_NEEDS.map(({ Icon, text, short }, k) => (
+                <motion.li
+                  key={text}
+                  initial={{ opacity: 0, x: -14 }}
+                  whileInView={{ opacity: 1, x: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ delay: 0.15 + k * 0.08 }}
+                  className="flex items-center gap-3 text-sm leading-snug font-semibold text-white/90 max-sm:flex-col max-sm:gap-2 max-sm:rounded-2xl max-sm:bg-white/[0.05] max-sm:px-2 max-sm:py-3 max-sm:text-center max-sm:text-xs max-sm:ring-1 max-sm:ring-white/10 sm:text-[15px]"
+                >
+                  <span className="grid size-8 shrink-0 place-items-center rounded-lg bg-[#2f6bff]/25 sm:size-9 sm:rounded-xl text-[#a9c2ff] ring-1 ring-[#2f6bff]/30">
+                    <Icon size={17} aria-hidden="true" />
+                  </span>
+                  <span className="sm:hidden">{short}</span>
+                  <span className="max-sm:hidden">{text}</span>
+                </motion.li>
+              ))}
+            </ul>
+          </div>
+          <motion.a
+            whileHover={{ y: -3 }}
+            whileTap={{ scale: 0.97 }}
+            href={waLink('Namaste, I want to book a Tatkal ticket. Here are the details:')}
+            target="_blank"
+            rel="noreferrer"
+            className="inline-flex h-12 shrink-0 items-center justify-center gap-2.5 rounded-2xl bg-white px-5 font-bold whitespace-nowrap text-[#141b34] no-underline shadow-[0_16px_30px_-14px_rgb(0_0_0/0.6)] sm:px-6"
+          >
+            <WhatsAppIcon size={19} className="text-[#25D366]" /> Send details on WhatsApp
+          </motion.a>
         </div>
       </Reveal>
     </section>
@@ -923,23 +969,23 @@ function Tours() {
   return (
     <section id="travel" className="scroll-mt-20 bg-[#f6f7fb] px-5 py-8 sm:px-8 lg:py-10">
       <div className="mx-auto max-w-7xl">
-        <Reveal className="grid gap-8 lg:grid-cols-[minmax(0,1fr)_minmax(0,0.9fr)] lg:items-end">
+        <Reveal className="grid gap-5 sm:gap-8 lg:grid-cols-[minmax(0,1fr)_minmax(0,0.9fr)] lg:items-end">
           <div>
             <p className="m-0 text-sm font-bold text-[#6d4aff]">Tour packages</p>
-            <h2 className="m-0 mt-2 text-3xl leading-[1.1] font-extrabold tracking-[-0.03em] text-[#0e1325] sm:text-[2.25rem]">
+            <h2 className="m-0 mt-2 text-[clamp(1.7rem,3.6vw,2.25rem)] leading-[1.1] font-extrabold tracking-[-0.03em] text-[#0e1325]">
               Holidays planned for you, from the first ticket to the last night.
             </h2>
-            <p className="m-0 mt-4 max-w-xl text-base leading-relaxed text-[#5a6280] sm:text-lg">
+            <p className="m-0 mt-3 max-w-xl text-[15px] leading-relaxed text-[#5a6280] sm:mt-4 sm:text-lg">
               Tell us where, when and how many. We put together a package that fits your budget, for families, groups and couples.
             </p>
           </div>
-          <ul className="m-0 grid list-none grid-cols-2 gap-2.5 p-0">
+          <ul className="m-0 grid list-none grid-cols-2 gap-2 p-0 sm:gap-2.5">
             {INCLUDED.map(({ Icon, label }) => (
               <li
                 key={label}
-                className="flex items-center gap-3 rounded-2xl bg-white px-3.5 py-3 text-sm font-bold text-[#1d2340] shadow-[0_1px_2px_rgb(15_21_48/0.05)] ring-1 ring-[#e3e6f0]"
+                className="flex items-center gap-2.5 rounded-2xl bg-white px-2.5 py-2.5 text-[13px] leading-tight font-bold text-[#1d2340] sm:gap-3 sm:px-3.5 sm:py-3 sm:text-sm sm:leading-[calc(1.25/0.875)] shadow-[0_1px_2px_rgb(15_21_48/0.05)] ring-1 ring-[#e3e6f0]"
               >
-                <span className="grid size-9 shrink-0 place-items-center rounded-xl bg-[#e4f4ff] text-[#0b6fb0]">
+                <span className="grid size-8 shrink-0 place-items-center rounded-lg bg-[#e4f4ff] text-[#0b6fb0] sm:size-9 sm:rounded-xl">
                   <Icon size={17} aria-hidden="true" />
                 </span>
                 {label}
@@ -948,7 +994,7 @@ function Tours() {
           </ul>
         </Reveal>
 
-        <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        <div className="mt-5 grid grid-cols-2 gap-2.5 sm:mt-8 sm:gap-4 lg:grid-cols-4">
           {TOURS.map((t, i) => (
             <motion.article
               key={t.title}
@@ -956,27 +1002,29 @@ function Tours() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true, margin: '-60px' }}
               transition={{ duration: 0.7, delay: i * 0.08, ease: [0.22, 1, 0.36, 1] }}
-              className={`group relative overflow-hidden rounded-[28px] shadow-[0_30px_60px_-34px_rgb(15_21_48/0.7)] ${i % 2 ? 'lg:mt-6' : ''}`}
+              className={`group relative overflow-hidden rounded-[20px] shadow-[0_20px_36px_-28px_rgb(15_21_48/0.7)] sm:rounded-[28px] sm:shadow-[0_30px_60px_-34px_rgb(15_21_48/0.7)] ${i % 2 ? 'lg:mt-6' : ''}`}
             >
-              <div className="aspect-[4/3] sm:aspect-[4/4.6]">
+              <div className="aspect-[4/5] sm:aspect-[4/3.4] lg:aspect-[4/4.6]">
                 <Photo
                   photo={t.photo}
-                  sizes="(min-width: 1024px) 300px, (min-width: 640px) 45vw, 92vw"
+                  sizes="(min-width: 1280px) 300px, 48vw"
                   className="transition-transform duration-700 ease-out group-hover:scale-110"
                 />
               </div>
               <div className="absolute inset-0 bg-gradient-to-t from-[#0b1028]/90 via-[#0b1028]/15 to-transparent" />
-              <span className="absolute top-4 left-4 grid size-10 place-items-center rounded-xl bg-white/90 text-[#141b34] backdrop-blur">
-                <t.Icon size={18} aria-hidden="true" />
+              <span className="absolute top-2.5 left-2.5 grid size-8 place-items-center rounded-lg bg-white/90 text-[#141b34] backdrop-blur sm:top-4 sm:left-4 sm:size-10 sm:rounded-xl">
+                <t.Icon size={16} aria-hidden="true" />
               </span>
-              <div className="absolute inset-x-0 bottom-0 p-5 text-white">
-                <h3 className="m-0 text-xl font-extrabold text-white">{t.title}</h3>
-                <p className="m-0 mt-1 text-sm text-white/75">{t.note}</p>
+              <div className="absolute inset-x-0 bottom-0 p-3 text-white sm:p-5">
+                <h3 className="m-0 text-[15px] leading-tight font-extrabold text-white sm:text-xl sm:leading-[1.4]">{t.title}</h3>
+                <p className="m-0 mt-1 text-xs leading-snug text-white/75 max-sm:line-clamp-2 sm:text-sm sm:leading-[calc(1.25/0.875)]">
+                  {t.note}
+                </p>
                 <a
                   href={waLink(`Namaste, I want to plan a trip: ${t.title.toLowerCase()}.`)}
                   target="_blank"
                   rel="noreferrer"
-                  className="mt-3 inline-flex min-h-10 items-center gap-1.5 rounded-xl bg-white/15 px-3 text-sm font-bold text-white no-underline ring-1 ring-white/25 backdrop-blur transition-colors hover:bg-white hover:text-[#141b34]"
+                  className="mt-2.5 inline-flex min-h-9 items-center gap-1 rounded-lg bg-white/15 px-2.5 text-xs font-bold sm:mt-3 sm:min-h-10 sm:gap-1.5 sm:rounded-xl sm:px-3 sm:text-sm text-white no-underline ring-1 ring-white/25 backdrop-blur transition-colors hover:bg-white hover:text-[#141b34]"
                 >
                   Plan this trip <ArrowRight size={15} aria-hidden="true" />
                 </a>
@@ -994,26 +1042,26 @@ function Tours() {
 function HowItWorks() {
   return (
     <section id="how" className="scroll-mt-20 bg-[#f6f7fb] px-5 py-8 sm:px-8 lg:py-10">
-      <Reveal className="relative mx-auto max-w-7xl overflow-hidden rounded-[32px] bg-[#0f1530] p-6 text-white shadow-[0_40px_80px_-48px_rgb(15_21_48/0.9)] sm:p-10 lg:p-12">
+      <Reveal className="relative mx-auto max-w-7xl overflow-hidden rounded-[32px] bg-[#0f1530] px-5 py-6 text-white shadow-[0_40px_80px_-48px_rgb(15_21_48/0.9)] sm:p-10 lg:p-12">
         <div className="pointer-events-none absolute inset-0" aria-hidden="true">
-          <div className="absolute -top-32 left-1/4 size-[420px] rounded-full bg-[#6d4aff]/30 blur-[110px]" />
-          <div className="absolute -right-24 -bottom-40 size-[420px] rounded-full bg-[#2f6bff]/25 blur-[110px]" />
+          <div className="absolute -top-32 left-1/4 size-[420px] rounded-full bg-[radial-gradient(closest-side,rgb(109_74_255/0.3),transparent)]" />
+          <div className="absolute -right-24 -bottom-40 size-[420px] rounded-full bg-[radial-gradient(closest-side,rgb(47_107_255/0.25),transparent)]" />
           <div className="absolute inset-0 bg-[linear-gradient(rgb(255_255_255/0.035)_1px,transparent_1px),linear-gradient(90deg,rgb(255_255_255/0.035)_1px,transparent_1px)] bg-[size:56px_56px] [mask-image:radial-gradient(ellipse_at_center,black_20%,transparent_70%)]" />
         </div>
 
-        <div className="relative flex flex-wrap items-end justify-between gap-x-10 gap-y-4">
+        <div className="relative flex flex-wrap items-end justify-between gap-x-10 gap-y-2 sm:gap-y-4">
           <div className="max-w-xl">
             <p className="m-0 text-sm font-bold text-[#a9b8ff]">How it works</p>
-            <h2 className="m-0 mt-2 text-3xl leading-[1.1] font-extrabold tracking-[-0.03em] text-white sm:text-[2.25rem]">
+            <h2 className="m-0 mt-2 text-[clamp(1.7rem,3.6vw,2.25rem)] leading-[1.1] font-extrabold tracking-[-0.03em] text-white">
               Three steps, and the job is done.
             </h2>
           </div>
-          <p className="m-0 max-w-sm text-base leading-relaxed text-white/65">
+          <p className="m-0 max-w-sm text-[15px] leading-relaxed text-white/65 sm:text-base">
             The same simple routine, whether it’s a bus ticket or a GST registration.
           </p>
         </div>
 
-        <ol className="relative m-0 mt-8 grid list-none gap-3 p-0 md:grid-cols-3 md:gap-4">
+        <ol className="relative m-0 mt-6 grid list-none gap-5 p-0 sm:mt-8 sm:grid-cols-3 sm:gap-3 lg:gap-4">
           {STEPS.map(({ Icon, title, body, tag }, i) => (
             <motion.li
               key={title}
@@ -1021,18 +1069,24 @@ function HowItWorks() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true, margin: '-60px' }}
               transition={{ duration: 0.55, delay: 0.1 + i * 0.12, ease: [0.22, 1, 0.36, 1] }}
-              className="relative flex gap-4 rounded-[24px] bg-white/[0.05] p-5 ring-1 ring-white/10"
+              className="relative flex gap-4 sm:rounded-[24px] sm:bg-white/[0.05] sm:p-5 sm:ring-1 sm:ring-white/10 sm:max-lg:flex-col sm:max-lg:gap-3"
             >
-              <span className="relative grid size-12 shrink-0 place-items-center rounded-2xl bg-gradient-to-br from-[#7b5eff] to-[#2f6bff] shadow-[0_14px_28px_-12px_rgb(79_90_255/0.9)]">
+              {i < STEPS.length - 1 && (
+                <span
+                  className="absolute top-12 -bottom-5 left-[21px] w-px bg-gradient-to-b from-[#7b5eff]/60 to-white/10 sm:hidden"
+                  aria-hidden="true"
+                />
+              )}
+              <span className="relative grid size-11 shrink-0 place-items-center rounded-2xl sm:size-12 bg-gradient-to-br from-[#7b5eff] to-[#2f6bff] shadow-[0_14px_28px_-12px_rgb(79_90_255/0.9)]">
                 <Icon size={22} strokeWidth={2} aria-hidden="true" />
                 <span className="absolute -top-1.5 -right-1.5 grid size-5 place-items-center rounded-full bg-white text-[11px] font-extrabold text-[#141b34]">
                   {i + 1}
                 </span>
               </span>
               <div className="min-w-0">
-                <h3 className="m-0 text-[17px] font-extrabold text-white">{title}</h3>
-                <p className="m-0 mt-1 text-sm leading-relaxed text-white/65">{body}</p>
-                <span className="mt-2.5 inline-flex rounded-full bg-white/[0.07] px-2.5 py-0.5 text-[11px] font-bold text-[#c9d4ff] ring-1 ring-white/10">
+                <h3 className="m-0 text-base font-extrabold text-white sm:text-[17px] sm:leading-[1.2]">{title}</h3>
+                <p className="m-0 mt-1 text-[13.5px] leading-relaxed text-white/65 sm:text-sm">{body}</p>
+                <span className="mt-2 inline-flex rounded-full sm:mt-2.5 bg-white/[0.07] px-2.5 py-0.5 text-[11px] font-bold text-[#c9d4ff] ring-1 ring-white/10">
                   {tag}
                 </span>
               </div>
@@ -1040,15 +1094,17 @@ function HowItWorks() {
           ))}
         </ol>
 
-        <div className="relative mt-7 flex flex-wrap items-center gap-x-6 gap-y-3 border-t border-white/10 pt-6">
-          <p className="m-0 flex-1 text-base font-bold text-white">Ready to start? Send us a message and we’ll tell you what to bring.</p>
+        <div className="relative mt-6 flex flex-col gap-3 border-0 border-t border-solid border-white/10 pt-5 sm:mt-7 sm:flex-row sm:items-center sm:gap-6 sm:pt-6">
+          <p className="m-0 min-w-0 flex-1 text-[15px] font-bold text-white sm:text-base">
+            Ready to start? Send us a message and we’ll tell you what to bring.
+          </p>
           <motion.a
             whileHover={{ y: -3 }}
             whileTap={{ scale: 0.97 }}
             href={waHref}
             target="_blank"
             rel="noreferrer"
-            className="inline-flex h-13 items-center gap-2.5 rounded-2xl bg-white px-6 font-bold text-[#141b34] no-underline shadow-[0_16px_30px_-14px_rgb(0_0_0/0.6)]"
+            className="inline-flex h-12 shrink-0 items-center justify-center gap-2.5 rounded-2xl bg-white px-6 font-bold whitespace-nowrap sm:h-13 text-[#141b34] no-underline shadow-[0_16px_30px_-14px_rgb(0_0_0/0.6)]"
           >
             <WhatsAppIcon size={19} className="text-[#25D366]" /> Start on WhatsApp
           </motion.a>
@@ -1085,19 +1141,19 @@ function WhyUs() {
     { value: SERVICE_GROUPS.length, label: 'kinds of work, from tax to travel' },
   ]
   return (
-    <section className="scroll-mt-20 bg-[#f6f7fb] px-5 py-8 sm:px-8 lg:py-10">
+    <section id="promise" className="scroll-mt-20 bg-[#f6f7fb] px-5 py-8 sm:px-8 lg:py-10">
       <Reveal className="mx-auto max-w-7xl overflow-hidden rounded-[32px] bg-white shadow-[0_1px_2px_rgb(15_21_48/0.05),0_30px_60px_-40px_rgb(15_21_48/0.5)] ring-1 ring-[#e3e6f0]">
-        <div className="grid lg:grid-cols-[minmax(0,1.1fr)_minmax(0,0.9fr)]">
+        <div className="grid md:grid-cols-[minmax(0,1.1fr)_minmax(0,0.9fr)]">
           {/* Promises */}
-          <div className="p-6 sm:p-10 lg:p-12">
+          <div className="px-5 pt-6 pb-4 sm:p-8 lg:p-12">
             <p className="m-0 text-sm font-bold text-[#6d4aff]">Our promise</p>
-            <h2 className="m-0 mt-2 text-3xl leading-[1.1] font-extrabold tracking-[-0.03em] text-[#0e1325] sm:text-[2.25rem]">
+            <h2 className="m-0 mt-2 text-[clamp(1.7rem,3.6vw,2.25rem)] leading-[1.1] font-extrabold tracking-[-0.03em] text-[#0e1325]">
               Small promises, kept every time.
             </h2>
-            <p className="m-0 mt-3 max-w-md text-base leading-relaxed text-[#5a6280]">
+            <p className="m-0 mt-2 max-w-md text-[15px] leading-relaxed text-[#5a6280] sm:mt-3 sm:text-base">
               Whether it’s a bus ticket or a life policy, this is how every job at our counter is handled.
             </p>
-            <ul className="m-0 mt-8 grid list-none gap-x-8 gap-y-6 p-0 sm:grid-cols-2">
+            <ul className="m-0 mt-4 grid list-none grid-cols-2 gap-2 p-0 sm:mt-6 sm:gap-2.5 lg:mt-8 lg:gap-x-8 lg:gap-y-6">
               {REASONS.map(({ Icon, title, body }, i) => (
                 <motion.li
                   key={title}
@@ -1105,23 +1161,25 @@ function WhyUs() {
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true, margin: '-40px' }}
                   transition={{ duration: 0.5, delay: i * 0.08, ease: [0.22, 1, 0.36, 1] }}
-                  className="flex gap-4"
+                  className="grid grid-cols-[auto_minmax(0,1fr)] items-center gap-x-2.5 gap-y-2 rounded-2xl max-[400px]:grid-cols-1 md:max-lg:grid-cols-1 bg-[#f7f7fc] p-3 ring-1 ring-[#eceef5] sm:gap-x-3 sm:p-3.5 lg:flex lg:items-start lg:gap-4 lg:rounded-none lg:bg-transparent lg:p-0 lg:ring-0"
                 >
-                  <span className="relative grid size-11 shrink-0 place-items-center rounded-2xl bg-[#f1f0fb] text-[#5b37f0]">
-                    <Icon size={20} aria-hidden="true" />
+                  <span className="relative grid size-9 shrink-0 place-items-center rounded-xl bg-white text-[#5b37f0] ring-1 ring-[#eceef5] sm:size-10 lg:size-11 lg:rounded-2xl lg:bg-[#f1f0fb] lg:ring-0">
+                    <Icon size={18} aria-hidden="true" />
                     <motion.span
                       initial={{ scale: 0 }}
                       whileInView={{ scale: 1 }}
                       viewport={{ once: true }}
                       transition={{ delay: 0.4 + i * 0.1, type: 'spring', stiffness: 400, damping: 16 }}
-                      className="absolute -right-1.5 -bottom-1.5 grid size-5 place-items-center rounded-full bg-[#16a34a] text-white ring-2 ring-white"
+                      className="absolute -right-1 -bottom-1 grid size-4 place-items-center rounded-full bg-[#16a34a] text-white ring-2 ring-white lg:-right-1.5 lg:-bottom-1.5 lg:size-5"
                     >
-                      <CheckCircle2 size={12} strokeWidth={3} aria-hidden="true" />
+                      <CheckCircle2 size={10} strokeWidth={3} aria-hidden="true" />
                     </motion.span>
                   </span>
-                  <div className="min-w-0">
-                    <h3 className="m-0 text-[17px] font-extrabold text-[#0e1325]">{title}</h3>
-                    <p className="m-0 mt-1 text-[15px] leading-relaxed text-[#5a6280]">{body}</p>
+                  <div className="contents lg:block lg:min-w-0">
+                    <h3 className="m-0 text-[13px] leading-snug font-extrabold text-[#0e1325] sm:text-sm lg:text-[17px] lg:leading-[1.2]">
+                      {title}
+                    </h3>
+                    <p className="col-span-full m-0 text-xs leading-relaxed text-[#5a6280] sm:text-[13px] lg:mt-1 lg:text-[15px]">{body}</p>
                   </div>
                 </motion.li>
               ))}
@@ -1129,11 +1187,11 @@ function WhyUs() {
           </div>
 
           {/* Photo */}
-          <div className="relative min-h-[280px] p-3 pt-0 lg:min-h-0 lg:p-3 lg:pl-0">
-            <div className="relative h-full min-h-[280px] overflow-hidden rounded-[26px]">
+          <div className="relative p-3 pt-0 md:p-3 md:pl-0">
+            <div className="relative aspect-[2/1] overflow-hidden rounded-[22px] sm:rounded-[26px] md:aspect-auto md:h-full">
               <Photo photo={PHOTOS.promise} sizes="(min-width: 1024px) 560px, 92vw" className="absolute inset-0" />
               <div className="absolute inset-0 bg-gradient-to-t from-[#0b1028]/70 via-transparent to-transparent" />
-              <p className="absolute bottom-5 left-5 m-0 max-w-[15rem] text-lg leading-snug font-extrabold text-white">
+              <p className="absolute bottom-4 left-4 m-0 max-w-[15rem] text-base leading-snug font-extrabold text-white sm:bottom-5 sm:left-5 sm:text-lg">
                 Advice that fits your family and your budget.
               </p>
             </div>
@@ -1141,7 +1199,7 @@ function WhyUs() {
         </div>
 
         {/* Figures */}
-        <dl className="m-0 grid border-t border-[#eceef5] bg-[#0f1530] text-white sm:grid-cols-3">
+        <dl className="m-0 grid grid-cols-3 border-t border-[#eceef5] bg-[#0f1530] text-white">
           {stats.map((st, i) => (
             <motion.div
               key={st.label}
@@ -1149,10 +1207,12 @@ function WhyUs() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ delay: 0.15 + i * 0.1 }}
-              className={`flex items-baseline gap-3 px-6 py-5 sm:flex-col sm:gap-1 sm:px-10 sm:py-6 ${i ? 'border-t border-white/10 sm:border-t-0 sm:border-l' : ''}`}
+              className={`flex flex-col gap-0.5 px-3 py-3.5 sm:items-start sm:gap-1 sm:px-8 sm:py-5 lg:px-10 lg:py-6 ${i ? 'border-0 border-l border-solid border-white/10' : ''}`}
             >
-              <dt className="order-2 text-sm text-white/65 sm:order-none">{st.label}</dt>
-              <dd className="m-0 text-2xl font-extrabold tracking-tight sm:order-first sm:text-[2rem]">{st.value}</dd>
+              <dt className="order-2 text-[11px] leading-snug text-white/65 sm:text-sm sm:leading-[calc(1.25/0.875)]">{st.label}</dt>
+              <dd className="order-first m-0 text-xl font-extrabold tracking-tight whitespace-nowrap sm:text-[2rem] sm:leading-[calc(2/1.5)]">
+                {st.value}
+              </dd>
             </motion.div>
           ))}
         </dl>
@@ -1274,28 +1334,30 @@ const CHAT = [
 function Faq() {
   const [open, setOpen] = useState(0)
   return (
-    <section className="scroll-mt-20 bg-[#f6f7fb] px-5 py-8 sm:px-8 lg:py-10">
-      <div className="mx-auto grid max-w-7xl gap-4 lg:grid-cols-[minmax(0,0.85fr)_minmax(0,1.15fr)]">
+    <section id="faq" className="scroll-mt-20 bg-[#f6f7fb] px-5 py-8 sm:px-8 lg:py-10">
+      <div className="mx-auto grid max-w-7xl gap-3 sm:gap-4 lg:grid-cols-[minmax(0,0.85fr)_minmax(0,1.15fr)]">
         {/* Navy panel: the heading and a sample chat */}
-        <Reveal className="relative flex flex-col overflow-hidden rounded-[32px] bg-[#0f1530] p-6 text-white shadow-[0_40px_80px_-48px_rgb(15_21_48/0.9)] sm:p-10">
+        <Reveal className="relative flex flex-col overflow-hidden rounded-[28px] bg-[#0f1530] px-5 py-6 text-white shadow-[0_40px_80px_-48px_rgb(15_21_48/0.9)] sm:rounded-[32px] sm:p-10 md:max-lg:grid md:max-lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)] md:max-lg:items-center md:max-lg:gap-x-10">
           <div
-            className="pointer-events-none absolute -top-24 -left-20 size-80 rounded-full bg-[#6d4aff]/35 blur-[100px]"
+            className="pointer-events-none absolute -top-24 -left-20 size-80 rounded-full bg-[radial-gradient(closest-side,rgb(109_74_255/0.35),transparent)]"
             aria-hidden="true"
           />
           <div
-            className="pointer-events-none absolute -right-24 -bottom-28 size-80 rounded-full bg-[#2f6bff]/25 blur-[100px]"
+            className="pointer-events-none absolute -right-24 -bottom-28 size-80 rounded-full bg-[radial-gradient(closest-side,rgb(47_107_255/0.25),transparent)]"
             aria-hidden="true"
           />
-          <p className="relative m-0 text-sm font-bold text-[#a9b8ff]">Questions</p>
-          <h2 className="relative m-0 mt-2 text-3xl leading-[1.1] font-extrabold tracking-[-0.03em] text-white sm:text-[2.25rem]">
-            Answers before you come in.
-          </h2>
-          <p className="relative m-0 mt-3 max-w-sm text-base leading-relaxed text-white/65">
-            The things people ask us most. Anything else, just send a message.
-          </p>
+          <div className="relative">
+            <p className="m-0 text-sm font-bold text-[#a9b8ff]">Questions</p>
+            <h2 className="relative m-0 mt-2 text-[clamp(1.7rem,3.6vw,2.25rem)] leading-[1.1] font-extrabold tracking-[-0.03em] text-white">
+              Answers before you come in.
+            </h2>
+            <p className="relative m-0 mt-2 max-w-sm text-[15px] leading-relaxed text-white/65 sm:mt-3 sm:text-base">
+              The things people ask us most. Anything else, just send a message.
+            </p>
+          </div>
 
-          <div className="relative mt-8 flex flex-1 flex-col justify-end">
-            <div className="rounded-[24px] bg-[#0b1028]/70 p-4 ring-1 ring-white/10" aria-hidden="true">
+          <div className="relative mt-5 flex flex-1 flex-col justify-end sm:mt-8 md:max-lg:mt-0">
+            <div className="rounded-[24px] bg-[#0b1028]/70 p-4 ring-1 ring-white/10 max-sm:hidden" aria-hidden="true">
               <div className="flex items-center gap-2.5 border-b border-white/10 pb-3">
                 <img src="/brand/mark-64.png" alt="" width="32" height="32" className="size-8 rounded-lg" />
                 <span className="leading-tight">
@@ -1327,7 +1389,7 @@ function Faq() {
               href={waLink('Namaste, I have a question:')}
               target="_blank"
               rel="noreferrer"
-              className="mt-5 inline-flex h-12 items-center justify-center gap-2.5 self-start rounded-2xl bg-white px-5 font-bold text-[#141b34] no-underline shadow-[0_16px_30px_-14px_rgb(0_0_0/0.6)]"
+              className="inline-flex h-12 items-center justify-center gap-2.5 self-start rounded-2xl bg-white px-5 font-bold sm:mt-5 text-[#141b34] no-underline shadow-[0_16px_30px_-14px_rgb(0_0_0/0.6)]"
             >
               <WhatsAppIcon size={18} className="text-[#25D366]" /> Ask your question
             </motion.a>
@@ -1335,7 +1397,7 @@ function Faq() {
         </Reveal>
 
         {/* The questions */}
-        <ul className="m-0 flex list-none flex-col gap-3 p-0">
+        <ul className="m-0 flex list-none flex-col gap-2 p-0 sm:gap-3">
           {FAQ_LIST.map((item, i) => {
             const on = open === i
             return (
@@ -1345,7 +1407,7 @@ function Faq() {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true, margin: '-40px' }}
                 transition={{ duration: 0.45, delay: i * 0.04 }}
-                className={`overflow-hidden rounded-[24px] bg-white ring-1 transition-shadow ${
+                className={`overflow-hidden rounded-[18px] bg-white ring-1 sm:rounded-[24px] transition-shadow ${
                   on
                     ? 'shadow-[0_24px_50px_-34px_rgb(40_40_120/0.55)] ring-[#d6d2f5]'
                     : 'shadow-[0_1px_2px_rgb(15_21_48/0.05)] ring-[#e3e6f0]'
@@ -1356,10 +1418,10 @@ function Faq() {
                     type="button"
                     aria-expanded={on}
                     onClick={() => setOpen(on ? -1 : i)}
-                    className="flex w-full cursor-pointer items-center gap-4 border-0 bg-transparent px-5 py-4 text-left text-base font-bold text-[#0e1325] sm:px-6"
+                    className="flex w-full cursor-pointer items-center gap-3 border-0 bg-transparent px-3.5 py-3 text-left text-[15px] leading-snug font-bold text-[#0e1325] sm:gap-4 sm:px-6 sm:py-4 sm:text-base sm:leading-normal"
                   >
                     <span
-                      className={`grid size-9 shrink-0 place-items-center rounded-xl text-sm font-extrabold transition-colors ${on ? 'bg-gradient-to-br from-[#6d4aff] to-[#2f6bff] text-white' : 'bg-[#f1f0fb] text-[#5b37f0]'}`}
+                      className={`grid size-8 shrink-0 place-items-center rounded-lg text-xs font-extrabold sm:size-9 sm:rounded-xl sm:text-sm transition-colors ${on ? 'bg-gradient-to-br from-[#6d4aff] to-[#2f6bff] text-white' : 'bg-[#f1f0fb] text-[#5b37f0]'}`}
                     >
                       {String(i + 1).padStart(2, '0')}
                     </span>
@@ -1367,7 +1429,7 @@ function Faq() {
                     <motion.span
                       animate={{ rotate: on ? 45 : 0 }}
                       transition={{ type: 'spring', stiffness: 300, damping: 20 }}
-                      className={`grid size-8 shrink-0 place-items-center rounded-full text-lg leading-none font-bold transition-colors ${on ? 'bg-[#141b34] text-white' : 'bg-[#eef0f7] text-[#141b34]'}`}
+                      className={`grid size-7 shrink-0 place-items-center rounded-full text-base sm:size-8 sm:text-lg leading-none font-bold transition-colors ${on ? 'bg-[#141b34] text-white' : 'bg-[#eef0f7] text-[#141b34]'}`}
                       aria-hidden="true"
                     >
                       +
@@ -1383,7 +1445,9 @@ function Faq() {
                       transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
                       className="overflow-hidden"
                     >
-                      <p className="m-0 pr-6 pb-5 pl-[4.5rem] text-[15px] leading-relaxed text-[#5a6280] sm:pl-[4.75rem]">{item.a}</p>
+                      <p className="m-0 px-3.5 pb-4 text-sm leading-relaxed text-[#5a6280] sm:pr-6 sm:pb-5 sm:pl-[4.75rem] sm:text-[15px]">
+                        {item.a}
+                      </p>
                     </motion.div>
                   )}
                 </AnimatePresence>
@@ -1399,66 +1463,97 @@ function Faq() {
 /* ---------- Contact ---------- */
 
 function ContactSection() {
+  const details = [
+    { Icon: Phone, label: 'Phone and WhatsApp', value: CONTACT.phone, ph: 'Phone number', href: telHref, order: 'lg:order-1' },
+    { Icon: Clock, label: 'Opening hours', value: CONTACT.hours, ph: 'Opening hours', order: 'lg:order-3' },
+    {
+      Icon: MapPin,
+      label: 'Visit the office',
+      value: CONTACT.address,
+      ph: 'Shop address',
+      href: mapsHref,
+      wide: true,
+      order: 'lg:order-2',
+    },
+  ]
   return (
-    <section id="contact" className="scroll-mt-20 bg-[#f6f7fb] px-5 py-8 sm:px-8 lg:py-10 pb-16 lg:pb-20">
+    <section id="contact" className="scroll-mt-20 bg-[#f6f7fb] px-5 py-8 pb-12 sm:px-8 sm:pb-16 lg:py-10 lg:pb-20">
       <Reveal className="relative mx-auto max-w-7xl overflow-hidden rounded-[32px] bg-[#0f1530] text-white shadow-[0_40px_80px_-48px_rgb(15_21_48/0.9)]">
         <div className="pointer-events-none absolute inset-0" aria-hidden="true">
-          <motion.div
-            animate={{ x: [0, -30, 0] }}
-            transition={{ duration: 16, repeat: Infinity, ease: 'easeInOut' }}
-            className="absolute -right-32 -bottom-40 size-[460px] rounded-full bg-[#2f6bff]/30 blur-[110px]"
-          />
-          <div className="absolute -top-32 left-1/3 size-[380px] rounded-full bg-[#6d4aff]/25 blur-[110px]" />
+          <div className="absolute -right-32 -bottom-40 size-[460px] rounded-full bg-[radial-gradient(closest-side,rgb(47_107_255/0.3),transparent)]" />
+          <div className="absolute -top-32 left-1/3 size-[380px] rounded-full bg-[radial-gradient(closest-side,rgb(109_74_255/0.25),transparent)]" />
         </div>
-        <div className="relative grid gap-8 p-6 sm:p-10 lg:grid-cols-[minmax(0,1fr)_minmax(0,0.8fr)] lg:items-center lg:p-12">
+        <div className="relative grid gap-5 px-5 py-6 sm:gap-6 sm:p-10 lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)] lg:gap-10 lg:p-12">
           <div>
             <p className="m-0 mb-2 text-sm font-bold text-[#a9b8ff]">Contact</p>
-            <h2 className="m-0 text-3xl leading-[1.1] font-extrabold tracking-[-0.03em] text-white sm:text-[2.25rem]">
+            <h2 className="m-0 text-[clamp(1.7rem,3.6vw,2.25rem)] leading-[1.1] font-extrabold tracking-[-0.03em] text-white">
               Tell us what you need. We’ll take it from there.
             </h2>
-            <p className="m-0 mt-4 max-w-lg text-base leading-relaxed text-white/70 sm:text-lg">
+            <p className="m-0 mt-3 max-w-lg text-[15px] leading-relaxed text-white/70 sm:mt-4 sm:text-base">
               Walk in, call or send a message. We’ll tell you exactly what to bring, and most work starts the same day.
             </p>
-            <div className="mt-8 flex flex-wrap gap-3">
+            <div className="mt-5 grid grid-cols-2 gap-2.5 sm:mt-6 sm:flex sm:flex-wrap sm:gap-3">
               <motion.a
                 whileHover={{ y: -3 }}
                 whileTap={{ scale: 0.97 }}
                 href={waHref}
                 target="_blank"
                 rel="noreferrer"
-                className="inline-flex h-14 items-center gap-2.5 rounded-2xl bg-white px-6 font-bold text-[#141b34] no-underline shadow-[0_16px_30px_-14px_rgb(0_0_0/0.6)]"
+                className="inline-flex h-12 items-center justify-center gap-2 rounded-2xl bg-white px-4 font-bold whitespace-nowrap text-[#141b34] sm:gap-2.5 sm:px-5 no-underline shadow-[0_16px_30px_-14px_rgb(0_0_0/0.6)]"
               >
-                <WhatsAppIcon size={20} className="text-[#25D366]" /> WhatsApp us
+                <WhatsAppIcon size={19} className="text-[#25D366]" />{' '}
+                <span>
+                  WhatsApp<span className="max-sm:hidden"> us</span>
+                </span>
               </motion.a>
               <motion.a
                 whileHover={{ y: -3 }}
                 whileTap={{ scale: 0.97 }}
                 href={telHref}
-                className="inline-flex h-14 items-center gap-2.5 rounded-2xl px-6 font-bold text-white no-underline ring-1 ring-white/25 hover:bg-white/[0.06]"
+                className="inline-flex h-12 items-center justify-center gap-2 rounded-2xl px-4 font-bold whitespace-nowrap text-white sm:gap-2.5 sm:px-5 no-underline ring-1 ring-white/25 hover:bg-white/[0.06]"
               >
-                <Phone size={18} aria-hidden="true" /> Call the office
+                <Phone size={18} aria-hidden="true" /> <span className="sm:hidden">Call us</span>
+                <span className="max-sm:hidden">Call the office</span>
               </motion.a>
             </div>
-          </div>
-          <dl className="m-0 grid gap-3">
-            {[
-              { Icon: Phone, label: 'Phone and WhatsApp', value: CONTACT.phone, ph: 'Phone number', href: telHref },
-              { Icon: MapPin, label: 'Visit the office', value: CONTACT.address, ph: 'Shop address', href: mapsHref },
-              { Icon: Clock, label: 'Opening hours', value: CONTACT.hours, ph: 'Opening hours' },
-            ].map(({ Icon, label, value, ph, href }) => (
-              <div key={label} className="flex items-center gap-4 rounded-2xl bg-white/[0.05] p-4 ring-1 ring-white/10">
-                <span className="grid size-12 shrink-0 place-items-center rounded-2xl bg-gradient-to-br from-[#6d4aff] to-[#2f6bff]">
-                  <Icon size={20} aria-hidden="true" />
-                </span>
-                <div className="min-w-0">
-                  <dt className="text-sm font-bold text-[#a9b8ff]">{label}</dt>
-                  <dd className="m-0 mt-0.5 text-[15px] font-semibold text-white/90">
-                    <Detail value={value} placeholder={ph} href={href} />
-                  </dd>
+            <dl className="m-0 mt-5 grid grid-cols-2 gap-2 sm:mt-8 sm:gap-2.5 lg:grid-cols-1">
+              {details.map(({ Icon, label, value, ph, href, wide, order }) => (
+                <div
+                  key={label}
+                  className={`flex items-center gap-3 rounded-2xl bg-white/[0.05] p-3 ring-1 ring-white/10 sm:gap-3.5 sm:p-3.5 ${order} ${wide ? 'col-span-2 lg:col-span-1' : 'max-[420px]:flex-col max-[420px]:items-start max-[420px]:gap-2'}`}
+                >
+                  <span className="grid size-9 shrink-0 place-items-center rounded-xl bg-gradient-to-br sm:size-10 from-[#6d4aff] to-[#2f6bff]">
+                    <Icon size={18} aria-hidden="true" />
+                  </span>
+                  <div className="min-w-0">
+                    <dt className="text-xs font-bold text-[#a9b8ff]">{label}</dt>
+                    <dd className="m-0 mt-0.5 text-sm font-semibold text-white/90 sm:text-[15px]">
+                      <Detail value={value} placeholder={ph} href={href} />
+                    </dd>
+                  </div>
                 </div>
-              </div>
-            ))}
-          </dl>
+              ))}
+            </dl>
+          </div>
+
+          {/* Map of the office */}
+          <div className="relative min-h-[240px] overflow-hidden rounded-[22px] bg-[#1a2147] ring-1 ring-white/15 sm:min-h-[320px] sm:rounded-[24px] lg:min-h-full">
+            <iframe
+              title="Map showing the Manish Associates office in Super Bazar, Rewa"
+              src={`https://maps.google.com/maps?q=${MAP.lat},${MAP.lng}&t=h&z=17&output=embed`}
+              loading="lazy"
+              referrerPolicy="no-referrer-when-downgrade"
+              className="absolute inset-0 h-full w-full border-0"
+            />
+            <a
+              href={mapsHref}
+              target="_blank"
+              rel="noreferrer"
+              className="absolute top-3 right-3 inline-flex h-9 items-center gap-2 rounded-xl bg-white px-3 text-[13px] font-bold sm:h-10 sm:px-4 sm:text-sm text-[#141b34] no-underline shadow-[0_10px_24px_-10px_rgb(0_0_0/0.6)]"
+            >
+              <MapPin size={16} className="text-[#5b37f0]" aria-hidden="true" /> Get directions
+            </a>
+          </div>
         </div>
       </Reveal>
     </section>
@@ -1466,65 +1561,93 @@ function ContactSection() {
 }
 
 function Footer() {
+  const cols = [
+    { title: 'Services', links: SERVICE_GROUPS.map((g) => ({ label: g.title, href: '#services' })) },
+    {
+      title: 'Popular',
+      links: [
+        { label: 'Tatkal train tickets', href: '#services' },
+        { label: 'Passport, Tatkal', href: '#services' },
+        { label: 'Health insurance', href: '#services' },
+        { label: 'Tour packages', href: '#travel' },
+      ],
+    },
+    {
+      title: 'Company',
+      links: [
+        { label: 'How it works', href: '#how' },
+        { label: 'Contact', href: '#contact' },
+        { label: 'Staff sign in', to: '/login' },
+      ],
+    },
+  ]
+  const linkClass = 'inline-flex min-h-8 items-center text-[13px] text-white/60 no-underline hover:text-white sm:min-h-9 sm:text-sm'
+  const column = (col) => (
+    <div key={col.title}>
+      <p className="m-0 text-sm font-bold text-white">{col.title}</p>
+      <ul className="m-0 mt-2 flex list-none flex-col p-0 sm:mt-3">
+        {col.links.map((l) => (
+          <li key={l.label}>
+            {l.to ? (
+              <Link to={l.to} className={linkClass}>
+                {l.label}
+              </Link>
+            ) : (
+              <a href={l.href} className={linkClass}>
+                {l.label}
+              </a>
+            )}
+          </li>
+        ))}
+      </ul>
+    </div>
+  )
   return (
-    <footer className="bg-[#0b1028] px-5 pt-12 pb-8 text-white sm:px-8">
+    <footer className="bg-[#0b1028] px-5 pt-10 pb-6 text-white sm:px-8 sm:pt-12 sm:pb-8">
       <div className="mx-auto max-w-7xl">
-        <div className="grid grid-cols-2 gap-x-6 gap-y-10 lg:grid-cols-[minmax(0,1.3fr)_repeat(3,minmax(0,1fr))]">
-          <div className="col-span-2 lg:col-span-1">
+        <div className="grid grid-cols-2 gap-x-6 gap-y-8 md:grid-cols-[minmax(0,1.3fr)_repeat(3,minmax(0,1fr))] md:gap-y-10">
+          <div className="col-span-2 md:col-span-1">
             <BrandMark light />
             <p className="m-0 mt-4 max-w-xs text-sm leading-relaxed text-white/60">
               Insurance, banking, GST and tax, registrations, passports, tickets and tours, at one counter.
             </p>
+            <ul className="m-0 mt-4 flex list-none flex-col gap-1 p-0 text-sm lg:hidden">
+              <li>
+                <a href={telHref} className="inline-flex min-h-8 items-center gap-2 text-white/80 no-underline hover:text-white">
+                  <Phone size={15} className="text-[#a9b8ff]" aria-hidden="true" /> {CONTACT.phone}
+                </a>
+              </li>
+              <li>
+                <a
+                  href={mapsHref}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="inline-flex min-h-8 items-center gap-2 text-white/80 no-underline hover:text-white"
+                >
+                  <MapPin size={15} className="shrink-0 text-[#a9b8ff]" aria-hidden="true" /> Super Bazar, Dhekha, Rewa
+                </a>
+              </li>
+            </ul>
             <a
               href={waHref}
               target="_blank"
               rel="noreferrer"
-              className="mt-5 inline-flex h-11 items-center gap-2 rounded-xl bg-white/[0.07] px-4 text-sm font-bold text-white no-underline ring-1 ring-white/12 hover:bg-white/[0.12]"
+              className="mt-4 inline-flex h-11 items-center gap-2 rounded-xl bg-white/[0.07] lg:mt-5 px-4 text-sm font-bold text-white no-underline ring-1 ring-white/12 hover:bg-white/[0.12]"
             >
               <WhatsAppIcon size={17} className="text-[#25D366]" /> WhatsApp us
             </a>
           </div>
-          {[
-            { title: 'Services', links: SERVICE_GROUPS.map((g) => ({ label: g.title, href: '#services' })) },
-            {
-              title: 'Popular',
-              links: [
-                { label: 'Tatkal train tickets', href: '#services' },
-                { label: 'Passport, Tatkal', href: '#services' },
-                { label: 'Health insurance', href: '#services' },
-                { label: 'Tour packages', href: '#travel' },
-              ],
-            },
-            {
-              title: 'Company',
-              links: [
-                { label: 'How it works', href: '#how' },
-                { label: 'Contact', href: '#contact' },
-                { label: 'Staff sign in', to: '/login' },
-              ],
-            },
-          ].map((col) => (
-            <div key={col.title}>
-              <p className="m-0 text-sm font-bold text-white">{col.title}</p>
-              <ul className="m-0 mt-3 flex list-none flex-col p-0">
-                {col.links.map((l) => (
-                  <li key={l.label}>
-                    {l.to ? (
-                      <Link to={l.to} className="inline-flex min-h-9 items-center text-sm text-white/60 no-underline hover:text-white">
-                        {l.label}
-                      </Link>
-                    ) : (
-                      <a href={l.href} className="inline-flex min-h-9 items-center text-sm text-white/60 no-underline hover:text-white">
-                        {l.label}
-                      </a>
-                    )}
-                  </li>
-                ))}
-              </ul>
-            </div>
-          ))}
+          {column(cols[0])}
+          {/* On phones, Popular and Company share the second column */}
+          <div className="flex flex-col gap-6 md:contents">
+            {column(cols[1])}
+            {column(cols[2])}
+          </div>
         </div>
-        <p className="m-0 mt-12 border-t border-white/10 pt-6 text-xs text-white/45">© {YEAR} Manish Associates. All rights reserved.</p>
+        <div className="mt-8 flex flex-col gap-2 border-0 border-t border-solid border-white/10 pt-5 text-xs text-white/45 sm:mt-12 sm:flex-row sm:items-center sm:justify-between sm:pt-6">
+          <p className="m-0">© {YEAR} Manish Associates. All rights reserved.</p>
+          <p className="m-0 lg:hidden">{CONTACT.hours}</p>
+        </div>
       </div>
     </footer>
   )
@@ -1544,6 +1667,21 @@ function scrollToHash(e) {
 }
 
 function Home() {
+  // Opened with an anchor (an old link such as /#top or /#contact), or the anchor typed in: go to that section,
+  // then clear it from the address.
+  useEffect(() => {
+    const clear = () => {
+      const id = window.location.hash.slice(1)
+      if (!id) return
+      window.history.replaceState(null, '', window.location.pathname + window.location.search)
+      if (id === 'top') window.scrollTo({ top: 0 })
+      else requestAnimationFrame(() => document.getElementById(id)?.scrollIntoView({ block: 'start' }))
+    }
+    clear()
+    window.addEventListener('hashchange', clear)
+    return () => window.removeEventListener('hashchange', clear)
+  }, [])
+
   return (
     <MotionConfig reducedMotion="user">
       <div
