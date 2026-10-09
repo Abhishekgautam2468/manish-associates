@@ -78,7 +78,7 @@ const PHOTOS = {
   international: { id: '1512453979798-5ea266f8880c', alt: 'The Dubai skyline at dusk' },
   business: { id: '1600880292203-757bb62b4baf', alt: 'Two colleagues celebrating at a desk' },
   signing: { id: '1450101499163-c8848c66ca85', alt: 'Signing a form' },
-  handshake: { id: '1521791136064-7986c2920216', alt: 'Two people shaking hands' },
+  promise: { id: '1556742049-0cfed4f6a45d', alt: 'A customer being helped at a shop counter' },
 }
 const photoUrl = (id, w) => `https://images.unsplash.com/photo-${id}?auto=format&fit=crop&q=75&w=${w}`
 
@@ -1050,44 +1050,57 @@ const REASONS = [
 function WhyUs() {
   return (
     <section className="bg-[#f6f7fb] px-5 pb-20 sm:px-8">
-      <div className="mx-auto grid max-w-7xl gap-10 lg:grid-cols-[minmax(0,0.85fr)_minmax(0,1.15fr)] lg:items-center">
-        <Reveal>
-          <p className="m-0 text-sm font-bold text-[#6d4aff]">Our promise</p>
-          <h2 className="m-0 mt-2 text-3xl leading-[1.1] font-extrabold tracking-[-0.03em] text-[#0e1325] sm:text-[2.6rem]">
-            Small promises, kept every time.
-          </h2>
-          <p className="m-0 mt-4 max-w-md text-base leading-relaxed text-[#5a6280] sm:text-lg">
-            Whether it’s a bus ticket or a life policy, here’s what you can count on every time.
-          </p>
-          <div className="relative mt-8 hidden aspect-[16/10] overflow-hidden rounded-[28px] lg:block">
-            <Photo photo={PHOTOS.handshake} sizes="480px" />
-            <div className="absolute inset-0 bg-gradient-to-t from-[#0b1028]/50 to-transparent" />
+      <div className="mx-auto max-w-7xl">
+        <Reveal className="flex flex-wrap items-end justify-between gap-x-10 gap-y-4">
+          <div className="max-w-xl">
+            <p className="m-0 text-sm font-bold text-[#6d4aff]">Our promise</p>
+            <h2 className="m-0 mt-2 text-3xl leading-[1.1] font-extrabold tracking-[-0.03em] text-[#0e1325] sm:text-[2.6rem]">
+              Small promises, kept every time.
+            </h2>
           </div>
+          <p className="m-0 max-w-md text-base leading-relaxed text-[#5a6280]">
+            Whether it’s a bus ticket or a life policy, this is how every job at our counter is handled.
+          </p>
         </Reveal>
-        <div className="grid gap-4 sm:grid-cols-2">
-          {REASONS.map(({ Icon, title, body }, i) => (
-            <motion.div
-              key={title}
-              initial={{ opacity: 0, y: 30 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, margin: '-60px' }}
-              transition={{ duration: 0.6, delay: i * 0.08, ease: [0.22, 1, 0.36, 1] }}
-              whileHover={{ y: -6 }}
-              className={`rounded-[28px] p-6 ring-1 transition-shadow ${
-                i === 0
-                  ? 'bg-gradient-to-br from-[#141b34] to-[#2a2370] text-white ring-white/10 shadow-[0_30px_60px_-30px_rgb(20_27_52/0.9)]'
-                  : 'bg-white text-[#0e1325] ring-[#e3e6f0] shadow-[0_24px_50px_-36px_rgb(15_21_48/0.5)]'
-              }`}
-            >
-              <span
-                className={`grid size-12 place-items-center rounded-2xl ${i === 0 ? 'bg-white/12 text-white' : 'bg-[#efeaff] text-[#5b37f0]'}`}
+
+        <div className="mt-10 grid gap-4 lg:grid-cols-[minmax(0,0.95fr)_minmax(0,1.05fr)]">
+          {/* Photo with the shop's track record */}
+          <Reveal className="relative min-h-[260px] overflow-hidden rounded-[30px] sm:min-h-[320px] shadow-[0_30px_60px_-34px_rgb(15_21_48/0.7)] lg:min-h-0">
+            <Photo photo={PHOTOS.promise} sizes="(min-width: 1024px) 600px, 92vw" className="absolute inset-0" />
+            <div className="absolute inset-0 bg-gradient-to-t from-[#0b1028]/90 via-[#0b1028]/25 to-transparent" />
+            <div className="absolute inset-x-0 bottom-0 p-6 text-white sm:p-7">
+              <p className="m-0 text-sm font-bold text-[#c9bfff]">Serving {SINCE.town}</p>
+              <p className="m-0 mt-1 text-[2.5rem] leading-none font-extrabold tracking-tight">{SINCE.years} years</p>
+              <p className="m-0 mt-2 max-w-xs text-[15px] leading-relaxed text-white/75">
+                of tickets, policies, returns and registrations, from one counter at Super Bazar.
+              </p>
+            </div>
+          </Reveal>
+
+          {/* The promises */}
+          <ul className="m-0 grid list-none gap-4 p-0 sm:grid-cols-2">
+            {REASONS.map(({ Icon, title, body }, i) => (
+              <motion.li
+                key={title}
+                initial={{ opacity: 0, y: 28 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true, margin: '-60px' }}
+                transition={{ duration: 0.6, delay: i * 0.08, ease: [0.22, 1, 0.36, 1] }}
+                whileHover={{ y: -5 }}
+                className="group relative grid grid-cols-[auto_minmax(0,1fr)] content-start gap-x-4 overflow-hidden rounded-[26px] bg-white p-5 shadow sm:p-6-[0_24px_50px_-36px_rgb(15_21_48/0.5)] ring-1 ring-[#e3e6f0] transition-shadow hover:shadow-[0_34px_60px_-34px_rgb(40_40_120/0.5)]"
               >
-                <Icon size={22} aria-hidden="true" />
-              </span>
-              <h3 className={`m-0 mt-5 text-lg font-extrabold ${i === 0 ? 'text-white' : 'text-[#0e1325]'}`}>{title}</h3>
-              <p className={`m-0 mt-1.5 text-[15px] leading-relaxed ${i === 0 ? 'text-white/70' : 'text-[#5a6280]'}`}>{body}</p>
-            </motion.div>
-          ))}
+                <span
+                  className="pointer-events-none absolute -top-10 -right-10 size-32 rounded-full bg-gradient-to-br from-[#6d4aff]/12 to-[#2f6bff]/5 transition-transform duration-500 group-hover:scale-125"
+                  aria-hidden="true"
+                />
+                <span className="relative row-span-2 grid size-11 place-items-center rounded-2xl bg-gradient-to-br from-[#6d4aff] to-[#2f6bff] text-white sm:row-span-1 sm:size-12 shadow-[0_12px_24px_-12px_rgb(79_90_255/0.9)]">
+                  <Icon size={21} aria-hidden="true" />
+                </span>
+                <h3 className="relative m-0 self-center text-lg font-extrabold text-[#0e1325] sm:col-span-2 sm:mt-5">{title}</h3>
+                <p className="relative m-0 mt-1 text-[15px] leading-relaxed text-[#5a6280] sm:col-span-2 sm:mt-1.5">{body}</p>
+              </motion.li>
+            ))}
+          </ul>
         </div>
       </div>
     </section>
