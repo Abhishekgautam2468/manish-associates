@@ -15,6 +15,7 @@ import {
   Globe,
   HandCoins,
   HeartPulse,
+  IdCard,
   Landmark,
   MapPin,
   Menu,
@@ -723,53 +724,80 @@ function Services() {
 
 /* ---------- Highlight: Tatkal ---------- */
 
+const TATKAL_NEEDS = [
+  { Icon: IdCard, text: 'ID proof of each traveller' },
+  { Icon: TrainFront, text: 'From, to and the travel date' },
+  { Icon: Phone, text: 'A phone number for the ticket' },
+]
+
 function Highlight() {
   const ref = useRef(null)
   const { scrollYProgress } = useScroll({ target: ref, offset: ['start end', 'end start'] })
   const y = useTransform(scrollYProgress, [0, 1], ['-10%', '10%'])
   return (
     <section ref={ref} className="bg-[#f6f7fb] px-5 pb-20 sm:px-8">
-      <Reveal className="relative mx-auto grid max-w-7xl overflow-hidden rounded-[40px] bg-[#0f1530] text-white shadow-[0_50px_100px_-50px_rgb(15_21_48/0.9)] lg:grid-cols-2">
-        <div className="relative z-10 p-8 sm:p-12 lg:p-16">
+      <Reveal className="relative mx-auto grid max-w-7xl overflow-hidden rounded-[36px] bg-[#0f1530] text-white shadow-[0_50px_100px_-50px_rgb(15_21_48/0.9)] lg:grid-cols-[minmax(0,1.05fr)_minmax(0,0.95fr)]">
+        <div className="relative z-10 p-7 sm:p-12 lg:p-14">
           <div
             className="pointer-events-none absolute -top-28 -left-28 size-80 rounded-full bg-[#6d4aff]/40 blur-[100px]"
             aria-hidden="true"
           />
           <p className="relative m-0 inline-flex items-center gap-2 rounded-full bg-[#ffb648]/15 px-3 py-1 text-sm font-bold text-[#ffcf85] ring-1 ring-[#ffb648]/30">
-            <Clock size={14} aria-hidden="true" /> In a hurry?
+            <Clock size={14} aria-hidden="true" /> Tatkal and urgent work
           </p>
-          <h2 className="relative m-0 mt-5 text-3xl leading-tight font-extrabold tracking-tight text-white sm:text-[2.75rem]">
-            Tatkal tickets and passports, handled on time.
+          <h2 className="relative m-0 mt-5 text-3xl leading-tight font-extrabold tracking-tight text-white sm:text-[2.6rem]">
+            Booking opens at a fixed time. We’re ready before it does.
           </h2>
-          <p className="relative m-0 mt-5 max-w-md text-[17px] leading-relaxed text-white/70">
-            Tatkal windows open and close fast. Share your details the day before, and we’re ready the moment booking opens.
+          <p className="relative m-0 mt-4 max-w-lg text-[17px] leading-relaxed text-white/70">
+            For Tatkal train tickets, passports and urgent visas, send your details the day before. We fill everything in advance, so not a
+            second is lost when the window opens.
           </p>
-          <div className="relative mt-9 grid max-w-md grid-cols-3 gap-3">
-            {[
-              { Icon: TrainFront, label: 'Train' },
-              { Icon: BookUser, label: 'Passport' },
-              { Icon: Globe, label: 'Visa' },
-            ].map(({ Icon, label }, k) => (
-              <motion.div
-                key={label}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: 0.2 + k * 0.1, type: 'spring', stiffness: 260, damping: 22 }}
-                whileHover={{ y: -4, backgroundColor: 'rgb(255 255 255 / 0.1)' }}
-                className="flex flex-col items-center gap-2 rounded-2xl bg-white/[0.06] py-5 ring-1 ring-white/10"
+
+          <div className="relative mt-8 rounded-3xl bg-white/[0.05] p-5 ring-1 ring-white/10">
+            <p className="m-0 text-sm font-bold text-white/80">For a Tatkal train ticket, send us:</p>
+            <ul className="m-0 mt-3 grid list-none gap-2.5 p-0 sm:grid-cols-3">
+              {TATKAL_NEEDS.map(({ Icon, text }, k) => (
+                <motion.li
+                  key={text}
+                  initial={{ opacity: 0, y: 14 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ delay: 0.15 + k * 0.08 }}
+                  className="flex items-center gap-2.5 text-sm font-semibold text-white/90 sm:flex-col sm:items-start"
+                >
+                  <span className="grid size-9 shrink-0 place-items-center rounded-xl bg-[#2f6bff]/25 text-[#a9c2ff]">
+                    <Icon size={17} aria-hidden="true" />
+                  </span>
+                  {text}
+                </motion.li>
+              ))}
+            </ul>
+          </div>
+
+          <motion.a
+            whileHover={{ y: -3 }}
+            whileTap={{ scale: 0.97 }}
+            href={waHref}
+            className="relative mt-8 inline-flex h-13 items-center gap-2.5 rounded-2xl bg-white px-6 font-bold text-[#141b34] no-underline shadow-[0_16px_30px_-14px_rgb(0_0_0/0.6)]"
+          >
+            <MessageCircle size={18} aria-hidden="true" /> Send details on WhatsApp
+          </motion.a>
+        </div>
+        <div className="relative min-h-[260px] overflow-hidden lg:min-h-full">
+          <motion.div style={{ y }} className="absolute -inset-y-[12%] inset-x-0">
+            <Photo photo={PHOTOS.train} sizes="(min-width: 1024px) 600px, 100vw" />
+          </motion.div>
+          <div className="absolute inset-0 bg-gradient-to-r from-[#0f1530] via-[#0f1530]/20 to-transparent max-lg:bg-gradient-to-b" />
+          <div className="absolute right-5 bottom-5 left-5 flex flex-wrap gap-2 lg:left-auto">
+            {['Train', 'Passport', 'Visa'].map((x) => (
+              <span
+                key={x}
+                className="rounded-full bg-[#0b1028]/60 px-3.5 py-1.5 text-sm font-bold text-white ring-1 ring-white/20 backdrop-blur"
               >
-                <Icon size={24} className="text-[#9db7ff]" aria-hidden="true" />
-                <span className="text-sm font-bold">{label}</span>
-              </motion.div>
+                Tatkal {x.toLowerCase()}
+              </span>
             ))}
           </div>
-        </div>
-        <div className="relative min-h-[300px] overflow-hidden lg:min-h-full">
-          <motion.div style={{ y }} className="absolute -inset-y-[12%] inset-x-0">
-            <Photo photo={PHOTOS.train} sizes="(min-width: 1024px) 640px, 100vw" />
-          </motion.div>
-          <div className="absolute inset-0 bg-gradient-to-r from-[#0f1530] via-[#0f1530]/30 to-transparent max-lg:bg-gradient-to-t" />
         </div>
       </Reveal>
     </section>
@@ -778,29 +806,42 @@ function Highlight() {
 
 /* ---------- Tours ---------- */
 
+const INCLUDED = [
+  { Icon: Plane, label: 'Train or flight tickets' },
+  { Icon: Building2, label: 'Hotel stays' },
+  { Icon: Car, label: 'Cabs and transfers' },
+  { Icon: Mountain, label: 'Sightseeing plan' },
+]
+
 function Tours() {
   return (
     <section id="travel" className="scroll-mt-20 bg-white px-5 py-20 sm:px-8 lg:py-24">
       <div className="mx-auto max-w-7xl">
-        <Reveal className="flex flex-wrap items-end justify-between gap-6">
-          <div className="max-w-2xl">
+        <Reveal className="grid gap-8 lg:grid-cols-[minmax(0,1fr)_minmax(0,0.9fr)] lg:items-end">
+          <div>
             <p className="m-0 text-sm font-bold text-[#2f6bff]">Tour packages</p>
-            <h2 className="m-0 mt-3 text-4xl leading-[1.08] font-extrabold tracking-[-0.035em] text-[#0e1325] sm:text-5xl">
-              Holidays planned, booked and sorted.
+            <h2 className="m-0 mt-2 text-3xl leading-[1.1] font-extrabold tracking-[-0.03em] text-[#0e1325] sm:text-[2.6rem]">
+              Holidays planned for you, from the first ticket to the last night.
             </h2>
-            <p className="m-0 mt-4 text-lg leading-relaxed text-[#5a6280]">
-              Tickets, hotels and sightseeing in one package, for families, groups and couples.
+            <p className="m-0 mt-4 max-w-xl text-base leading-relaxed text-[#5a6280] sm:text-lg">
+              Tell us where, when and how many. We put together a package that fits your budget, for families, groups and couples.
             </p>
           </div>
-          <motion.a
-            whileHover={{ y: -3 }}
-            whileTap={{ scale: 0.97 }}
-            href={waHref}
-            className="group inline-flex h-12 items-center gap-2 rounded-2xl bg-[#141b34] px-5 font-bold text-white no-underline shadow-[0_14px_30px_-14px_rgb(20_27_52/0.8)]"
-          >
-            Ask for a package <ArrowRight size={18} className="transition-transform group-hover:translate-x-1" aria-hidden="true" />
-          </motion.a>
+          <ul className="m-0 grid list-none grid-cols-2 gap-2.5 p-0">
+            {INCLUDED.map(({ Icon, label }) => (
+              <li
+                key={label}
+                className="flex items-center gap-3 rounded-2xl bg-[#f6f7fb] px-3.5 py-3 text-sm font-bold text-[#1d2340] ring-1 ring-[#eceef5]"
+              >
+                <span className="grid size-9 shrink-0 place-items-center rounded-xl bg-[#e4f4ff] text-[#0b6fb0]">
+                  <Icon size={17} aria-hidden="true" />
+                </span>
+                {label}
+              </li>
+            ))}
+          </ul>
         </Reveal>
+
         <div className="mt-12 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
           {TOURS.map((t, i) => (
             <motion.article
@@ -809,7 +850,7 @@ function Tours() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true, margin: '-60px' }}
               transition={{ duration: 0.7, delay: i * 0.08, ease: [0.22, 1, 0.36, 1] }}
-              className={`group relative overflow-hidden rounded-[30px] shadow-[0_30px_60px_-34px_rgb(15_21_48/0.7)] ${i % 2 ? 'lg:translate-y-10' : ''}`}
+              className={`group relative overflow-hidden rounded-[28px] shadow-[0_30px_60px_-34px_rgb(15_21_48/0.7)] ${i % 2 ? 'lg:mt-10' : ''}`}
             >
               <div className="aspect-[4/3] sm:aspect-[4/5]">
                 <Photo
@@ -818,7 +859,7 @@ function Tours() {
                   className="transition-transform duration-700 ease-out group-hover:scale-110"
                 />
               </div>
-              <div className="absolute inset-0 bg-gradient-to-t from-[#0b1028]/90 via-[#0b1028]/20 to-transparent" />
+              <div className="absolute inset-0 bg-gradient-to-t from-[#0b1028]/90 via-[#0b1028]/15 to-transparent" />
               <span className="absolute top-4 left-4 grid size-10 place-items-center rounded-xl bg-white/90 text-[#141b34] backdrop-blur">
                 <t.Icon size={18} aria-hidden="true" />
               </span>
@@ -827,9 +868,9 @@ function Tours() {
                 <p className="m-0 mt-1 text-sm text-white/75">{t.note}</p>
                 <a
                   href={waHref}
-                  className="mt-3 inline-flex min-h-10 translate-y-2 items-center gap-1.5 text-sm font-bold text-white no-underline opacity-0 transition duration-300 group-hover:translate-y-0 group-hover:opacity-100 group-focus-within:translate-y-0 group-focus-within:opacity-100 max-lg:translate-y-0 max-lg:opacity-100"
+                  className="mt-3 inline-flex min-h-10 items-center gap-1.5 rounded-xl bg-white/15 px-3 text-sm font-bold text-white no-underline ring-1 ring-white/25 backdrop-blur transition-colors hover:bg-white hover:text-[#141b34]"
                 >
-                  Ask about this <ArrowRight size={15} aria-hidden="true" />
+                  Plan this trip <ArrowRight size={15} aria-hidden="true" />
                 </a>
               </div>
             </motion.article>
@@ -844,47 +885,204 @@ function Tours() {
 
 function HowItWorks() {
   return (
-    <section id="how" className="scroll-mt-20 bg-[#f6f7fb] px-5 py-20 sm:px-8 lg:pt-32 lg:pb-24">
+    <section id="how" className="scroll-mt-20 bg-[#f6f7fb] px-5 py-20 sm:px-8 lg:pt-28 lg:pb-20">
       <div className="mx-auto max-w-7xl">
         <Reveal className="mx-auto max-w-2xl text-center">
           <p className="m-0 text-sm font-bold text-[#6d4aff]">How it works</p>
-          <h2 className="m-0 mt-3 text-4xl leading-[1.08] font-extrabold tracking-[-0.035em] text-[#0e1325] sm:text-5xl">
-            Three steps, and you’re done.
+          <h2 className="m-0 mt-2 text-3xl leading-[1.1] font-extrabold tracking-[-0.03em] text-[#0e1325] sm:text-[2.6rem]">
+            Three steps, and the job is done.
           </h2>
-          <p className="m-0 mt-4 text-lg text-[#5a6280]">The same simple routine, whether it’s a bus ticket or a GST registration.</p>
+          <p className="m-0 mt-4 text-base text-[#5a6280] sm:text-lg">
+            The same simple routine, whether it’s a bus ticket or a GST registration.
+          </p>
         </Reveal>
-        <ol className="relative m-0 mt-16 grid list-none gap-6 p-0 md:grid-cols-3">
+        <ol className="relative m-0 mt-14 grid list-none gap-5 p-0 md:grid-cols-3">
           <motion.span
             initial={{ scaleX: 0 }}
             whileInView={{ scaleX: 1 }}
             viewport={{ once: true, margin: '-100px' }}
             transition={{ duration: 1.2, ease: [0.22, 1, 0.36, 1] }}
-            className="absolute top-[62px] right-[17%] left-[17%] hidden h-[2px] origin-left bg-gradient-to-r from-[#6d4aff] via-[#4f6bff] to-[#38a8f0] md:block"
+            className="absolute top-[58px] right-[17%] left-[17%] hidden h-[2px] origin-left bg-gradient-to-r from-[#6d4aff] via-[#4f6bff] to-[#38a8f0] md:block"
             aria-hidden="true"
           />
-          {STEPS.map((s, i) => (
+          {STEPS.map((step, i) => (
             <motion.li
-              key={s.title}
+              key={step.title}
               initial={{ opacity: 0, y: 30 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true, margin: '-80px' }}
               transition={{ duration: 0.6, delay: 0.25 + i * 0.18, ease: [0.22, 1, 0.36, 1] }}
-              className="relative flex flex-col items-center rounded-[30px] bg-white px-7 pt-9 pb-10 text-center shadow-[0_24px_50px_-36px_rgb(15_21_48/0.5)] ring-1 ring-[#e3e6f0]"
+              className="relative flex gap-4 rounded-[28px] bg-white p-6 shadow-[0_24px_50px_-36px_rgb(15_21_48/0.5)] ring-1 ring-[#e3e6f0] md:flex-col md:items-center md:px-7 md:pt-8 md:pb-9 md:text-center"
             >
               <motion.span
                 initial={{ scale: 0.5, rotate: -12 }}
                 whileInView={{ scale: 1, rotate: 0 }}
                 viewport={{ once: true }}
                 transition={{ delay: 0.35 + i * 0.18, type: 'spring', stiffness: 300, damping: 16 }}
-                className="relative grid size-[60px] place-items-center rounded-2xl bg-gradient-to-br from-[#6d4aff] to-[#2f6bff] text-xl font-extrabold text-white shadow-[0_16px_30px_-12px_rgb(79_90_255/0.9)] ring-8 ring-[#f6f7fb]"
+                className="relative grid size-[52px] shrink-0 place-items-center rounded-2xl bg-gradient-to-br from-[#6d4aff] to-[#2f6bff] text-lg font-extrabold text-white shadow-[0_16px_30px_-12px_rgb(79_90_255/0.9)] md:size-[60px] md:text-xl md:ring-8 md:ring-[#f6f7fb]"
               >
                 {i + 1}
               </motion.span>
-              <h3 className="m-0 mt-6 text-xl font-extrabold text-[#0e1325]">{s.title}</h3>
-              <p className="m-0 mt-2 text-[15px] leading-relaxed text-[#5a6280]">{s.body}</p>
+              <div>
+                <h3 className="m-0 text-lg font-extrabold text-[#0e1325] md:mt-5 md:text-xl">{step.title}</h3>
+                <p className="m-0 mt-1.5 text-[15px] leading-relaxed text-[#5a6280]">{step.body}</p>
+              </div>
             </motion.li>
           ))}
         </ol>
+      </div>
+    </section>
+  )
+}
+
+/* ---------- Our promise ---------- */
+
+const REASONS = [
+  {
+    Icon: BadgeIndianRupee,
+    title: 'Fees told upfront',
+    body: 'You know the full charge before any work starts. No hidden extras at the end.',
+  },
+  {
+    Icon: FileCheck2,
+    title: 'Documents checked twice',
+    body: 'Every form is checked before it’s submitted, so applications don’t bounce back.',
+  },
+  { Icon: MessageCircle, title: 'Updates on WhatsApp', body: 'You hear from us at each step, without having to call and ask.' },
+  { Icon: ShieldCheck, title: 'Help after the sale', body: 'Renewal reminders for your policies, and help with the forms when you claim.' },
+]
+
+function WhyUs() {
+  return (
+    <section className="bg-[#f6f7fb] px-5 pb-20 sm:px-8">
+      <div className="mx-auto grid max-w-7xl gap-10 lg:grid-cols-[minmax(0,0.85fr)_minmax(0,1.15fr)] lg:items-center">
+        <Reveal>
+          <p className="m-0 text-sm font-bold text-[#6d4aff]">Our promise</p>
+          <h2 className="m-0 mt-2 text-3xl leading-[1.1] font-extrabold tracking-[-0.03em] text-[#0e1325] sm:text-[2.6rem]">
+            Small promises, kept every time.
+          </h2>
+          <p className="m-0 mt-4 max-w-md text-base leading-relaxed text-[#5a6280] sm:text-lg">
+            Whether it’s a bus ticket or a life policy, here’s what you can count on every time.
+          </p>
+          <div className="relative mt-8 hidden aspect-[16/10] overflow-hidden rounded-[28px] lg:block">
+            <Photo photo={PHOTOS.handshake} sizes="480px" />
+            <div className="absolute inset-0 bg-gradient-to-t from-[#0b1028]/50 to-transparent" />
+          </div>
+        </Reveal>
+        <div className="grid gap-4 sm:grid-cols-2">
+          {REASONS.map(({ Icon, title, body }, i) => (
+            <motion.div
+              key={title}
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, margin: '-60px' }}
+              transition={{ duration: 0.6, delay: i * 0.08, ease: [0.22, 1, 0.36, 1] }}
+              whileHover={{ y: -6 }}
+              className={`rounded-[28px] p-6 ring-1 transition-shadow ${
+                i === 0
+                  ? 'bg-gradient-to-br from-[#141b34] to-[#2a2370] text-white ring-white/10 shadow-[0_30px_60px_-30px_rgb(20_27_52/0.9)]'
+                  : 'bg-white text-[#0e1325] ring-[#e3e6f0] shadow-[0_24px_50px_-36px_rgb(15_21_48/0.5)]'
+              }`}
+            >
+              <span
+                className={`grid size-12 place-items-center rounded-2xl ${i === 0 ? 'bg-white/12 text-white' : 'bg-[#efeaff] text-[#5b37f0]'}`}
+              >
+                <Icon size={22} aria-hidden="true" />
+              </span>
+              <h3 className={`m-0 mt-5 text-lg font-extrabold ${i === 0 ? 'text-white' : 'text-[#0e1325]'}`}>{title}</h3>
+              <p className={`m-0 mt-1.5 text-[15px] leading-relaxed ${i === 0 ? 'text-white/70' : 'text-[#5a6280]'}`}>{body}</p>
+            </motion.div>
+          ))}
+        </div>
+      </div>
+    </section>
+  )
+}
+
+/* ---------- Questions ---------- */
+
+const FAQS = [
+  {
+    q: 'Which documents should I bring?',
+    a: 'It depends on the work. Send us a WhatsApp message saying what you need, and we’ll reply with the exact list, so you only make one trip.',
+  },
+  {
+    q: 'Can I start without visiting the office?',
+    a: 'Yes, for most work. Send clear photos of your documents on WhatsApp. We’ll tell you if anything has to be signed in person.',
+  },
+  {
+    q: 'Do you help with insurance claims and renewals?',
+    a: 'Yes. We help you fill in the claim forms, follow up with the insurer, and remind you before your policy is due for renewal.',
+  },
+  {
+    q: 'How can I pay?',
+    a: 'Cash, UPI or bank transfer. You’ll know the full fee before we start, and you get a receipt for every payment.',
+  },
+  {
+    q: 'Do you book Tatkal tickets?',
+    a: 'Yes. Send the traveller details the day before, and we book the moment the Tatkal window opens. Seats depend on availability.',
+  },
+]
+
+function Faq() {
+  const [open, setOpen] = useState(0)
+  return (
+    <section className="bg-white px-5 py-20 sm:px-8 lg:py-24">
+      <div className="mx-auto grid max-w-7xl gap-10 lg:grid-cols-[minmax(0,0.8fr)_minmax(0,1.2fr)]">
+        <Reveal>
+          <p className="m-0 text-sm font-bold text-[#2f6bff]">Questions</p>
+          <h2 className="m-0 mt-2 text-3xl leading-[1.1] font-extrabold tracking-[-0.03em] text-[#0e1325] sm:text-[2.6rem]">
+            Before you come in.
+          </h2>
+          <p className="m-0 mt-4 max-w-sm text-base leading-relaxed text-[#5a6280] sm:text-lg">
+            Can’t find your question? Send it to us on WhatsApp and we’ll reply during office hours.
+          </p>
+          <a href={waHref} className="group mt-6 inline-flex min-h-10 items-center gap-2 text-[15px] font-bold text-[#5b37f0] no-underline">
+            Ask a question <ArrowRight size={16} className="transition-transform group-hover:translate-x-1" aria-hidden="true" />
+          </a>
+        </Reveal>
+        <ul className="m-0 flex list-none flex-col gap-3 p-0">
+          {FAQS.map((item, i) => {
+            const on = open === i
+            return (
+              <li
+                key={item.q}
+                className={`overflow-hidden rounded-3xl ring-1 transition-colors ${on ? 'bg-[#f6f7fb] ring-[#d9dcf0]' : 'bg-white ring-[#e3e6f0]'}`}
+              >
+                <h3 className="m-0">
+                  <button
+                    type="button"
+                    aria-expanded={on}
+                    onClick={() => setOpen(on ? -1 : i)}
+                    className="flex w-full cursor-pointer items-center justify-between gap-4 border-0 bg-transparent px-5 py-4.5 text-left text-base font-bold text-[#0e1325] sm:px-6"
+                  >
+                    {item.q}
+                    <motion.span
+                      animate={{ rotate: on ? 45 : 0 }}
+                      transition={{ type: 'spring', stiffness: 300, damping: 20 }}
+                      className={`grid size-8 shrink-0 place-items-center rounded-full text-lg leading-none font-bold ${on ? 'bg-[#6d4aff] text-white' : 'bg-[#eef0f7] text-[#141b34]'}`}
+                      aria-hidden="true"
+                    >
+                      +
+                    </motion.span>
+                  </button>
+                </h3>
+                <AnimatePresence initial={false}>
+                  {on && (
+                    <motion.div
+                      initial={{ height: 0, opacity: 0 }}
+                      animate={{ height: 'auto', opacity: 1 }}
+                      exit={{ height: 0, opacity: 0 }}
+                      transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
+                    >
+                      <p className="m-0 px-5 pb-5 text-[15px] leading-relaxed text-[#5a6280] sm:px-6">{item.a}</p>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </li>
+            )
+          })}
+        </ul>
       </div>
     </section>
   )
@@ -894,19 +1092,23 @@ function HowItWorks() {
 
 function ContactSection() {
   return (
-    <section id="contact" className="scroll-mt-20 bg-[#f6f7fb] px-5 pb-20 sm:px-8">
-      <Reveal className="relative mx-auto max-w-7xl overflow-hidden rounded-[40px] bg-[#0b1028] text-white">
+    <section id="contact" className="scroll-mt-20 bg-white px-5 pb-20 sm:px-8">
+      <Reveal className="relative mx-auto max-w-7xl overflow-hidden rounded-[36px] bg-[#0b1028] text-white">
         <div className="pointer-events-none absolute inset-0" aria-hidden="true">
-          <div className="absolute -right-32 -bottom-40 size-[460px] rounded-full bg-[#2f6bff]/30 blur-[110px]" />
+          <motion.div
+            animate={{ x: [0, -30, 0] }}
+            transition={{ duration: 16, repeat: Infinity, ease: 'easeInOut' }}
+            className="absolute -right-32 -bottom-40 size-[460px] rounded-full bg-[#2f6bff]/30 blur-[110px]"
+          />
           <div className="absolute -top-32 left-1/3 size-[380px] rounded-full bg-[#6d4aff]/25 blur-[110px]" />
         </div>
-        <div className="relative grid gap-10 p-8 sm:p-12 lg:grid-cols-[minmax(0,1fr)_minmax(0,0.85fr)] lg:items-center lg:p-16">
+        <div className="relative grid gap-10 p-7 sm:p-12 lg:grid-cols-[minmax(0,1fr)_minmax(0,0.8fr)] lg:items-center lg:p-14">
           <div>
-            <h2 className="m-0 text-4xl leading-[1.08] font-extrabold tracking-[-0.035em] text-white sm:text-5xl">
-              Drop by, call or send a message.
+            <h2 className="m-0 text-3xl leading-[1.1] font-extrabold tracking-[-0.03em] text-white sm:text-5xl">
+              Tell us what you need. We’ll take it from there.
             </h2>
-            <p className="m-0 mt-4 max-w-lg text-lg leading-relaxed text-white/70">
-              Tell us what you need and we’ll tell you exactly what to bring. Most jobs start the same day.
+            <p className="m-0 mt-4 max-w-lg text-base leading-relaxed text-white/70 sm:text-lg">
+              Walk in, call or send a message. We’ll tell you exactly what to bring, and most work starts the same day.
             </p>
             <div className="mt-8 flex flex-wrap gap-3">
               <motion.a
@@ -915,7 +1117,7 @@ function ContactSection() {
                 href={waHref}
                 className="inline-flex h-14 items-center gap-2.5 rounded-2xl bg-white px-6 font-bold text-[#141b34] no-underline shadow-[0_16px_30px_-14px_rgb(0_0_0/0.6)]"
               >
-                <MessageCircle size={19} aria-hidden="true" /> WhatsApp
+                <MessageCircle size={19} aria-hidden="true" /> WhatsApp us
               </motion.a>
               <motion.a
                 whileHover={{ y: -3 }}
@@ -923,33 +1125,29 @@ function ContactSection() {
                 href={telHref}
                 className="inline-flex h-14 items-center gap-2.5 rounded-2xl px-6 font-bold text-white no-underline ring-1 ring-white/25 hover:bg-white/[0.06]"
               >
-                <Phone size={18} aria-hidden="true" /> Call us
+                <Phone size={18} aria-hidden="true" /> Call the office
               </motion.a>
             </div>
-            <dl className="m-0 mt-10 grid gap-4 sm:grid-cols-3">
-              {[
-                { Icon: Phone, label: 'Phone', value: CONTACT.phone, ph: 'Phone number' },
-                { Icon: MapPin, label: 'Address', value: CONTACT.address, ph: 'Shop address' },
-                { Icon: Clock, label: 'Open', value: CONTACT.hours, ph: 'Opening hours' },
-              ].map(({ Icon, label, value, ph }) => (
-                <div key={label} className="rounded-2xl bg-white/[0.05] p-4 ring-1 ring-white/10">
-                  <dt className="flex items-center gap-2 text-sm font-bold text-[#a9b8ff]">
-                    <Icon size={16} aria-hidden="true" /> {label}
-                  </dt>
-                  <dd className="m-0 mt-1.5 text-[15px] font-semibold text-white/90">
+          </div>
+          <dl className="m-0 grid gap-3">
+            {[
+              { Icon: Phone, label: 'Phone and WhatsApp', value: CONTACT.phone, ph: 'Phone number' },
+              { Icon: MapPin, label: 'Visit the office', value: CONTACT.address, ph: 'Shop address' },
+              { Icon: Clock, label: 'Opening hours', value: CONTACT.hours, ph: 'Opening hours' },
+            ].map(({ Icon, label, value, ph }) => (
+              <div key={label} className="flex items-center gap-4 rounded-2xl bg-white/[0.05] p-4 ring-1 ring-white/10">
+                <span className="grid size-12 shrink-0 place-items-center rounded-2xl bg-gradient-to-br from-[#6d4aff] to-[#2f6bff]">
+                  <Icon size={20} aria-hidden="true" />
+                </span>
+                <div className="min-w-0">
+                  <dt className="text-sm font-bold text-[#a9b8ff]">{label}</dt>
+                  <dd className="m-0 mt-0.5 text-[15px] font-semibold text-white/90">
                     <Detail value={value} placeholder={ph} />
                   </dd>
                 </div>
-              ))}
-            </dl>
-          </div>
-          <div className="relative aspect-[4/3.3] overflow-hidden rounded-[30px] ring-1 ring-white/15">
-            <Photo photo={PHOTOS.handshake} sizes="(min-width: 1024px) 520px, 92vw" />
-            <div className="absolute inset-0 bg-gradient-to-t from-[#0b1028]/70 to-transparent" />
-            <p className="absolute bottom-5 left-5 m-0 max-w-[16rem] text-lg leading-snug font-extrabold">
-              Friendly help, and the job done right the first time.
-            </p>
-          </div>
+              </div>
+            ))}
+          </dl>
         </div>
       </Reveal>
     </section>
@@ -971,22 +1169,68 @@ function ScrollProgress() {
 
 function Footer() {
   return (
-    <footer className="bg-[#f6f7fb] px-5 pb-10 sm:px-8">
-      <div className="mx-auto flex max-w-7xl flex-wrap items-center justify-between gap-4 border-t border-[#e1e4ee] pt-8">
-        <BrandMark />
-        <p className="m-0 text-sm text-[#6b7290]">
-          © {new Date().getFullYear()} Manish Associates. Insurance, banking, documents and travel.
-        </p>
-        <Link
-          to="/login"
-          className="inline-flex min-h-10 items-center text-sm font-semibold text-[#5a6280] no-underline hover:text-[#141b34]"
-        >
-          Staff sign in
-        </Link>
+    <footer className="bg-[#0b1028] px-5 pt-14 pb-8 text-white sm:px-8">
+      <div className="mx-auto max-w-7xl">
+        <div className="grid grid-cols-2 gap-x-6 gap-y-10 lg:grid-cols-[minmax(0,1.3fr)_repeat(3,minmax(0,1fr))]">
+          <div className="col-span-2 lg:col-span-1">
+            <BrandMark light />
+            <p className="m-0 mt-4 max-w-xs text-sm leading-relaxed text-white/60">
+              Insurance advice, banking, documents, registrations, tickets and tours, at one counter.
+            </p>
+            <a
+              href={waHref}
+              className="mt-5 inline-flex h-11 items-center gap-2 rounded-xl bg-white/[0.07] px-4 text-sm font-bold text-white no-underline ring-1 ring-white/12 hover:bg-white/[0.12]"
+            >
+              <MessageCircle size={16} aria-hidden="true" /> WhatsApp us
+            </a>
+          </div>
+          {[
+            { title: 'Services', links: SERVICE_GROUPS.map((g) => ({ label: g.title, href: '#services' })) },
+            {
+              title: 'Popular',
+              links: [
+                { label: 'Tatkal train tickets', href: '#services' },
+                { label: 'Passport, Tatkal', href: '#services' },
+                { label: 'Health insurance', href: '#services' },
+                { label: 'Tour packages', href: '#travel' },
+              ],
+            },
+            {
+              title: 'Company',
+              links: [
+                { label: 'How it works', href: '#how' },
+                { label: 'Contact', href: '#contact' },
+                { label: 'Staff sign in', to: '/login' },
+              ],
+            },
+          ].map((col) => (
+            <div key={col.title}>
+              <p className="m-0 text-sm font-bold text-white">{col.title}</p>
+              <ul className="m-0 mt-3 flex list-none flex-col p-0">
+                {col.links.map((l) => (
+                  <li key={l.label}>
+                    {l.to ? (
+                      <Link to={l.to} className="inline-flex min-h-9 items-center text-sm text-white/60 no-underline hover:text-white">
+                        {l.label}
+                      </Link>
+                    ) : (
+                      <a href={l.href} className="inline-flex min-h-9 items-center text-sm text-white/60 no-underline hover:text-white">
+                        {l.label}
+                      </a>
+                    )}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          ))}
+        </div>
+        <p className="m-0 mt-12 border-t border-white/10 pt-6 text-xs text-white/45">© {YEAR} Manish Associates. All rights reserved.</p>
       </div>
     </footer>
   )
 }
+
+const YEAR = new Date().getFullYear()
 
 function Home() {
   return (
@@ -1001,6 +1245,8 @@ function Home() {
           <Highlight />
           <Tours />
           <HowItWorks />
+          <WhyUs />
+          <Faq />
           <ContactSection />
         </main>
         <Footer />
