@@ -85,7 +85,7 @@ export default [
     run: async () => {
       for (const id of ['services', 'travel', 'how', 'contact']) expect(Boolean(document.getElementById(id)), 'section ' + id)
       expect(all('a[href="#services"]').length > 0, 'nav links to services')
-      expect(/Insurance advice/.test(text()) && /Tickets and tours/.test(text()), 'service groups listed')
+      expect(/Insurance and investments/.test(text()) && /Tickets and tours/.test(text()), 'service groups listed')
       expect(all('img').length >= 6 && all('img').every((i) => i.alt), 'photos have descriptions')
       expect(Boolean(all('a').find((a) => a.getAttribute('href') === '/login')), 'staff sign in link')
     },
