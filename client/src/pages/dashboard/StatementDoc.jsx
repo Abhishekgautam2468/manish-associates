@@ -1,6 +1,7 @@
 import { useMemo, useState } from 'react'
 import { Link, useParams, useSearchParams } from 'react-router-dom'
-import { ArrowLeft, Building2, Printer } from 'lucide-react'
+import { ArrowLeft, Printer } from 'lucide-react'
+import Logo from '../../components/Logo.jsx'
 import { useContact, useTransactions } from '../../lib/queries.js'
 import DateRange, { presetRange } from '../../dashboard/DateRange.jsx'
 import { displayPhone, formatDate, formatFullDate, formatMonth, formatStamp, modeLabel, money, todayISO } from '../../lib/format.js'
@@ -141,14 +142,9 @@ function StatementDoc() {
       {/* The document */}
       <article className="doc-sheet mx-auto w-full max-w-[210mm] rounded-sm border border-[#d9d7e3] bg-white p-4 text-[12.5px] leading-snug shadow-[0_20px_50px_-30px_rgb(20_23_43/0.5)] sm:p-[12mm]">
         <header className="doc-keep flex flex-wrap items-start justify-between gap-6 border-b-2 border-[#14172b] pb-4">
-          <div className="flex items-center gap-3">
-            <span className="grid size-10 place-items-center rounded-lg bg-[#6d4aff] text-white" aria-hidden="true">
-              <Building2 size={20} strokeWidth={2.25} />
-            </span>
-            <div>
-              <p className="m-0 text-lg font-extrabold tracking-tight">Manish Associates</p>
-              <p className="m-0 text-[11px] text-[#6a6e86]">Statement of account</p>
-            </div>
+          <div>
+            <Logo size="md" onLight />
+            <p className="m-0 mt-1.5 text-[11px] text-[#6a6e86]">Statement of account</p>
           </div>
           <div className="text-right text-[11px] text-[#4b4f68]">
             <p className="m-0">
@@ -184,11 +180,12 @@ function StatementDoc() {
           // Brought forward only shows when money was carried in from before the start date;
           // the end balance only when the period stops before today (otherwise it is "Balance today").
           const tiles = [
-            doc.from && doc.opening !== 0 && {
-              label: `Brought forward (before ${formatDate(doc.from, { short: true })})`,
-              value: balanceLabel(doc.opening).text,
-              tone: balanceLabel(doc.opening).cls,
-            },
+            doc.from &&
+              doc.opening !== 0 && {
+                label: `Brought forward (before ${formatDate(doc.from, { short: true })})`,
+                value: balanceLabel(doc.opening).text,
+                tone: balanceLabel(doc.opening).cls,
+              },
             { label: 'Total received', value: money(doc.received), tone: 'text-[#1d4ed8]' },
             { label: 'Total paid or sent', value: money(doc.paid), tone: 'text-[#c2410c]' },
             doc.to < todayISO() && {

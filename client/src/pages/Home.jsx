@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
+import Logo from '../components/Logo.jsx'
 import { AnimatePresence, MotionConfig, motion, useScroll, useSpring, useTransform } from 'framer-motion'
 import {
   ArrowRight,
@@ -261,16 +262,7 @@ const mapsHref = CONTACT.address ? `https://www.google.com/maps/search/?api=1&qu
 const waHref = CONTACT.whatsapp ? `https://wa.me/${CONTACT.whatsapp}` : '#contact'
 
 function BrandMark({ light = false }) {
-  return (
-    <span className="inline-flex items-center gap-2.5">
-      <span className="grid size-9 place-items-center rounded-xl bg-gradient-to-br from-[#7b5eff] to-[#2f6bff] text-white shadow-[0_8px_20px_-8px_rgb(109_74_255/0.9)]">
-        <Building2 size={18} strokeWidth={2.25} aria-hidden="true" />
-      </span>
-      <span className={`text-[17px] font-extrabold tracking-tight whitespace-nowrap ${light ? 'text-white' : 'text-[#0e1325]'}`}>
-        Manish Associates
-      </span>
-    </span>
-  )
+  return <Logo size="md" onLight={!light} />
 }
 
 /* ---------- Navigation ---------- */
@@ -591,20 +583,18 @@ function Hero() {
               initial={{ opacity: 0, y: 16 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.9, duration: 0.6 }}
-              className="absolute inset-x-4 bottom-4 flex items-center gap-3 rounded-2xl bg-[#0b1028]/40 p-3 ring-1 ring-white/20 backdrop-blur-md sm:inset-x-5 sm:bottom-5 lg:top-5 lg:right-auto lg:bottom-auto lg:w-[min(22rem,80%)]"
+              className="absolute inset-x-4 bottom-4 flex items-center gap-3 rounded-2xl bg-[#0b1028]/75 p-2.5 pr-3 shadow-[0_18px_40px_-18px_rgb(0_0_0/0.8)] ring-1 ring-white/15 backdrop-blur-xl sm:inset-x-5 sm:bottom-5"
             >
-              <span className="grid size-11 shrink-0 place-items-center rounded-xl bg-gradient-to-br from-[#7b5eff] to-[#2f6bff]">
-                <Building2 size={20} aria-hidden="true" />
-              </span>
+              <img src="/brand/mark-192.png" alt="" width="44" height="44" className="size-11 shrink-0 rounded-xl" />
               <span className="min-w-0 flex-1 leading-tight">
-                <span className="block text-[15px] font-extrabold text-white">Manish Associates</span>
-                <span className="block truncate text-xs font-semibold text-white/70">
-                  {SINCE.years} years in business · Rewa Super Bazar
+                <span className="block text-[15px] font-extrabold whitespace-nowrap text-white">Manish Associates</span>
+                <span className="block text-xs font-semibold whitespace-nowrap text-white/70">
+                  {SINCE.years} years in business · {SINCE.town}
                 </span>
               </span>
               <a
                 href="#contact"
-                className="hidden h-9 shrink-0 items-center rounded-lg bg-white px-3 text-xs font-bold text-[#141b34] no-underline sm:inline-flex"
+                className="ml-2 hidden h-9 shrink-0 items-center rounded-lg bg-white px-3.5 text-xs font-bold text-[#141b34] no-underline sm:inline-flex"
               >
                 Visit us
               </a>
@@ -620,20 +610,20 @@ function Hero() {
               x: { delay: 1, type: 'spring' },
               y: { delay: 1.6, duration: 5, repeat: Infinity, ease: 'easeInOut' },
             }}
-            className="absolute -top-5 right-3 flex items-center gap-2.5 rounded-2xl bg-white px-3.5 py-2.5 shadow-[0_20px_40px_-18px_rgb(0_0_0/0.6)] sm:-right-6 lg:top-[46%] lg:-right-10"
+            className="absolute -top-5 right-3 flex items-center gap-2.5 rounded-2xl bg-white px-3.5 py-2.5 shadow-[0_20px_40px_-18px_rgb(0_0_0/0.6)] sm:-right-6 lg:top-[24%] lg:right-auto lg:-left-12"
             aria-hidden="true"
           >
             <span className="grid size-9 place-items-center rounded-xl bg-[#e7f7ee] text-[#0f7a45]">
               <CheckCircle2 size={18} />
             </span>
             <span className="leading-tight">
-              <span className="block text-[11px] font-bold text-[#6b7290]">Serving {SINCE.town}</span>
-              <span className="block text-sm font-extrabold text-[#0e1325]">{SINCE.years} years in business</span>
+              <span className="block text-[11px] font-bold text-[#6b7290]">Fees told upfront</span>
+              <span className="block text-sm font-extrabold text-[#0e1325]">Documents checked twice</span>
             </span>
           </motion.div>
 
           {/* The counter's queue */}
-          <div className="relative mx-auto mt-5 w-[94%] lg:absolute lg:-bottom-24 lg:-left-16 lg:mt-0 lg:w-[72%]">
+          <div className="relative mx-auto mt-5 w-[94%] lg:w-[86%]">
             <TokenStack />
           </div>
         </motion.div>
@@ -1339,10 +1329,24 @@ function Footer() {
 
 const YEAR = new Date().getFullYear()
 
+// In-page links scroll smoothly to their section and leave the address as it is (no #top, #services...).
+function scrollToHash(e) {
+  const link = e.target.closest('a[href^="#"]')
+  if (!link) return
+  const id = link.getAttribute('href').slice(1)
+  e.preventDefault()
+  const behavior = window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth'
+  if (!id || id === 'top') return window.scrollTo({ top: 0, behavior })
+  document.getElementById(id)?.scrollIntoView({ behavior, block: 'start' })
+}
+
 function Home() {
   return (
     <MotionConfig reducedMotion="user">
-      <div className="min-h-screen bg-[#f6f7fb] font-[Manrope,system-ui,sans-serif] text-[#0e1325] antialiased [scroll-behavior:smooth]">
+      <div
+        onClick={scrollToHash}
+        className="min-h-screen bg-[#f6f7fb] font-[Manrope,system-ui,sans-serif] text-[#0e1325] antialiased [scroll-behavior:smooth]"
+      >
         <ScrollProgress />
         <TopNav />
         <main>

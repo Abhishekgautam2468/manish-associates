@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { Link, useSearchParams } from 'react-router-dom'
-import { ArrowLeft, Building2, Printer } from 'lucide-react'
+import { ArrowLeft, Printer } from 'lucide-react'
+import Logo from '../../components/Logo.jsx'
 import { useDaybook, useTransactions } from '../../lib/queries.js'
 import { formatFullDate, formatStamp, modeLabel, money, todayISO } from '../../lib/format.js'
 
@@ -54,11 +55,21 @@ function RegisterDoc() {
     <div className="dash-root doc-wrap min-h-screen bg-[#e9e8f0] px-3 py-6 text-[#14172b] sm:px-6">
       <style>{PAGE_CSS}</style>
       <div className="doc-toolbar mx-auto mb-4 flex max-w-[297mm] flex-wrap items-center justify-between gap-3">
-        <Link to={`/dashboard/daybook${date === todayISO() ? '' : `?date=${date}`}`} className="inline-flex min-h-10 items-center gap-1.5 text-sm font-bold text-[#4b4f68] no-underline hover:text-[#5b3df5]">
+        <Link
+          to={`/dashboard/daybook${date === todayISO() ? '' : `?date=${date}`}`}
+          className="inline-flex min-h-10 items-center gap-1.5 text-sm font-bold text-[#4b4f68] no-underline hover:text-[#5b3df5]"
+        >
           <ArrowLeft size={16} aria-hidden="true" /> Back to the day book
         </Link>
         <div className="toolbar">
-          <input type="date" className="field field--compact w-auto" aria-label="Day" value={date} max={todayISO()} onChange={(e) => e.target.value && setParams({ date: e.target.value })} />
+          <input
+            type="date"
+            className="field field--compact w-auto"
+            aria-label="Day"
+            value={date}
+            max={todayISO()}
+            onChange={(e) => e.target.value && setParams({ date: e.target.value })}
+          />
           <button type="button" className="btn btn--primary" onClick={() => window.print()}>
             <Printer size={16} aria-hidden="true" /> Print or save as PDF
           </button>
@@ -67,24 +78,22 @@ function RegisterDoc() {
 
       <article className="doc-sheet mx-auto w-full max-w-[297mm] rounded-sm border border-[#d9d7e3] bg-white p-4 text-[12px] leading-snug shadow-[0_20px_50px_-30px_rgb(20_23_43/0.5)] sm:p-[10mm]">
         <header className="flex flex-wrap items-start justify-between gap-6 border-b-2 border-[#14172b] pb-3">
-          <div className="flex items-center gap-3">
-            <span className="grid size-9 place-items-center rounded-lg bg-[#6d4aff] text-white" aria-hidden="true">
-              <Building2 size={18} strokeWidth={2.25} />
-            </span>
-            <div>
-              <p className="m-0 text-base font-extrabold">Manish Associates</p>
-              <p className="m-0 text-[11px] text-[#6a6e86]">Day register · {formatFullDate(date)}</p>
-            </div>
+          <div>
+            <Logo size="md" onLight />
+            <p className="m-0 mt-1.5 text-[11px] text-[#6a6e86]">Day register · {formatFullDate(date)}</p>
           </div>
           <p className="m-0 text-right text-[11px] text-[#4b4f68]">
-            {rows.length} {rows.length === 1 ? 'entry' : 'entries'} · commission <strong className="text-[#15803d]">{money(day.commission)}</strong>
+            {rows.length} {rows.length === 1 ? 'entry' : 'entries'} · commission{' '}
+            <strong className="text-[#15803d]">{money(day.commission)}</strong>
             <br />
             Generated {formatStamp(generated)}
           </p>
         </header>
 
         {rows.length === 0 ? (
-          <p className="m-0 mt-6 rounded-lg border border-dashed border-[#d9d7e3] px-4 py-6 text-center text-[#6a6e86]">No entries on this day.</p>
+          <p className="m-0 mt-6 rounded-lg border border-dashed border-[#d9d7e3] px-4 py-6 text-center text-[#6a6e86]">
+            No entries on this day.
+          </p>
         ) : (
           <div className="mt-4 overflow-x-auto">
             <table className="doc-table w-full min-w-[46rem] border-collapse text-left">
@@ -175,8 +184,12 @@ function RegisterDoc() {
               {counted != null && (
                 <>
                   <dt className="font-bold">Difference</dt>
-                  <dd className={`m-0 text-right font-bold tabular-nums ${counted - expected === 0 ? 'text-[#15803d]' : counted - expected < 0 ? 'text-[#b91c1c]' : 'text-[#8a5a00]'}`}>
-                    {counted - expected === 0 ? 'Matches' : `${money(Math.abs(counted - expected))} ${counted - expected < 0 ? 'short' : 'extra'}`}
+                  <dd
+                    className={`m-0 text-right font-bold tabular-nums ${counted - expected === 0 ? 'text-[#15803d]' : counted - expected < 0 ? 'text-[#b91c1c]' : 'text-[#8a5a00]'}`}
+                  >
+                    {counted - expected === 0
+                      ? 'Matches'
+                      : `${money(Math.abs(counted - expected))} ${counted - expected < 0 ? 'short' : 'extra'}`}
                   </dd>
                 </>
               )}
