@@ -156,8 +156,6 @@ const STEPS = [
   { title: 'We handle the rest', body: 'We file, book or apply for you and keep you posted until it’s done.' },
 ]
 
-const PROMISES = ['Fees told before we start', 'Documents checked twice', 'Updates on WhatsApp', 'One counter for everything']
-
 // The tickets that cycle in the hero, like tokens at a service counter.
 const TOKENS = [
   { no: '014', label: 'Tatkal train ticket', Icon: TrainFront, tone: 'bg-[#2f6bff]' },
@@ -201,7 +199,9 @@ function BrandMark({ light = false }) {
       <span className="grid size-9 place-items-center rounded-xl bg-gradient-to-br from-[#7b5eff] to-[#2f6bff] text-white shadow-[0_8px_20px_-8px_rgb(109_74_255/0.9)]">
         <Building2 size={18} strokeWidth={2.25} aria-hidden="true" />
       </span>
-      <span className={`text-[17px] font-extrabold tracking-tight ${light ? 'text-white' : 'text-[#0e1325]'}`}>Manish Associates</span>
+      <span className={`text-[17px] font-extrabold tracking-tight whitespace-nowrap ${light ? 'text-white' : 'text-[#0e1325]'}`}>
+        Manish Associates
+      </span>
     </span>
   )
 }
@@ -234,7 +234,7 @@ function TopNav() {
         <a href="#top" className="no-underline" aria-label="Manish Associates, back to top">
           <BrandMark light />
         </a>
-        <ul className="m-0 ml-auto hidden list-none items-center gap-1 p-0 md:flex">
+        <ul className="m-0 ml-auto hidden list-none items-center gap-1 p-0 lg:flex">
           {NAV.map((n) => (
             <li key={n.href}>
               <a
@@ -248,13 +248,13 @@ function TopNav() {
         </ul>
         <a
           href={waHref}
-          className="ml-auto hidden h-11 items-center gap-2 rounded-xl bg-white px-4 text-[15px] font-bold text-[#141b34] no-underline shadow-[0_10px_24px_-12px_rgb(0_0_0/0.6)] transition-transform hover:-translate-y-0.5 md:ml-2 md:inline-flex"
+          className="ml-auto hidden h-11 items-center gap-2 rounded-xl bg-white px-4 text-[15px] font-bold whitespace-nowrap text-[#141b34] no-underline shadow-[0_10px_24px_-12px_rgb(0_0_0/0.6)] transition-transform hover:-translate-y-0.5 sm:inline-flex lg:ml-2"
         >
           <MessageCircle size={17} aria-hidden="true" /> WhatsApp us
         </a>
         <button
           type="button"
-          className="ml-auto grid size-11 cursor-pointer place-items-center rounded-xl border-0 bg-white/[0.06] text-white ring-1 ring-white/15 hover:bg-white/10 md:hidden"
+          className="ml-auto grid size-11 cursor-pointer place-items-center rounded-xl border-0 bg-white/[0.06] text-white ring-1 ring-white/15 hover:bg-white/10 sm:ml-2 lg:hidden"
           aria-label={open ? 'Close menu' : 'Open menu'}
           aria-expanded={open}
           onClick={() => setOpen((v) => !v)}
@@ -268,7 +268,7 @@ function TopNav() {
             initial={{ opacity: 0, height: 0 }}
             animate={{ opacity: 1, height: 'auto' }}
             exit={{ opacity: 0, height: 0 }}
-            className="m-0 list-none overflow-hidden border-t border-white/10 px-5 pb-4 md:hidden"
+            className="m-0 list-none overflow-hidden border-t border-white/10 px-5 pb-4 lg:hidden"
           >
             {NAV.map((n) => (
               <li key={n.href}>
@@ -356,14 +356,48 @@ function TokenStack() {
   )
 }
 
-const HEADLINE = ['Insurance,', 'banking,', 'documents', 'and', 'travel', 'at', 'one', 'counter.']
+// The words that cycle at the end of the headline.
+const ROTATING = ['insurance', 'Tatkal tickets', 'passport', 'GST and ITR', 'next holiday', 'banking']
+
+// Shortcuts under the headline, one per kind of work.
+const QUICK = [
+  { label: 'Insurance', Icon: ShieldCheck, href: '#services' },
+  { label: 'Banking', Icon: Landmark, href: '#services' },
+  { label: 'Passport', Icon: BookUser, href: '#services' },
+  { label: 'Tickets', Icon: TrainFront, href: '#services' },
+  { label: 'Tours', Icon: TreePalm, href: '#travel' },
+]
+
+function RotatingWord() {
+  const [i, setI] = useState(0)
+  useEffect(() => {
+    const t = setInterval(() => setI((x) => (x + 1) % ROTATING.length), 2400)
+    return () => clearInterval(t)
+  }, [])
+  return (
+    <span className="relative block h-[1.12em] overflow-hidden" aria-live="polite">
+      <AnimatePresence mode="popLayout" initial={false}>
+        <motion.span
+          key={ROTATING[i]}
+          initial={{ y: '100%', opacity: 0, filter: 'blur(6px)' }}
+          animate={{ y: 0, opacity: 1, filter: 'blur(0px)' }}
+          exit={{ y: '-100%', opacity: 0, filter: 'blur(6px)' }}
+          transition={{ duration: 0.55, ease: [0.22, 1, 0.36, 1] }}
+          className="absolute inset-x-0 top-0 bg-gradient-to-r from-[#b8a8ff] via-[#8fb0ff] to-[#7ad3ff] bg-clip-text whitespace-nowrap text-transparent"
+        >
+          {ROTATING[i]}.
+        </motion.span>
+      </AnimatePresence>
+    </span>
+  )
+}
 
 function Hero() {
   const ref = useRef(null)
   const { scrollYProgress } = useScroll({ target: ref, offset: ['start start', 'end start'] })
-  const imgY = useTransform(scrollYProgress, [0, 1], ['0%', '14%'])
-  const imgScale = useTransform(scrollYProgress, [0, 1], [1.04, 1.14])
-  const copyY = useTransform(scrollYProgress, [0, 1], [0, -60])
+  const imgY = useTransform(scrollYProgress, [0, 1], ['0%', '12%'])
+  const imgScale = useTransform(scrollYProgress, [0, 1], [1.03, 1.12])
+  const copyY = useTransform(scrollYProgress, [0, 1], [0, -50])
   const glow = useTransform(scrollYProgress, [0, 1], [1, 0.3])
 
   return (
@@ -382,41 +416,32 @@ function Hero() {
         <div className="absolute inset-0 bg-[linear-gradient(rgb(255_255_255/0.04)_1px,transparent_1px),linear-gradient(90deg,rgb(255_255_255/0.04)_1px,transparent_1px)] bg-[size:64px_64px] [mask-image:radial-gradient(ellipse_at_30%_20%,black_25%,transparent_70%)]" />
       </motion.div>
 
-      <div className="mx-auto grid max-w-7xl items-center gap-12 px-5 pt-12 pb-14 sm:gap-16 sm:px-8 sm:pb-28 lg:grid-cols-[minmax(0,1.05fr)_minmax(0,0.95fr)] lg:pt-20 lg:pb-40">
-        <motion.div style={{ y: copyY }} initial="hidden" animate="show" variants={{ show: { transition: { staggerChildren: 0.08 } } }}>
+      <div className="mx-auto grid max-w-7xl items-center gap-12 px-5 pt-10 pb-16 sm:px-8 lg:grid-cols-[minmax(0,1.08fr)_minmax(0,0.92fr)] lg:gap-16 lg:pt-16 lg:pb-32">
+        <motion.div style={{ y: copyY }} initial="hidden" animate="show" variants={{ show: { transition: { staggerChildren: 0.09 } } }}>
           <motion.p
             variants={fadeUp}
-            className="m-0 inline-flex items-center gap-2 rounded-full bg-white/[0.07] px-3.5 py-1.5 text-sm font-semibold text-white/80 ring-1 ring-white/12 backdrop-blur"
+            className="m-0 inline-flex items-center gap-2 rounded-full bg-white/[0.07] py-1 pr-3.5 pl-1 text-sm font-semibold text-white/80 ring-1 ring-white/12 backdrop-blur"
           >
-            <span className="relative flex size-2">
-              <span className="absolute inline-flex size-full animate-ping rounded-full bg-[#5ee0a0] opacity-60" />
-              <span className="relative inline-flex size-2 rounded-full bg-[#5ee0a0]" />
+            <span className="grid size-6 place-items-center rounded-full bg-gradient-to-br from-[#7b5eff] to-[#2f6bff]">
+              <ShieldCheck size={13} aria-hidden="true" />
             </span>
-            Your neighbourhood service centre
+            Insurance advisor and service centre
           </motion.p>
 
-          <h1 className="m-0 mt-6 text-[2.55rem] leading-[1.04] font-extrabold tracking-[-0.04em] text-white sm:text-6xl lg:text-[4.4rem]">
-            {HEADLINE.map((w, k) => (
-              <span key={k} className="inline-block overflow-hidden pb-[0.08em] align-top">
-                <motion.span
-                  className={`inline-block ${k >= 5 ? 'bg-gradient-to-r from-[#b3a2ff] via-[#8fb0ff] to-[#7ad3ff] bg-clip-text text-transparent' : ''}`}
-                  initial={{ y: '110%' }}
-                  animate={{ y: 0 }}
-                  transition={{ delay: 0.15 + k * 0.06, duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
-                >
-                  {w}
-                  {k < HEADLINE.length - 1 && ' '}
-                </motion.span>
-              </span>
-            ))}
-          </h1>
+          <motion.h1
+            variants={fadeUp}
+            className="m-0 mt-6 text-[2.6rem] leading-[1.06] font-extrabold tracking-[-0.04em] text-white sm:text-6xl lg:text-[4.1rem]"
+          >
+            One counter for your
+            <RotatingWord />
+          </motion.h1>
 
-          <motion.p variants={fadeUp} className="m-0 mt-7 max-w-[34rem] text-lg leading-relaxed text-white/70">
-            From Tatkal tickets and passports to life cover and tour packages, Manish Associates handles the paperwork, so you don’t have to
-            run between offices.
+          <motion.p variants={fadeUp} className="m-0 mt-6 max-w-[33rem] text-lg leading-relaxed text-white/70">
+            Insurance, banking, passports, registrations, tickets and tours, handled by people who know the paperwork. No running between
+            offices, no surprises on the fee.
           </motion.p>
 
-          <motion.div variants={fadeUp} className="mt-9 flex flex-wrap gap-3">
+          <motion.div variants={fadeUp} className="mt-8 flex flex-wrap gap-3">
             <motion.a
               whileHover={{ y: -3 }}
               whileTap={{ scale: 0.97 }}
@@ -428,54 +453,95 @@ function Hero() {
             <motion.a
               whileHover={{ y: -3 }}
               whileTap={{ scale: 0.97 }}
-              href="#services"
-              className="group inline-flex h-14 items-center gap-2 rounded-2xl px-6 text-base font-bold text-white no-underline ring-1 ring-white/20 backdrop-blur transition-colors hover:bg-white/[0.06]"
+              href={telHref}
+              className="inline-flex h-14 items-center gap-2.5 rounded-2xl px-6 text-base font-bold text-white no-underline ring-1 ring-white/20 backdrop-blur transition-colors hover:bg-white/[0.06]"
             >
-              See all services <ArrowRight size={18} className="transition-transform group-hover:translate-x-1" aria-hidden="true" />
+              <Phone size={18} aria-hidden="true" /> Call the office
             </motion.a>
           </motion.div>
 
-          <motion.ul
-            variants={fadeUp}
-            className="m-0 mt-10 grid max-w-lg list-none grid-cols-2 gap-x-6 gap-y-3 p-0 text-sm font-semibold text-white/75"
-          >
-            {PROMISES.map((p) => (
-              <li key={p} className="inline-flex items-center gap-2">
-                <CheckCircle2 size={16} className="shrink-0 text-[#8fb0ff]" aria-hidden="true" /> {p}
-              </li>
-            ))}
-          </motion.ul>
+          {/* What we handle, as shortcuts */}
+          <motion.div variants={fadeUp} className="mt-10">
+            <p className="m-0 text-sm font-semibold text-white/50">What can we help with?</p>
+            <ul className="m-0 mt-3 flex list-none flex-wrap gap-2 p-0">
+              {QUICK.map(({ label, Icon, href }, k) => (
+                <motion.li
+                  key={label}
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.7 + k * 0.06 }}
+                >
+                  <a
+                    href={href}
+                    className="group inline-flex h-11 items-center gap-2 rounded-xl bg-white/[0.06] pr-3.5 pl-2 text-sm font-bold text-white/85 no-underline ring-1 ring-white/10 transition-colors hover:bg-white/[0.12] hover:text-white"
+                  >
+                    <span className="grid size-7 place-items-center rounded-lg bg-white/10 text-[#a9c2ff] transition-colors group-hover:bg-[#6d4aff] group-hover:text-white">
+                      <Icon size={15} aria-hidden="true" />
+                    </span>
+                    {label}
+                  </a>
+                </motion.li>
+              ))}
+            </ul>
+          </motion.div>
         </motion.div>
 
         <motion.div
           initial={{ opacity: 0, scale: 0.94, rotate: 1.5 }}
           animate={{ opacity: 1, scale: 1, rotate: 0 }}
-          transition={{ delay: 0.3, duration: 1, ease: [0.22, 1, 0.36, 1] }}
-          className="relative mx-auto w-full max-w-[560px]"
+          transition={{ delay: 0.25, duration: 1, ease: [0.22, 1, 0.36, 1] }}
+          className="relative mx-auto w-full max-w-[540px]"
         >
-          {/* Photo with a soft violet frame */}
-          <div className="relative aspect-[1.09/1] overflow-hidden rounded-[34px] shadow-[0_50px_100px_-40px_rgb(0_0_0/0.9)] ring-1 ring-white/15">
+          {/* Glow ring behind the photo */}
+          <div
+            className="absolute -inset-3 -z-10 rounded-[44px] bg-gradient-to-br from-[#6d4aff]/50 via-[#2f6bff]/20 to-transparent blur-2xl"
+            aria-hidden="true"
+          />
+
+          <div className="relative aspect-[1.05/1] overflow-hidden rounded-[36px] shadow-[0_50px_100px_-40px_rgb(0_0_0/0.9)] ring-1 ring-white/15">
             <motion.div style={{ y: imgY, scale: imgScale }} className="absolute inset-0">
               <picture>
                 <source
                   type="image/webp"
                   srcSet="/images/office-640.webp 640w, /images/office-1100.webp 1100w"
-                  sizes="(min-width: 1024px) 560px, 92vw"
+                  sizes="(min-width: 1024px) 540px, 92vw"
                 />
                 <img
                   src="/images/office-1100.jpg"
                   srcSet="/images/office-640.jpg 640w, /images/office-1100.jpg 1100w"
-                  sizes="(min-width: 1024px) 560px, 92vw"
+                  sizes="(min-width: 1024px) 540px, 92vw"
                   alt="At the desk in the Manish Associates office"
                   fetchPriority="high"
-                  className="h-full w-full bg-[#1a2147] object-cover object-[50%_30%]"
+                  className="h-full w-full bg-[#1a2147] object-cover object-[50%_28%]"
                 />
               </picture>
             </motion.div>
-            <div className="absolute inset-0 bg-gradient-to-t from-[#0b1028]/85 via-transparent to-transparent" />
+            <div className="absolute inset-0 bg-gradient-to-t from-[#0b1028]/85 via-transparent to-[#0b1028]/30" />
+
+            {/* Visiting card on the photo */}
+            <motion.div
+              initial={{ opacity: 0, y: 16 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.9, duration: 0.6 }}
+              className="absolute inset-x-4 bottom-4 flex items-center gap-3 rounded-2xl bg-[#0b1028]/40 p-3 ring-1 ring-white/20 backdrop-blur-md sm:inset-x-5 sm:bottom-5 lg:top-5 lg:right-auto lg:bottom-auto lg:w-[min(22rem,80%)]"
+            >
+              <span className="grid size-11 shrink-0 place-items-center rounded-xl bg-gradient-to-br from-[#7b5eff] to-[#2f6bff]">
+                <Building2 size={20} aria-hidden="true" />
+              </span>
+              <span className="min-w-0 flex-1 leading-tight">
+                <span className="block text-[15px] font-extrabold text-white">Manish Associates</span>
+                <span className="block truncate text-xs font-semibold text-white/70">Insurance advisor and service centre</span>
+              </span>
+              <a
+                href="#contact"
+                className="hidden h-9 shrink-0 items-center rounded-lg bg-white px-3 text-xs font-bold text-[#141b34] no-underline sm:inline-flex"
+              >
+                Visit us
+              </a>
+            </motion.div>
           </div>
 
-          {/* Floating chips */}
+          {/* One floating chip */}
           <motion.div
             initial={{ opacity: 0, x: 30 }}
             animate={{ opacity: 1, x: 0, y: [0, -8, 0] }}
@@ -484,35 +550,20 @@ function Hero() {
               x: { delay: 1, type: 'spring' },
               y: { delay: 1.6, duration: 5, repeat: Infinity, ease: 'easeInOut' },
             }}
-            className="absolute -top-5 right-4 flex items-center gap-2.5 rounded-2xl bg-white px-3.5 py-2.5 shadow-[0_20px_40px_-18px_rgb(0_0_0/0.6)] sm:-right-6"
+            className="absolute -top-5 right-3 flex items-center gap-2.5 rounded-2xl bg-white px-3.5 py-2.5 shadow-[0_20px_40px_-18px_rgb(0_0_0/0.6)] sm:-right-6 lg:top-[46%] lg:-right-10"
             aria-hidden="true"
           >
-            <span className="grid size-9 place-items-center rounded-xl bg-[#efeaff] text-[#5b37f0]">
-              <ShieldCheck size={18} />
+            <span className="grid size-9 place-items-center rounded-xl bg-[#e7f7ee] text-[#0f7a45]">
+              <CheckCircle2 size={18} />
             </span>
             <span className="leading-tight">
-              <span className="block text-[11px] font-bold text-[#6b7290]">Insurance</span>
-              <span className="block text-sm font-extrabold text-[#0e1325]">Life · Health · Motor</span>
+              <span className="block text-[11px] font-bold text-[#6b7290]">Fees told upfront</span>
+              <span className="block text-sm font-extrabold text-[#0e1325]">Documents checked twice</span>
             </span>
-          </motion.div>
-          <motion.div
-            initial={{ opacity: 0, x: -30 }}
-            animate={{ opacity: 1, x: 0, y: [0, 8, 0] }}
-            transition={{
-              opacity: { delay: 1.2 },
-              x: { delay: 1.2, type: 'spring' },
-              y: { delay: 1.8, duration: 6, repeat: Infinity, ease: 'easeInOut' },
-            }}
-            className="absolute top-[38%] -left-3 hidden items-center gap-2.5 rounded-2xl bg-[#141b34]/85 px-3.5 py-2.5 text-white ring-1 ring-white/15 backdrop-blur-md sm:-left-10 sm:flex"
-            aria-hidden="true"
-          >
-            <span className="grid size-9 place-items-center rounded-xl bg-[#2f6bff]">
-              <Plane size={17} />
-            </span>
-            <span className="text-sm font-bold">Train · Flight · Bus</span>
           </motion.div>
 
-          <div className="relative mx-auto -mt-6 w-[92%] sm:absolute sm:-bottom-16 sm:left-1/2 sm:mt-0 sm:w-[88%] sm:-translate-x-1/2">
+          {/* The counter's queue */}
+          <div className="relative mx-auto mt-5 w-[94%] lg:absolute lg:-bottom-24 lg:-left-16 lg:mt-0 lg:w-[72%]">
             <TokenStack />
           </div>
         </motion.div>
