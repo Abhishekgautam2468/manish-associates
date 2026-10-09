@@ -40,11 +40,14 @@ import {
  * Fill in CONTACT below. Until then the page shows clearly marked placeholders,
  * the same way it does for photos.
  */
+// From the shop's business listing.
+const SINCE = { years: 7, town: 'Rewa' }
+
 const CONTACT = {
   phone: '', // e.g. '+91 98xxx xxxxx'
   whatsapp: '', // digits only with country code, e.g. '9198xxxxxxxx'
-  address: '', // shop address
-  hours: '', // e.g. 'Monday to Saturday, 9:30 am to 8:00 pm'
+  address: 'Maa GST Suvidha Kendra, Rewa Super Bazar, Rewa', // shop address
+  hours: 'Open until 8:30 pm', // e.g. 'Monday to Saturday, 9:30 am to 8:30 pm'
 }
 
 // Unsplash photos (free to use under the Unsplash licence). Swap an id to change a photo.
@@ -53,7 +56,6 @@ const PHOTOS = {
   banking: { id: '1563013544-824ae1b704d3', alt: 'Paying online with a card' },
   documents: { id: '1554224155-6726b3ff858f', alt: 'Forms and a calculator on a desk' },
   travel: { id: '1436491865332-7a61a109cc05', alt: 'The wing of a plane above the clouds' },
-  train: { id: '1474487548417-781cb71495f3', alt: 'A train on the tracks' },
   hills: { id: '1506905925346-21bda4d32df4', alt: 'Snow mountains above the clouds' },
   pilgrimage: { id: '1548013146-72479768bada', alt: 'The Taj Mahal through a carved archway' },
   beach: { id: '1507525428034-b723cf961d3e', alt: 'A quiet beach at sunset' },
@@ -186,12 +188,24 @@ function Reveal({ children, className = '', delay = 0 }) {
 }
 
 // Contact details, or a marked placeholder until they are filled in.
-function Detail({ value, placeholder }) {
+function Detail({ value, placeholder, href }) {
+  if (value && href)
+    return (
+      <a
+        href={href}
+        target="_blank"
+        rel="noreferrer"
+        className="text-white underline decoration-white/30 underline-offset-4 hover:decoration-white"
+      >
+        {value}
+      </a>
+    )
   if (value) return <span>{value}</span>
   return <span className="rounded-md border border-dashed border-current/40 px-1.5 py-0.5 text-[0.95em] opacity-70">{placeholder}</span>
 }
 
 const telHref = CONTACT.phone ? `tel:${CONTACT.phone.replace(/\s+/g, '')}` : '#contact'
+const mapsHref = CONTACT.address ? `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(CONTACT.address)}` : undefined
 const waHref = CONTACT.whatsapp ? `https://wa.me/${CONTACT.whatsapp}` : '#contact'
 
 function BrandMark({ light = false }) {
@@ -426,7 +440,7 @@ function Hero() {
             <span className="grid size-6 place-items-center rounded-full bg-gradient-to-br from-[#7b5eff] to-[#2f6bff]">
               <ShieldCheck size={13} aria-hidden="true" />
             </span>
-            Insurance advisor and service centre
+            Insurance advisor and service centre in Rewa
           </motion.p>
 
           <motion.h1
@@ -531,7 +545,9 @@ function Hero() {
               </span>
               <span className="min-w-0 flex-1 leading-tight">
                 <span className="block text-[15px] font-extrabold text-white">Manish Associates</span>
-                <span className="block truncate text-xs font-semibold text-white/70">Insurance advisor and service centre</span>
+                <span className="block truncate text-xs font-semibold text-white/70">
+                  {SINCE.years} years in business · Rewa Super Bazar
+                </span>
               </span>
               <a
                 href="#contact"
@@ -558,8 +574,8 @@ function Hero() {
               <CheckCircle2 size={18} />
             </span>
             <span className="leading-tight">
-              <span className="block text-[11px] font-bold text-[#6b7290]">Fees told upfront</span>
-              <span className="block text-sm font-extrabold text-[#0e1325]">Documents checked twice</span>
+              <span className="block text-[11px] font-bold text-[#6b7290]">Serving {SINCE.town}</span>
+              <span className="block text-sm font-extrabold text-[#0e1325]">{SINCE.years} years in business</span>
             </span>
           </motion.div>
 
@@ -724,79 +740,129 @@ function Services() {
 
 /* ---------- Highlight: Tatkal ---------- */
 
+// IRCTC Tatkal windows open one day before the journey date (the travel date itself not counted).
+const TATKAL_WINDOWS = [
+  { time: '10:00', meridiem: 'AM', label: 'AC classes', note: '1A, 2A, 3A, CC, EC' },
+  { time: '11:00', meridiem: 'AM', label: 'Non-AC classes', note: 'Sleeper and 2S' },
+]
+
 const TATKAL_NEEDS = [
-  { Icon: IdCard, text: 'ID proof of each traveller' },
-  { Icon: TrainFront, text: 'From, to and the travel date' },
-  { Icon: Phone, text: 'A phone number for the ticket' },
+  { Icon: IdCard, text: 'Name, age and ID of each traveller' },
+  { Icon: TrainFront, text: 'Train, route, class and date' },
+  { Icon: Phone, text: 'A mobile number for the ticket' },
+]
+
+const URGENT = [
+  { Icon: BookUser, title: 'Passport, Tatkal', body: 'Form filled and appointment booked for the earliest slot.' },
+  { Icon: Globe, title: 'Visa, urgent', body: 'Documents arranged in the format the embassy asks for.' },
 ]
 
 function Highlight() {
-  const ref = useRef(null)
-  const { scrollYProgress } = useScroll({ target: ref, offset: ['start end', 'end start'] })
-  const y = useTransform(scrollYProgress, [0, 1], ['-10%', '10%'])
   return (
-    <section ref={ref} className="bg-[#f6f7fb] px-5 pb-20 sm:px-8">
-      <Reveal className="relative mx-auto grid max-w-7xl overflow-hidden rounded-[36px] bg-[#0f1530] text-white shadow-[0_50px_100px_-50px_rgb(15_21_48/0.9)] lg:grid-cols-[minmax(0,1.05fr)_minmax(0,0.95fr)]">
-        <div className="relative z-10 p-7 sm:p-12 lg:p-14">
-          <div
-            className="pointer-events-none absolute -top-28 -left-28 size-80 rounded-full bg-[#6d4aff]/40 blur-[100px]"
-            aria-hidden="true"
-          />
-          <p className="relative m-0 inline-flex items-center gap-2 rounded-full bg-[#ffb648]/15 px-3 py-1 text-sm font-bold text-[#ffcf85] ring-1 ring-[#ffb648]/30">
-            <Clock size={14} aria-hidden="true" /> Tatkal and urgent work
-          </p>
-          <h2 className="relative m-0 mt-5 text-3xl leading-tight font-extrabold tracking-tight text-white sm:text-[2.6rem]">
-            Booking opens at a fixed time. We’re ready before it does.
-          </h2>
-          <p className="relative m-0 mt-4 max-w-lg text-[17px] leading-relaxed text-white/70">
-            For Tatkal train tickets, passports and urgent visas, send your details the day before. We fill everything in advance, so not a
-            second is lost when the window opens.
-          </p>
+    <section className="bg-[#f6f7fb] px-5 pb-20 sm:px-8">
+      <Reveal className="relative mx-auto max-w-7xl overflow-hidden rounded-[36px] bg-[#0f1530] text-white shadow-[0_50px_100px_-50px_rgb(15_21_48/0.9)]">
+        <div className="pointer-events-none absolute inset-0" aria-hidden="true">
+          <div className="absolute -top-32 -left-24 size-96 rounded-full bg-[#6d4aff]/35 blur-[110px]" />
+          <div className="absolute -right-24 -bottom-32 size-96 rounded-full bg-[#ffb648]/12 blur-[110px]" />
+        </div>
 
-          <div className="relative mt-8 rounded-3xl bg-white/[0.05] p-5 ring-1 ring-white/10">
-            <p className="m-0 text-sm font-bold text-white/80">For a Tatkal train ticket, send us:</p>
-            <ul className="m-0 mt-3 grid list-none gap-2.5 p-0 sm:grid-cols-3">
+        <div className="relative grid grid-cols-[minmax(0,1fr)] gap-10 p-6 sm:p-12 lg:grid-cols-[minmax(0,1fr)_minmax(0,0.95fr)] lg:items-center lg:gap-14 lg:p-14">
+          {/* Copy */}
+          <div>
+            <p className="m-0 inline-flex items-center gap-2 rounded-full bg-[#ffb648]/15 px-3 py-1 text-sm font-bold text-[#ffcf85] ring-1 ring-[#ffb648]/30">
+              <Clock size={14} aria-hidden="true" /> Tatkal and urgent work
+            </p>
+            <h2 className="m-0 mt-5 text-3xl leading-tight font-extrabold tracking-tight text-white sm:text-[2.6rem]">
+              Tatkal seats go in minutes. Your details will be ready before that.
+            </h2>
+            <p className="m-0 mt-4 max-w-lg text-base leading-relaxed text-white/70 sm:text-[17px]">
+              Send us everything a day before. We fill the booking in advance and submit it the moment the window opens, so nothing is typed
+              while the seats are running out.
+            </p>
+
+            <p className="m-0 mt-8 text-sm font-bold text-white/85">For a Tatkal train ticket, send us:</p>
+            <ul className="m-0 mt-3 flex list-none flex-col gap-2 p-0">
               {TATKAL_NEEDS.map(({ Icon, text }, k) => (
                 <motion.li
                   key={text}
-                  initial={{ opacity: 0, y: 14 }}
-                  whileInView={{ opacity: 1, y: 0 }}
+                  initial={{ opacity: 0, x: -14 }}
+                  whileInView={{ opacity: 1, x: 0 }}
                   viewport={{ once: true }}
                   transition={{ delay: 0.15 + k * 0.08 }}
-                  className="flex items-center gap-2.5 text-sm font-semibold text-white/90 sm:flex-col sm:items-start"
+                  className="flex items-center gap-3 text-[15px] font-semibold text-white/90"
                 >
-                  <span className="grid size-9 shrink-0 place-items-center rounded-xl bg-[#2f6bff]/25 text-[#a9c2ff]">
+                  <span className="grid size-9 shrink-0 place-items-center rounded-xl bg-[#2f6bff]/25 text-[#a9c2ff] ring-1 ring-[#2f6bff]/30">
                     <Icon size={17} aria-hidden="true" />
                   </span>
                   {text}
                 </motion.li>
               ))}
             </ul>
+
+            <motion.a
+              whileHover={{ y: -3 }}
+              whileTap={{ scale: 0.97 }}
+              href={waHref}
+              className="mt-8 inline-flex h-13 items-center gap-2.5 rounded-2xl bg-white px-6 font-bold text-[#141b34] no-underline shadow-[0_16px_30px_-14px_rgb(0_0_0/0.6)]"
+            >
+              <MessageCircle size={18} aria-hidden="true" /> Send details on WhatsApp
+            </motion.a>
           </div>
 
-          <motion.a
-            whileHover={{ y: -3 }}
-            whileTap={{ scale: 0.97 }}
-            href={waHref}
-            className="relative mt-8 inline-flex h-13 items-center gap-2.5 rounded-2xl bg-white px-6 font-bold text-[#141b34] no-underline shadow-[0_16px_30px_-14px_rgb(0_0_0/0.6)]"
-          >
-            <MessageCircle size={18} aria-hidden="true" /> Send details on WhatsApp
-          </motion.a>
-        </div>
-        <div className="relative min-h-[260px] overflow-hidden lg:min-h-full">
-          <motion.div style={{ y }} className="absolute -inset-y-[12%] inset-x-0">
-            <Photo photo={PHOTOS.train} sizes="(min-width: 1024px) 600px, 100vw" />
-          </motion.div>
-          <div className="absolute inset-0 bg-gradient-to-r from-[#0f1530] via-[#0f1530]/20 to-transparent max-lg:bg-gradient-to-b" />
-          <div className="absolute right-5 bottom-5 left-5 flex flex-wrap gap-2 lg:left-auto">
-            {['Train', 'Passport', 'Visa'].map((x) => (
-              <span
-                key={x}
-                className="rounded-full bg-[#0b1028]/60 px-3.5 py-1.5 text-sm font-bold text-white ring-1 ring-white/20 backdrop-blur"
-              >
-                Tatkal {x.toLowerCase()}
-              </span>
-            ))}
+          {/* Booking windows, as a ticket */}
+          <div className="flex flex-col gap-4">
+            <motion.div
+              initial={{ opacity: 0, y: 30, rotate: -1.5 }}
+              whileInView={{ opacity: 1, y: 0, rotate: 0 }}
+              viewport={{ once: true, margin: '-60px' }}
+              transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
+              className="relative overflow-hidden rounded-[28px] bg-white text-[#0e1325] shadow-[0_40px_80px_-40px_rgb(0_0_0/0.9)]"
+            >
+              <div className="flex items-center justify-between gap-3 whitespace-nowrap bg-gradient-to-r from-[#6d4aff] to-[#2f6bff] px-6 py-4 text-white">
+                <span className="flex items-center gap-2.5 text-sm font-bold">
+                  <TrainFront size={18} aria-hidden="true" /> Tatkal booking opens
+                </span>
+                <span className="rounded-full bg-white/15 px-2.5 py-1 text-xs font-bold whitespace-nowrap ring-1 ring-white/25">
+                  1 day before
+                </span>
+              </div>
+              <div className="grid grid-cols-2">
+                {TATKAL_WINDOWS.map((w, k) => (
+                  <div key={w.label} className={`px-5 py-6 sm:px-6 ${k ? 'border-0 border-l-2 border-dashed border-[#e3e6f0]' : ''}`}>
+                    <p className="m-0 text-xs font-bold text-[#6b7290]">{w.label}</p>
+                    <p className="m-0 mt-1 flex items-baseline gap-1.5">
+                      <span className="text-[2rem] font-extrabold tracking-tight tabular-nums sm:text-5xl">{w.time}</span>
+                      <span className="text-sm font-bold text-[#5a6280]">{w.meridiem}</span>
+                    </p>
+                    <p className="m-0 mt-1 text-xs text-[#8a90a8]">{w.note}</p>
+                  </div>
+                ))}
+              </div>
+              <p className="m-0 border-t border-[#eceef5] bg-[#f6f7fb] px-6 py-3 text-xs text-[#6b7290]">
+                Seats depend on availability. Tatkal fares are set by the railways.
+              </p>
+            </motion.div>
+
+            <div className="grid gap-3 sm:grid-cols-2">
+              {URGENT.map(({ Icon, title, body }, k) => (
+                <motion.div
+                  key={title}
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ delay: 0.25 + k * 0.1, duration: 0.6 }}
+                  className="rounded-2xl bg-white/[0.06] p-4 ring-1 ring-white/10"
+                >
+                  <span className="flex items-center gap-2.5 text-[15px] font-bold text-white">
+                    <span className="grid size-9 place-items-center rounded-xl bg-[#ffb648]/15 text-[#ffcf85]">
+                      <Icon size={17} aria-hidden="true" />
+                    </span>
+                    {title}
+                  </span>
+                  <p className="m-0 mt-2 text-sm leading-relaxed text-white/65">{body}</p>
+                </motion.div>
+              ))}
+            </div>
           </div>
         </div>
       </Reveal>
@@ -1132,9 +1198,9 @@ function ContactSection() {
           <dl className="m-0 grid gap-3">
             {[
               { Icon: Phone, label: 'Phone and WhatsApp', value: CONTACT.phone, ph: 'Phone number' },
-              { Icon: MapPin, label: 'Visit the office', value: CONTACT.address, ph: 'Shop address' },
+              { Icon: MapPin, label: 'Visit the office', value: CONTACT.address, ph: 'Shop address', href: mapsHref },
               { Icon: Clock, label: 'Opening hours', value: CONTACT.hours, ph: 'Opening hours' },
-            ].map(({ Icon, label, value, ph }) => (
+            ].map(({ Icon, label, value, ph, href }) => (
               <div key={label} className="flex items-center gap-4 rounded-2xl bg-white/[0.05] p-4 ring-1 ring-white/10">
                 <span className="grid size-12 shrink-0 place-items-center rounded-2xl bg-gradient-to-br from-[#6d4aff] to-[#2f6bff]">
                   <Icon size={20} aria-hidden="true" />
@@ -1142,7 +1208,7 @@ function ContactSection() {
                 <div className="min-w-0">
                   <dt className="text-sm font-bold text-[#a9b8ff]">{label}</dt>
                   <dd className="m-0 mt-0.5 text-[15px] font-semibold text-white/90">
-                    <Detail value={value} placeholder={ph} />
+                    <Detail value={value} placeholder={ph} href={href} />
                   </dd>
                 </div>
               </div>
