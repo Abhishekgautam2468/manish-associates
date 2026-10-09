@@ -77,19 +77,30 @@ export default [
     },
   },
   {
-    name: 'home-signup',
+    name: 'home-landing',
     path: '/',
     w: 1440,
     h: 900,
+    wait: 3500,
     run: async () => {
-      const e = all('input[type=email]')[0]
-      if (!e) {
-        note('no signup form')
-        return { ok, notes }
-      }
-      setVal(e, 'not-an-email')
-      await click(all('button[type=submit]')[0], null, 800)
-      note('after bad email: ' + (document.querySelector('[role=alert], .field-error, [aria-live]')?.innerText || 'browser check'))
+      for (const id of ['services', 'travel', 'how', 'contact']) expect(Boolean(document.getElementById(id)), 'section ' + id)
+      expect(all('a[href="#services"]').length > 0, 'nav links to services')
+      expect(/Insurance advice/.test(text()) && /Tickets and tours/.test(text()), 'service groups listed')
+      expect(all('img').length >= 8 && all('img').every((i) => i.alt), 'photos have descriptions')
+      expect(Boolean(all('a').find((a) => a.getAttribute('href') === '/login')), 'staff sign in link')
+    },
+  },
+  {
+    name: 'home-menu-phone',
+    path: '/',
+    w: 390,
+    h: 844,
+    wait: 3500,
+    run: async () => {
+      await click(document.querySelector('button[aria-label="Open menu"]'), null, 600)
+      expect(Boolean(all('header a').find((a) => a.textContent.trim() === 'Tours')), 'phone menu opens')
+      await click(all('header a').filter((a) => a.textContent.trim() === 'Tours').at(-1), null, 900)
+      expect(!document.querySelector('button[aria-label="Close menu"]'), 'menu closes after a choice')
     },
   },
 ]
